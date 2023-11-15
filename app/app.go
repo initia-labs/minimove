@@ -169,6 +169,7 @@ var (
 		// x/builder's module account must be instantiated upon genesis to accrue auction rewards not
 		// distributed to proposers
 		buildertypes.ModuleName: nil,
+		opchildtypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 
 		// this is only for testing
 		authtypes.Minter: {authtypes.Minter},
