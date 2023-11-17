@@ -14,9 +14,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/initia-labs/OPinit v0.1.0-beta.2
-	github.com/initia-labs/initia v0.1.2-beta.0.0.20231110030553-37758f169dd6
-	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#15
-	github.com/initia-labs/initiavm v0.1.2-beta.1
+	github.com/initia-labs/initia v0.1.2-beta.2
+	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#5
+	github.com/initia-labs/initiavm v0.1.2-beta.2
 	github.com/pelletier/go-toml v1.9.5
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
