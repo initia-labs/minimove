@@ -661,10 +661,10 @@ github.com/initia-labs/OPinit v0.1.0-beta.2 h1:JTtgkPWg/11FrWqnNx6Wl/DBMafco++6o
 github.com/initia-labs/OPinit v0.1.0-beta.2/go.mod h1:MPnFU2x4xzeT3L8K3lc0wkOl09o/oekEabPHIwWdqJg=
 github.com/initia-labs/cometbft v0.0.0-20230712071302-2eb72ff629a1 h1:uRvrlR44s83ZdXW+zudw1cy/jMv1X4n/l62glM9RTw0=
 github.com/initia-labs/cometbft v0.0.0-20230712071302-2eb72ff629a1/go.mod h1:Y2MMMN//O5K4YKd8ze4r9jmk4Y7h0ajqILXbH5JQFVs=
-github.com/initia-labs/initia v0.1.2-beta.2 h1:8xIvYHUTb8pVHB1tkHD72n6IFEpWkHOgkY2TfrkXEnk=
-github.com/initia-labs/initia v0.1.2-beta.2/go.mod h1:ioCLAUJMrExU3UbDeOtNsPVbIc/eeZHab7mABd3wdcY=
-github.com/initia-labs/initiavm v0.1.2-beta.2 h1:i6ksQG9H40yxCCZLIFMme7PdmbkiiiI68Sum0HoKpiQ=
-github.com/initia-labs/initiavm v0.1.2-beta.2/go.mod h1:aQt4lImZWF9xj7Fm978n0IoeDdKWXTg1CSq6O4WoSD8=
+github.com/initia-labs/initia v0.1.2-beta.3 h1:YAyhLh65/08gu5zJkHWl/9zqvSkCNk6HUrLKfie54T8=
+github.com/initia-labs/initia v0.1.2-beta.3/go.mod h1:d9OMSQ4j12BDJCiw2Ebd7zBOzK6u5UVPZ1auAubPsm8=
+github.com/initia-labs/initiavm v0.1.2-beta.3 h1:+KTrSZIV3355I+KeRhX4LEex3M7enro0oWSjLZtzZGA=
+github.com/initia-labs/initiavm v0.1.2-beta.3/go.mod h1:aQt4lImZWF9xj7Fm978n0IoeDdKWXTg1CSq6O4WoSD8=
 github.com/jhump/protoreflect v1.15.1 h1:HUMERORf3I3ZdX05WaQ6MIpd/NJ434hTp5YiKgfCL6c=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
