@@ -14,7 +14,7 @@ require (
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
-	github.com/initia-labs/OPinit v0.1.0-beta.2
+	github.com/initia-labs/OPinit v0.1.0-beta.3
 	github.com/initia-labs/initia v0.1.2-beta.5
 	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#5
 	github.com/initia-labs/initiavm v0.1.2-beta.3
@@ -186,7 +186,7 @@ replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20230712071302-2eb72ff629a1
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20231122093053-d5f2b4829792
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
