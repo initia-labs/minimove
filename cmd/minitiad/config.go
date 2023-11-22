@@ -57,14 +57,14 @@ func initTendermintConfig() *tmcfg.Config {
 	cfg.Consensus.CreateEmptyBlocks = false
 	cfg.Consensus.CreateEmptyBlocksInterval = time.Minute
 
-	// block time from 5s to 0.5s
-	cfg.Consensus.TimeoutPropose = cfg.Consensus.TimeoutPropose / 10
-	cfg.Consensus.TimeoutProposeDelta = cfg.Consensus.TimeoutProposeDelta / 10
-	cfg.Consensus.TimeoutPrevote = cfg.Consensus.TimeoutPrevote / 10
-	cfg.Consensus.TimeoutPrevoteDelta = cfg.Consensus.TimeoutPrevoteDelta / 10
-	cfg.Consensus.TimeoutPrecommit = cfg.Consensus.TimeoutPrecommit / 10
-	cfg.Consensus.TimeoutPrecommitDelta = cfg.Consensus.TimeoutPrecommitDelta / 10
-	cfg.Consensus.TimeoutCommit = cfg.Consensus.TimeoutCommit / 10
+	// block time to 0.5s
+	cfg.Consensus.TimeoutPropose = 300 * time.Millisecond
+	cfg.Consensus.TimeoutProposeDelta = 500 * time.Millisecond
+	cfg.Consensus.TimeoutPrevote = 1000 * time.Millisecond
+	cfg.Consensus.TimeoutPrevoteDelta = 500 * time.Millisecond
+	cfg.Consensus.TimeoutPrecommit = 1000 * time.Millisecond
+	cfg.Consensus.TimeoutPrecommitDelta = 500 * time.Millisecond
+	cfg.Consensus.TimeoutCommit = 500 * time.Millisecond
 
 	return cfg
 }
