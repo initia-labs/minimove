@@ -13,8 +13,9 @@ import (
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	moveante "github.com/initia-labs/initia/x/move/ante"
 
-	builderante "github.com/skip-mev/pob/x/builder/ante"
-	builderkeeper "github.com/skip-mev/pob/x/builder/keeper"
+	"github.com/skip-mev/block-sdk/block"
+	auctionante "github.com/skip-mev/block-sdk/x/auction/ante"
+	auctionkeeper "github.com/skip-mev/block-sdk/x/auction/keeper"
 )
 
 // HandlerOptions extends the SDK's AnteHandler options by requiring the IBC
@@ -24,9 +25,10 @@ type HandlerOptions struct {
 	Codec         codec.BinaryCodec
 	IBCkeeper     *ibckeeper.Keeper
 	RollupKeeper  opchildtypes.AnteKeeper
-	BuilderKeeper builderkeeper.Keeper
+	AuctionKeeper auctionkeeper.Keeper
 	TxEncoder     sdk.TxEncoder
-	Mempool       builderante.Mempool
+	MevLane       auctionante.MEVLane
+	FreeLane      block.Lane
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -55,6 +57,21 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		txFeeChecker = opchildante.NewMempoolFeeChecker(options.RollupKeeper).CheckTxFeeWithMinGasPrices
 	}
 
+	freeLaneFeeChecker := func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+		// skip fee checker if the tx is free lane tx.
+		if !options.FreeLane.Match(ctx, tx) {
+			return txFeeChecker(ctx, tx)
+		}
+
+		// return fee without fee check
+		feeTx, ok := tx.(sdk.FeeTx)
+		if !ok {
+			return nil, 0, errors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+		}
+
+		return feeTx.GetFee(), 1 /* FIFO */, nil
+	}
+
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
@@ -64,7 +81,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, txFeeChecker),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, freeLaneFeeChecker),
 		// SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
@@ -72,7 +89,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
-		builderante.NewBuilderDecorator(options.BuilderKeeper, options.TxEncoder, options.Mempool),
+		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -15,6 +16,9 @@ import (
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 	"github.com/initia-labs/initiavm/precompile"
+	"github.com/initia-labs/minimove/types"
+
+	auctiontypes "github.com/skip-mev/block-sdk/x/auction/types"
 )
 
 // GenesisState - The genesis state of the blockchain is represented here as a map of raw json
@@ -32,7 +36,20 @@ func NewDefaultGenesisState(cdc codec.JSONCodec, mbm module.BasicManager) Genesi
 		ConfigureMinGasPrices(cdc).
 		ConfigureICA(cdc).
 		ConfigureMoveStdlib(cdc).
-		ConfigureIBCAllowedClients(cdc)
+		ConfigureIBCAllowedClients(cdc).
+		ConfigureAuctionFee(cdc)
+}
+
+func (genState GenesisState) ConfigureAuctionFee(cdc codec.JSONCodec) GenesisState {
+	var auctionGenState auctiontypes.GenesisState
+	cdc.MustUnmarshalJSON(genState[auctiontypes.ModuleName], &auctionGenState)
+	auctionGenState.Params.ReserveFee.Denom = types.BaseDenom
+	auctionGenState.Params.ReserveFee.Amount = math.ZeroInt()
+	auctionGenState.Params.MinBidIncrement.Denom = types.BaseDenom
+	auctionGenState.Params.MinBidIncrement.Amount = math.ZeroInt()
+	genState[auctiontypes.ModuleName] = cdc.MustMarshalJSON(&auctionGenState)
+
+	return genState
 }
 
 // ConfigureMinGasPrices generates the default state for the application.

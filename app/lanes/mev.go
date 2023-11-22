@@ -1,12 +1,12 @@
-package app
+package lanes
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	buildertypes "github.com/skip-mev/pob/x/builder/types"
+	auctiontypes "github.com/skip-mev/block-sdk/x/auction/types"
 )
 
-var _ buildertypes.RewardsAddressProvider = (*RewardsAddressProvider)(nil)
+var _ auctiontypes.RewardsAddressProvider = (*RewardsAddressProvider)(nil)
 
 // NewRewardsAddressProvider returns a new RewardsAddressProvider from a staking + distribution keeper
 func NewRewardsAddressProvider(feeCollectorName string) *RewardsAddressProvider {

@@ -13,6 +13,7 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	"cosmossdk.io/math"
 
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -109,21 +110,28 @@ import (
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
+	initiaservice "github.com/initia-labs/initia/service"
 	moveibcmiddleware "github.com/initia-labs/initia/x/move/ibc-middleware"
 
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 
-	builderabci "github.com/skip-mev/pob/abci"
-	pobabci "github.com/skip-mev/pob/abci"
-	buildermempool "github.com/skip-mev/pob/mempool"
-	"github.com/skip-mev/pob/x/builder"
-	builderkeeper "github.com/skip-mev/pob/x/builder/keeper"
-	buildertypes "github.com/skip-mev/pob/x/builder/types"
+	mevabci "github.com/skip-mev/block-sdk/abci"
+	signer_extraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
+	"github.com/skip-mev/block-sdk/block"
+	blockbase "github.com/skip-mev/block-sdk/block/base"
+	baselane "github.com/skip-mev/block-sdk/lanes/base"
+	freelane "github.com/skip-mev/block-sdk/lanes/free"
+	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
+	"github.com/skip-mev/block-sdk/x/auction"
+	auctionante "github.com/skip-mev/block-sdk/x/auction/ante"
+	auctionkeeper "github.com/skip-mev/block-sdk/x/auction/keeper"
+	auctiontypes "github.com/skip-mev/block-sdk/x/auction/types"
 
-	"github.com/initia-labs/minimove/app/ante"
-	"github.com/initia-labs/minimove/app/hook"
+	appante "github.com/initia-labs/minimove/app/ante"
+	apphook "github.com/initia-labs/minimove/app/hook"
+	applanes "github.com/initia-labs/minimove/app/lanes"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -156,7 +164,7 @@ var (
 		ibcfee.AppModuleBasic{},
 		move.AppModuleBasic{},
 		opchild.AppModuleBasic{},
-		builder.AppModuleBasic{},
+		auction.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -166,9 +174,9 @@ var (
 		ibcfeetypes.ModuleName:          nil,
 		ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 		movetypes.MoveStakingModuleName: nil,
-		// x/builder's module account must be instantiated upon genesis to accrue auction rewards not
+		// x/auction's module account must be instantiated upon genesis to accrue auction rewards not
 		// distributed to proposers
-		buildertypes.ModuleName: nil,
+		auctiontypes.ModuleName: nil,
 		opchildtypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 
 		// this is only for testing
@@ -226,7 +234,7 @@ type MinitiaApp struct {
 	IBCFeeKeeper          *ibcfeekeeper.Keeper
 	MoveKeeper            *movekeeper.Keeper
 	RollupKeeper          *opchildkeeper.Keeper
-	BuilderKeeper         *builderkeeper.Keeper // x/builder keeper used to process bids for TOB auctions
+	AuctionKeeper         *auctionkeeper.Keeper // x/builder keeper used to process bids for TOB auctions
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -244,7 +252,7 @@ type MinitiaApp struct {
 	configurator module.Configurator
 
 	// Override of BaseApp's CheckTx
-	checkTxHandler pobabci.CheckTx
+	checkTxHandler mevlane.CheckTx
 }
 
 // NewMinitiaApp returns a reference to an initialized Initia.
@@ -276,7 +284,7 @@ func NewMinitiaApp(
 		ibctransfertypes.StoreKey, ibcnfttransfertypes.StoreKey, capabilitytypes.StoreKey,
 		authzkeeper.StoreKey, feegrant.StoreKey, icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey, icaauthtypes.StoreKey, ibcfeetypes.StoreKey,
-		movetypes.StoreKey, opchildtypes.StoreKey, buildertypes.StoreKey,
+		movetypes.StoreKey, opchildtypes.StoreKey, auctiontypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -350,7 +358,7 @@ func NewMinitiaApp(
 		keys[opchildtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		hook.NewMoveBridgeHook(app.MoveKeeper).Hook,
+		apphook.NewMoveBridgeHook(app.MoveKeeper).Hook,
 		app.MsgServiceRouter(),
 		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
 	)
@@ -575,18 +583,18 @@ func NewMinitiaApp(
 
 	opchildKeeper.SetLegacyRouter(govRouter)
 
-	// x/builder module keeper initialization
+	// x/auction module keeper initialization
 
 	// initialize the keeper
-	builderKeeper := builderkeeper.NewKeeperWithRewardsAddressProvider(
+	auctionKeeper := auctionkeeper.NewKeeperWithRewardsAddressProvider(
 		app.appCodec,
-		app.keys[buildertypes.StoreKey],
+		app.keys[auctiontypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		NewRewardsAddressProvider(authtypes.FeeCollectorName),
+		applanes.NewRewardsAddressProvider(authtypes.FeeCollectorName),
 		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
 	)
-	app.BuilderKeeper = &builderKeeper
+	app.AuctionKeeper = &auctionKeeper
 
 	/****  Module Options ****/
 
@@ -606,7 +614,7 @@ func NewMinitiaApp(
 		groupmodule.NewAppModule(appCodec, *app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		consensus.NewAppModule(appCodec, *app.ConsensusParamsKeeper),
 		move.NewAppModule(app.AccountKeeper, *app.MoveKeeper),
-		builder.NewAppModule(app.appCodec, *app.BuilderKeeper),
+		auction.NewAppModule(app.appCodec, *app.AuctionKeeper),
 		transferModule,
 		nftTransferModule,
 		icaModule,
@@ -630,7 +638,7 @@ func NewMinitiaApp(
 		paramstypes.ModuleName,
 		movetypes.ModuleName,
 		consensusparamtypes.ModuleName,
-		buildertypes.ModuleName,
+		auctiontypes.ModuleName,
 		// ibc modules
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -652,7 +660,7 @@ func NewMinitiaApp(
 		upgradetypes.ModuleName,
 		movetypes.ModuleName,
 		consensusparamtypes.ModuleName,
-		buildertypes.ModuleName,
+		auctiontypes.ModuleName,
 		// ibc modules
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -677,7 +685,7 @@ func NewMinitiaApp(
 		upgradetypes.ModuleName,
 		feegrant.ModuleName,
 		consensusparamtypes.ModuleName,
-		buildertypes.ModuleName,
+		auctiontypes.ModuleName,
 		// ibc modules
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -713,35 +721,73 @@ func NewMinitiaApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	// initialize and set the InitiaApp mempool. The current mempool will be the
-	// x/builder module's mempool which will extract the top bid from the current block's auction
+	// x/auction module's mempool which will extract the top bid from the current block's auction
 	// and insert the txs at the top of the block spots.
-	factory := buildermempool.NewDefaultAuctionFactory(app.txConfig.TxDecoder())
-	mempool := buildermempool.NewAuctionMempool(
-		app.txConfig.TxDecoder(),
-		app.txConfig.TxEncoder(),
-		0,
-		factory,
+	signerExtractor := signer_extraction.NewDefaultAdapter()
+
+	mevConfig := blockbase.LaneConfig{
+		Logger:          app.Logger(),
+		TxEncoder:       app.txConfig.TxEncoder(),
+		TxDecoder:       app.txConfig.TxDecoder(),
+		MaxBlockSpace:   math.LegacyZeroDec(),
+		MaxTxs:          0,
+		SignerExtractor: signerExtractor,
+	}
+	mevLane := mevlane.NewMEVLane(
+		mevConfig,
+		mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor),
 	)
+
+	freeConfig := blockbase.LaneConfig{
+		Logger:          app.Logger(),
+		TxEncoder:       app.txConfig.TxEncoder(),
+		TxDecoder:       app.txConfig.TxDecoder(),
+		MaxBlockSpace:   math.LegacyZeroDec(),
+		MaxTxs:          10,
+		SignerExtractor: signerExtractor,
+	}
+	freeLane := freelane.NewFreeLane(
+		freeConfig,
+		blockbase.DefaultTxPriority(),
+		applanes.FreeLaneMatchHandler(),
+	)
+
+	defaultLaneConfig := blockbase.LaneConfig{
+		Logger:          app.Logger(),
+		TxEncoder:       app.txConfig.TxEncoder(),
+		TxDecoder:       app.txConfig.TxDecoder(),
+		MaxBlockSpace:   math.LegacyZeroDec(),
+		MaxTxs:          0,
+		SignerExtractor: signerExtractor,
+	}
+	defaultLane := baselane.NewDefaultLane(defaultLaneConfig)
+
+	lanes := []block.Lane{mevLane, freeLane, defaultLane}
+	mempool := block.NewLanedMempool(app.Logger(), true, lanes...)
 	app.SetMempool(mempool)
-	anteHandler := app.setAnteHandler(mempool)
+
+	anteHandler := app.setAnteHandler(mevLane, freeLane)
+	for _, lane := range lanes {
+		lane.SetAnteHandler(anteHandler)
+	}
 
 	// override the base-app's ABCI methods (CheckTx, PrepareProposal, ProcessProposal)
-	proposalHandlers := builderabci.NewProposalHandler(
-		mempool,
+	proposalHandlers := mevabci.NewProposalHandler(
 		app.Logger(),
-		anteHandler,
-		app.txConfig.TxEncoder(),
 		app.txConfig.TxDecoder(),
+		app.txConfig.TxEncoder(),
+		mempool,
 	)
+
 	// override base-app's ProcessProposal + PrepareProposal
 	app.SetPrepareProposal(proposalHandlers.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandlers.ProcessProposalHandler())
 
 	// overrde base-app's CheckTx
-	checkTxHandler := builderabci.NewCheckTxHandler(
+	checkTxHandler := mevlane.NewCheckTxHandler(
 		app.BaseApp,
 		app.txConfig.TxDecoder(),
-		mempool,
+		mevLane,
 		anteHandler,
 		app.ChainID(),
 	)
@@ -774,13 +820,16 @@ func (app *MinitiaApp) CheckTx(req abci.RequestCheckTx) abci.ResponseCheckTx {
 }
 
 // SetCheckTx sets the checkTxHandler for the app.
-func (app *MinitiaApp) SetCheckTx(handler pobabci.CheckTx) {
+func (app *MinitiaApp) SetCheckTx(handler mevlane.CheckTx) {
 	app.checkTxHandler = handler
 }
 
-func (app *MinitiaApp) setAnteHandler(mempl buildermempool.Mempool) sdk.AnteHandler {
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
+func (app *MinitiaApp) setAnteHandler(
+	mevLane auctionante.MEVLane,
+	freeLane block.Lane,
+) sdk.AnteHandler {
+	anteHandler, err := appante.NewAnteHandler(
+		appante.HandlerOptions{
 			HandlerOptions: cosmosante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
@@ -792,8 +841,9 @@ func (app *MinitiaApp) setAnteHandler(mempl buildermempool.Mempool) sdk.AnteHand
 			Codec:         app.appCodec,
 			RollupKeeper:  app.RollupKeeper,
 			TxEncoder:     app.txConfig.TxEncoder(),
-			BuilderKeeper: *app.BuilderKeeper,
-			Mempool:       mempl,
+			AuctionKeeper: *app.AuctionKeeper,
+			MevLane:       mevLane,
+			FreeLane:      freeLane,
 		},
 	)
 	if err != nil {
@@ -935,16 +985,17 @@ func (app *MinitiaApp) Simulate(txBytes []byte) (sdk.GasInfo, *sdk.Result, error
 
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *MinitiaApp) RegisterTxService(clientCtx client.Context) {
-	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.Simulate, app.interfaceRegistry)
+	initiaservice.RegisterTxService(
+		app.BaseApp.GRPCQueryRouter(), clientCtx,
+		authtx.NewTxServer(clientCtx, app.Simulate, app.interfaceRegistry),
+	)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *MinitiaApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(
-		clientCtx,
+	initiaservice.RegisterTendermintService(
 		app.BaseApp.GRPCQueryRouter(),
-		app.interfaceRegistry,
-		app.Query,
+		tmservice.NewQueryServer(clientCtx, app.interfaceRegistry, app.Query),
 	)
 }
 
