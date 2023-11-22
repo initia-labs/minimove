@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -44,9 +43,7 @@ func (genState GenesisState) ConfigureAuctionFee(cdc codec.JSONCodec) GenesisSta
 	var auctionGenState auctiontypes.GenesisState
 	cdc.MustUnmarshalJSON(genState[auctiontypes.ModuleName], &auctionGenState)
 	auctionGenState.Params.ReserveFee.Denom = types.BaseDenom
-	auctionGenState.Params.ReserveFee.Amount = math.ZeroInt()
 	auctionGenState.Params.MinBidIncrement.Denom = types.BaseDenom
-	auctionGenState.Params.MinBidIncrement.Amount = math.ZeroInt()
 	genState[auctiontypes.ModuleName] = cdc.MustMarshalJSON(&auctionGenState)
 
 	return genState
