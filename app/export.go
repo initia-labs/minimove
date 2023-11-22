@@ -30,7 +30,7 @@ func (app *MinitiaApp) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := opchild.WriteValidators(ctx, app.RollupKeeper)
+	validators, err := opchild.WriteValidators(ctx, app.OPChildKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}

@@ -233,7 +233,7 @@ type MinitiaApp struct {
 	ICAAuthKeeper         *icaauthkeeper.Keeper
 	IBCFeeKeeper          *ibcfeekeeper.Keeper
 	MoveKeeper            *movekeeper.Keeper
-	RollupKeeper          *opchildkeeper.Keeper
+	OPChildKeeper         *opchildkeeper.Keeper
 	AuctionKeeper         *auctionkeeper.Keeper // x/auction keeper used to process bids for TOB auctions
 
 	// make scoped keepers public for test purposes
@@ -349,9 +349,9 @@ func NewMinitiaApp(
 	)
 	app.BankKeeper = &bankKeeper
 
-	////////////////////////////////
-	// RollupKeeper Configuration //
-	////////////////////////////////
+	/////////////////////////////////
+	// OPChildKeeper Configuration //
+	/////////////////////////////////
 
 	opchildKeeper := opchildkeeper.NewKeeper(
 		appCodec,
@@ -362,7 +362,7 @@ func NewMinitiaApp(
 		app.MsgServiceRouter(),
 		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
 	)
-	app.RollupKeeper = &opchildKeeper
+	app.OPChildKeeper = &opchildKeeper
 
 	// get skipUpgradeHeights from the app options
 	skipUpgradeHeights := map[int64]bool{}
@@ -407,7 +407,7 @@ func NewMinitiaApp(
 		appCodec,
 		keys[ibcexported.StoreKey],
 		app.GetSubspace(ibcexported.ModuleName),
-		app.RollupKeeper,
+		app.OPChildKeeper,
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
 	)
@@ -604,7 +604,7 @@ func NewMinitiaApp(
 	app.mm = module.NewManager(
 		auth.NewAppModule(appCodec, *app.AccountKeeper, nil, nil),
 		bank.NewAppModule(appCodec, *app.BankKeeper, app.AccountKeeper),
-		opchild.NewAppModule(*app.RollupKeeper),
+		opchild.NewAppModule(*app.OPChildKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, *app.FeeGrantKeeper, app.interfaceRegistry),
 		upgrade.NewAppModule(app.UpgradeKeeper),
@@ -839,7 +839,7 @@ func (app *MinitiaApp) setAnteHandler(
 			},
 			IBCkeeper:     app.IBCKeeper,
 			Codec:         app.appCodec,
-			RollupKeeper:  app.RollupKeeper,
+			OPChildKeeper: app.OPChildKeeper,
 			TxEncoder:     app.txConfig.TxEncoder(),
 			AuctionKeeper: *app.AuctionKeeper,
 			MevLane:       mevLane,
@@ -1070,7 +1070,7 @@ func (app *MinitiaApp) GetAccountKeeper() *authkeeper.AccountKeeper {
 // GetStakingKeeper implements the TestingApp interface.
 // It returns opchild instead of original staking keeper.
 func (app *MinitiaApp) GetStakingKeeper() ibctestingtypes.StakingKeeper {
-	return app.RollupKeeper
+	return app.OPChildKeeper
 }
 
 // GetIBCKeeper implements the TestingApp interface.

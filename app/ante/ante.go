@@ -24,7 +24,7 @@ type HandlerOptions struct {
 	ante.HandlerOptions
 	Codec         codec.BinaryCodec
 	IBCkeeper     *ibckeeper.Keeper
-	RollupKeeper  opchildtypes.AnteKeeper
+	OPChildKeeper opchildtypes.AnteKeeper
 	AuctionKeeper auctionkeeper.Keeper
 	TxEncoder     sdk.TxEncoder
 	MevLane       auctionante.MEVLane
@@ -54,7 +54,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	txFeeChecker := options.TxFeeChecker
 	if txFeeChecker == nil {
-		txFeeChecker = opchildante.NewMempoolFeeChecker(options.RollupKeeper).CheckTxFeeWithMinGasPrices
+		txFeeChecker = opchildante.NewMempoolFeeChecker(options.OPChildKeeper).CheckTxFeeWithMinGasPrices
 	}
 
 	freeLaneFeeChecker := func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
