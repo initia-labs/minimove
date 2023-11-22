@@ -234,7 +234,7 @@ type MinitiaApp struct {
 	IBCFeeKeeper          *ibcfeekeeper.Keeper
 	MoveKeeper            *movekeeper.Keeper
 	RollupKeeper          *opchildkeeper.Keeper
-	AuctionKeeper         *auctionkeeper.Keeper // x/builder keeper used to process bids for TOB auctions
+	AuctionKeeper         *auctionkeeper.Keeper // x/auction keeper used to process bids for TOB auctions
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
