@@ -110,7 +110,6 @@ import (
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
-	initiaservice "github.com/initia-labs/initia/service"
 	moveibcmiddleware "github.com/initia-labs/initia/x/move/ibc-middleware"
 
 	opchild "github.com/initia-labs/OPinit/x/opchild"
@@ -988,17 +987,18 @@ func (app *MinitiaApp) Simulate(txBytes []byte) (sdk.GasInfo, *sdk.Result, error
 
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *MinitiaApp) RegisterTxService(clientCtx client.Context) {
-	initiaservice.RegisterTxService(
+	authtx.RegisterTxService(
 		app.BaseApp.GRPCQueryRouter(), clientCtx,
-		authtx.NewTxServer(clientCtx, app.Simulate, app.interfaceRegistry),
+		app.Simulate, app.interfaceRegistry,
 	)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *MinitiaApp) RegisterTendermintService(clientCtx client.Context) {
-	initiaservice.RegisterTendermintService(
+	tmservice.RegisterTendermintService(
+		clientCtx,
 		app.BaseApp.GRPCQueryRouter(),
-		tmservice.NewQueryServer(clientCtx, app.interfaceRegistry, app.Query),
+		app.interfaceRegistry, app.Query,
 	)
 }
 
