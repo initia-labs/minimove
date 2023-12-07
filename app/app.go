@@ -115,12 +115,12 @@ import (
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	initialanes "github.com/initia-labs/initia/app/lanes"
 
 	mevabci "github.com/skip-mev/block-sdk/abci"
 	signer_extraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block"
 	blockbase "github.com/skip-mev/block-sdk/block/base"
-	baselane "github.com/skip-mev/block-sdk/lanes/base"
 	freelane "github.com/skip-mev/block-sdk/lanes/free"
 	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
 	"github.com/skip-mev/block-sdk/x/auction"
@@ -759,7 +759,7 @@ func NewMinitiaApp(
 		applanes.FreeLaneMatchHandler(),
 	)
 
-	defaultLaneConfig := blockbase.LaneConfig{
+	priorityLaneConfig := blockbase.LaneConfig{
 		Logger:          app.Logger(),
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
@@ -767,9 +767,9 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
-	defaultLane := baselane.NewDefaultLane(defaultLaneConfig)
+	priorityLane := initialanes.NewPriorityLane(priorityLaneConfig)
 
-	lanes := []block.Lane{mevLane, freeLane, defaultLane}
+	lanes := []block.Lane{mevLane, freeLane, priorityLane}
 	mempool := block.NewLanedMempool(app.Logger(), true, lanes...)
 	app.SetMempool(mempool)
 
@@ -842,7 +842,6 @@ func (app *MinitiaApp) setAnteHandler(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: app.txConfig.SignModeHandler(),
-				SigGasConsumer:  cosmosante.DefaultSigVerificationGasConsumer,
 			},
 			IBCkeeper:     app.IBCKeeper,
 			Codec:         app.appCodec,
