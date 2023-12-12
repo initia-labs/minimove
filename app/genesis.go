@@ -15,7 +15,6 @@ import (
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 	"github.com/initia-labs/initiavm/precompile"
-	"github.com/initia-labs/minimove/types"
 
 	auctiontypes "github.com/skip-mev/block-sdk/x/auction/types"
 )
@@ -30,20 +29,20 @@ import (
 type GenesisState map[string]json.RawMessage
 
 // NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(cdc codec.JSONCodec, mbm module.BasicManager) GenesisState {
+func NewDefaultGenesisState(cdc codec.JSONCodec, mbm module.BasicManager, denom string) GenesisState {
 	return GenesisState(mbm.DefaultGenesis(cdc)).
 		ConfigureMinGasPrices(cdc).
 		ConfigureICA(cdc).
 		ConfigureMoveStdlib(cdc).
 		ConfigureIBCAllowedClients(cdc).
-		ConfigureAuctionFee(cdc)
+		ConfigureAuctionFee(cdc, denom)
 }
 
-func (genState GenesisState) ConfigureAuctionFee(cdc codec.JSONCodec) GenesisState {
+func (genState GenesisState) ConfigureAuctionFee(cdc codec.JSONCodec, denom string) GenesisState {
 	var auctionGenState auctiontypes.GenesisState
 	cdc.MustUnmarshalJSON(genState[auctiontypes.ModuleName], &auctionGenState)
-	auctionGenState.Params.ReserveFee.Denom = types.BaseDenom
-	auctionGenState.Params.MinBidIncrement.Denom = types.BaseDenom
+	auctionGenState.Params.ReserveFee.Denom = denom
+	auctionGenState.Params.MinBidIncrement.Denom = denom
 	genState[auctiontypes.ModuleName] = cdc.MustMarshalJSON(&auctionGenState)
 
 	return genState
