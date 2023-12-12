@@ -89,9 +89,9 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 				chainID = fmt.Sprintf("test-chain-%v", cometrand.Str(6))
 			}
 
-			denom, _ := cmd.Flags().GetString(FlagDenom)
-			if denom == "" {
-				denom = types.BaseDenom
+			denom, err := cmd.Flags().GetString(FlagDenom)
+			if err != nil {
+				return err
 			}
 
 			// Get bip39 mnemonic
