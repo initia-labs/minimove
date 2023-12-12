@@ -21,6 +21,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	"github.com/initia-labs/minimove/types"
 
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 )
@@ -63,7 +64,7 @@ func setup(db *dbm.DB, withGenesis bool) (*MinitiaApp, GenesisState) {
 	)
 
 	if withGenesis {
-		return app, NewDefaultGenesisState(encCdc.Marshaler, ModuleBasics)
+		return app, NewDefaultGenesisState(encCdc.Marshaler, ModuleBasics, types.BaseDenom)
 	}
 
 	return app, GenesisState{}
@@ -76,6 +77,13 @@ func SetupWithGenesisAccounts(
 	balances ...banktypes.Balance,
 ) *MinitiaApp {
 	app, genesisState := setup(nil, true)
+
+	if len(genAccs) == 0 {
+		privAcc := secp256k1.GenPrivKey()
+		genAccs = []authtypes.GenesisAccount{
+			authtypes.NewBaseAccount(privAcc.PubKey().Address().Bytes(), privAcc.PubKey(), 0, 0),
+		}
+	}
 
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
@@ -91,13 +99,6 @@ func SetupWithGenesisAccounts(
 
 		validator := tmtypes.NewValidator(pubKey, 1)
 		valSet = tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
-	}
-
-	if genAccs == nil || len(genAccs) == 0 {
-		privAcc := secp256k1.GenPrivKey()
-		genAccs = []authtypes.GenesisAccount{
-			authtypes.NewBaseAccount(privAcc.PubKey().Address().Bytes(), privAcc.PubKey(), 0, 0),
-		}
 	}
 
 	validators := make([]opchildtypes.Validator, 0, len(valSet.Validators))
