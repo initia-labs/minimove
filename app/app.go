@@ -428,16 +428,13 @@ func NewMinitiaApp(
 
 	var transferStack porttypes.IBCModule
 	{
-		moveMiddleware := &moveibcmiddleware.IBCMiddleware{}
-		feeMiddleware := &ibcfee.IBCMiddleware{}
-
 		// Create Transfer Keepers
 		transferKeeper := ibctransferkeeper.NewKeeper(
 			appCodec,
 			keys[ibctransfertypes.StoreKey],
 			app.GetSubspace(ibctransfertypes.ModuleName),
 			// ics4wrapper: transfer -> fee
-			feeMiddleware,
+			app.IBCFeeKeeper,
 			app.IBCKeeper.ChannelKeeper,
 			&app.IBCKeeper.PortKeeper,
 			app.AccountKeeper,
@@ -447,11 +444,8 @@ func NewMinitiaApp(
 		app.TransferKeeper = &transferKeeper
 		transferIBCModule := ibctransfer.NewIBCModule(*app.TransferKeeper)
 
-		// channel -> perm -> ibcfee -> move -> router -> transfer
-		transferStack = feeMiddleware
-
 		// create move middleware for transfer
-		*moveMiddleware = moveibcmiddleware.NewIBCMiddleware(
+		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
 			// receive: move -> transfer
 			transferIBCModule,
 			// ics4wrapper: not used
@@ -460,7 +454,7 @@ func NewMinitiaApp(
 		)
 
 		// create ibcfee middleware for transfer
-		*feeMiddleware = ibcfee.NewIBCMiddleware(
+		transferStack = ibcfee.NewIBCMiddleware(
 			// receive: fee -> move -> transfer
 			moveMiddleware,
 			// ics4wrapper: transfer -> fee -> channel
