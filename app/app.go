@@ -207,8 +207,6 @@ type MinitiaApp struct {
 	txConfig          client.TxConfig
 	interfaceRegistry types.InterfaceRegistry
 
-	invCheckPeriod uint
-
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
 	tkeys   map[string]*storetypes.TransientStoreKey
@@ -422,118 +420,128 @@ func NewMinitiaApp(
 	)
 	app.IBCFeeKeeper = &ibcFeeKeeper
 
-	////////////////////////////
+	///////////////////////////
 	// Transfer configuration //
 	////////////////////////////
-	// Send   : transfer -> move   -> fee    -> channel
-	// Receive: channel  -> fee    -> move   -> transfer
+	// Send   : transfer -> fee -> channel
+	// Receive: channel  -> fee -> move    -> transfer
 
-	moveMiddleware := &moveibcmiddleware.IBCMiddleware{}
-	feeMiddleware := &ibcfee.IBCMiddleware{}
+	var transferStack porttypes.IBCModule
+	{
+		// Create Transfer Keepers
+		transferKeeper := ibctransferkeeper.NewKeeper(
+			appCodec,
+			keys[ibctransfertypes.StoreKey],
+			app.GetSubspace(ibctransfertypes.ModuleName),
+			// ics4wrapper: transfer -> fee
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			scopedTransferKeeper,
+		)
+		app.TransferKeeper = &transferKeeper
+		transferIBCModule := ibctransfer.NewIBCModule(*app.TransferKeeper)
 
-	// Create Transfer Keepers
-	transferKeeper := ibctransferkeeper.NewKeeper(
-		appCodec,
-		keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		// ics4wrapper: transfer -> router
-		moveMiddleware,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		scopedTransferKeeper,
-	)
-	app.TransferKeeper = &transferKeeper
-	transferModule := ibctransfer.NewAppModule(*app.TransferKeeper)
-	transferIBCModule := ibctransfer.NewIBCModule(*app.TransferKeeper)
+		// create move middleware for transfer
+		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
+			// receive: move -> transfer
+			transferIBCModule,
+			// ics4wrapper: not used
+			nil,
+			moveKeeper,
+		)
 
-	// channel -> ibcfee -> move -> transfer
-	transferStack := feeMiddleware
-
-	// create move middleware for transfer
-	*moveMiddleware = moveibcmiddleware.NewIBCMiddleware(
-		// receive: move -> transfer
-		transferIBCModule,
-		// ics4wrapper: transfer -> move -> fee
-		feeMiddleware,
-		moveKeeper,
-	)
-
-	// create ibcfee middleware for transfer
-	*feeMiddleware = ibcfee.NewIBCMiddleware(
-		// receive: fee -> move -> transfer
-		moveMiddleware,
-		// ics4wrapper: transfer -> move -> fee -> channel
-		*app.IBCFeeKeeper,
-	)
+		// create ibcfee middleware for transfer
+		transferStack = ibcfee.NewIBCMiddleware(
+			// receive: fee -> move -> transfer
+			moveMiddleware,
+			// ics4wrapper: transfer -> fee -> channel
+			*app.IBCFeeKeeper,
+		)
+	}
 
 	////////////////////////////////
 	// Nft Transfer configuration //
 	////////////////////////////////
 
-	// Create Transfer Keepers
-	app.NftTransferKeeper = ibcnfttransferkeeper.NewKeeper(
-		appCodec,
-		keys[ibcnfttransfertypes.StoreKey],
-		// ics4wrapper: nft transfer -> fee -> channel
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		movekeeper.NewNftKeeper(moveKeeper),
-		scopedNftTransferKeeper,
-		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
-	)
-	nftTransferModule := ibcnfttransfer.NewAppModule(*app.NftTransferKeeper)
-	nftTransferIBCModule := ibcnfttransfer.NewIBCModule(*app.NftTransferKeeper)
-	nftTransferStack := ibcfee.NewIBCMiddleware(
-		// receive: channel -> fee -> nft transfer
-		nftTransferIBCModule,
-		*app.IBCFeeKeeper,
-	)
+	var nftTransferStack porttypes.IBCModule
+	{
+		// Create Transfer Keepers
+		app.NftTransferKeeper = ibcnfttransferkeeper.NewKeeper(
+			appCodec,
+			keys[ibcnfttransfertypes.StoreKey],
+			// ics4wrapper: nft transfer -> fee -> channel
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			movekeeper.NewNftKeeper(moveKeeper),
+			scopedNftTransferKeeper,
+			authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
+		)
+		nftTransferIBCModule := ibcnfttransfer.NewIBCModule(*app.NftTransferKeeper)
+
+		// create move middleware for nft transfer
+		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
+			// receive: move -> nft transfer
+			nftTransferIBCModule,
+			// ics4wrapper: not used
+			nil,
+			moveKeeper,
+		)
+
+		nftTransferStack = ibcfee.NewIBCMiddleware(
+			// receive: channel -> fee -> move -> nft transfer
+			moveMiddleware,
+			*app.IBCFeeKeeper,
+		)
+	}
 
 	///////////////////////
 	// ICA configuration //
 	///////////////////////
 
-	icaHostKeeper := icahostkeeper.NewKeeper(
-		appCodec, keys[icahosttypes.StoreKey],
-		app.GetSubspace(icahosttypes.SubModuleName),
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		scopedICAHostKeeper,
-		app.MsgServiceRouter(),
-	)
-	app.ICAHostKeeper = &icaHostKeeper
+	var icaHostStack porttypes.IBCModule
+	var icaControllerStack porttypes.IBCModule
+	{
+		icaHostKeeper := icahostkeeper.NewKeeper(
+			appCodec, keys[icahosttypes.StoreKey],
+			app.GetSubspace(icahosttypes.SubModuleName),
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			scopedICAHostKeeper,
+			app.MsgServiceRouter(),
+		)
+		app.ICAHostKeeper = &icaHostKeeper
 
-	icaControllerKeeper := icacontrollerkeeper.NewKeeper(
-		appCodec, keys[icacontrollertypes.StoreKey],
-		app.GetSubspace(icacontrollertypes.SubModuleName),
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedICAControllerKeeper,
-		app.MsgServiceRouter(),
-	)
-	app.ICAControllerKeeper = &icaControllerKeeper
+		icaControllerKeeper := icacontrollerkeeper.NewKeeper(
+			appCodec, keys[icacontrollertypes.StoreKey],
+			app.GetSubspace(icacontrollertypes.SubModuleName),
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			scopedICAControllerKeeper,
+			app.MsgServiceRouter(),
+		)
+		app.ICAControllerKeeper = &icaControllerKeeper
 
-	icaAuthKeeper := icaauthkeeper.NewKeeper(
-		appCodec, keys[icaauthtypes.StoreKey],
-		*app.ICAControllerKeeper,
-		scopedICAAuthKeeper,
-	)
-	app.ICAAuthKeeper = &icaAuthKeeper
+		icaAuthKeeper := icaauthkeeper.NewKeeper(
+			appCodec, keys[icaauthtypes.StoreKey],
+			*app.ICAControllerKeeper,
+			scopedICAAuthKeeper,
+		)
+		app.ICAAuthKeeper = &icaAuthKeeper
 
-	icaModule := ica.NewAppModule(app.ICAControllerKeeper, app.ICAHostKeeper)
-	icaAuthModule := icaauth.NewAppModule(appCodec, *app.ICAAuthKeeper)
-	icaAuthIBCModule := icaauth.NewIBCModule(*app.ICAAuthKeeper)
-	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
-	icaHostStack := ibcfee.NewIBCMiddleware(icaHostIBCModule, *app.IBCFeeKeeper)
-	icaControllerIBCModule := icacontroller.NewIBCMiddleware(icaAuthIBCModule, *app.ICAControllerKeeper)
-	icaControllerStack := ibcfee.NewIBCMiddleware(icaControllerIBCModule, *app.IBCFeeKeeper)
+		icaAuthIBCModule := icaauth.NewIBCModule(*app.ICAAuthKeeper)
+		icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+		icaHostStack = ibcfee.NewIBCMiddleware(icaHostIBCModule, *app.IBCFeeKeeper)
+		icaControllerIBCModule := icacontroller.NewIBCMiddleware(icaAuthIBCModule, *app.ICAControllerKeeper)
+		icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerIBCModule, *app.IBCFeeKeeper)
+	}
 
 	//////////////////////////////
 	// IBC router Configuration //
@@ -614,10 +622,10 @@ func NewMinitiaApp(
 		consensus.NewAppModule(appCodec, *app.ConsensusParamsKeeper),
 		move.NewAppModule(app.AccountKeeper, *app.MoveKeeper),
 		auction.NewAppModule(app.appCodec, *app.AuctionKeeper),
-		transferModule,
-		nftTransferModule,
-		icaModule,
-		icaAuthModule,
+		ibctransfer.NewAppModule(*app.TransferKeeper),
+		ibcnfttransfer.NewAppModule(*app.NftTransferKeeper),
+		ica.NewAppModule(app.ICAControllerKeeper, app.ICAHostKeeper),
+		icaauth.NewAppModule(appCodec, *app.ICAAuthKeeper),
 		ibcfee.NewAppModule(*app.IBCFeeKeeper),
 	)
 
