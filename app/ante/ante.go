@@ -11,7 +11,6 @@ import (
 
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
-	initiaante "github.com/initia-labs/initia/app/ante"
 	moveante "github.com/initia-labs/initia/x/move/ante"
 
 	"github.com/skip-mev/block-sdk/block"
@@ -50,7 +49,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	sigGasConsumer := options.SigGasConsumer
 	if sigGasConsumer == nil {
-		sigGasConsumer = initiaante.DefaultSigVerificationGasConsumer
+		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
 	txFeeChecker := options.TxFeeChecker
