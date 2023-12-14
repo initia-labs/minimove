@@ -115,13 +115,12 @@ import (
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	initialanes "github.com/initia-labs/initia/app/lanes"
 
 	mevabci "github.com/skip-mev/block-sdk/abci"
 	signer_extraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block"
 	blockbase "github.com/skip-mev/block-sdk/block/base"
-	baselane "github.com/skip-mev/block-sdk/lanes/base"
-	freelane "github.com/skip-mev/block-sdk/lanes/free"
 	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
 	"github.com/skip-mev/block-sdk/x/auction"
 	auctionante "github.com/skip-mev/block-sdk/x/auction/ante"
@@ -206,8 +205,6 @@ type MinitiaApp struct {
 	appCodec          codec.Codec
 	txConfig          client.TxConfig
 	interfaceRegistry types.InterfaceRegistry
-
-	invCheckPeriod uint
 
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
@@ -422,118 +419,128 @@ func NewMinitiaApp(
 	)
 	app.IBCFeeKeeper = &ibcFeeKeeper
 
-	////////////////////////////
+	///////////////////////////
 	// Transfer configuration //
 	////////////////////////////
-	// Send   : transfer -> move   -> fee    -> channel
-	// Receive: channel  -> fee    -> move   -> transfer
+	// Send   : transfer -> fee -> channel
+	// Receive: channel  -> fee -> move    -> transfer
 
-	moveMiddleware := &moveibcmiddleware.IBCMiddleware{}
-	feeMiddleware := &ibcfee.IBCMiddleware{}
+	var transferStack porttypes.IBCModule
+	{
+		// Create Transfer Keepers
+		transferKeeper := ibctransferkeeper.NewKeeper(
+			appCodec,
+			keys[ibctransfertypes.StoreKey],
+			app.GetSubspace(ibctransfertypes.ModuleName),
+			// ics4wrapper: transfer -> fee
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			app.BankKeeper,
+			scopedTransferKeeper,
+		)
+		app.TransferKeeper = &transferKeeper
+		transferIBCModule := ibctransfer.NewIBCModule(*app.TransferKeeper)
 
-	// Create Transfer Keepers
-	transferKeeper := ibctransferkeeper.NewKeeper(
-		appCodec,
-		keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		// ics4wrapper: transfer -> router
-		moveMiddleware,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		scopedTransferKeeper,
-	)
-	app.TransferKeeper = &transferKeeper
-	transferModule := ibctransfer.NewAppModule(*app.TransferKeeper)
-	transferIBCModule := ibctransfer.NewIBCModule(*app.TransferKeeper)
+		// create move middleware for transfer
+		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
+			// receive: move -> transfer
+			transferIBCModule,
+			// ics4wrapper: not used
+			nil,
+			moveKeeper,
+		)
 
-	// channel -> ibcfee -> move -> transfer
-	transferStack := feeMiddleware
-
-	// create move middleware for transfer
-	*moveMiddleware = moveibcmiddleware.NewIBCMiddleware(
-		// receive: move -> transfer
-		transferIBCModule,
-		// ics4wrapper: transfer -> move -> fee
-		feeMiddleware,
-		moveKeeper,
-	)
-
-	// create ibcfee middleware for transfer
-	*feeMiddleware = ibcfee.NewIBCMiddleware(
-		// receive: fee -> move -> transfer
-		moveMiddleware,
-		// ics4wrapper: transfer -> move -> fee -> channel
-		*app.IBCFeeKeeper,
-	)
+		// create ibcfee middleware for transfer
+		transferStack = ibcfee.NewIBCMiddleware(
+			// receive: fee -> move -> transfer
+			moveMiddleware,
+			// ics4wrapper: transfer -> fee -> channel
+			*app.IBCFeeKeeper,
+		)
+	}
 
 	////////////////////////////////
 	// Nft Transfer configuration //
 	////////////////////////////////
 
-	// Create Transfer Keepers
-	app.NftTransferKeeper = ibcnfttransferkeeper.NewKeeper(
-		appCodec,
-		keys[ibcnfttransfertypes.StoreKey],
-		// ics4wrapper: nft transfer -> fee -> channel
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		movekeeper.NewNftKeeper(moveKeeper),
-		scopedNftTransferKeeper,
-		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
-	)
-	nftTransferModule := ibcnfttransfer.NewAppModule(*app.NftTransferKeeper)
-	nftTransferIBCModule := ibcnfttransfer.NewIBCModule(*app.NftTransferKeeper)
-	nftTransferStack := ibcfee.NewIBCMiddleware(
-		// receive: channel -> fee -> nft transfer
-		nftTransferIBCModule,
-		*app.IBCFeeKeeper,
-	)
+	var nftTransferStack porttypes.IBCModule
+	{
+		// Create Transfer Keepers
+		app.NftTransferKeeper = ibcnfttransferkeeper.NewKeeper(
+			appCodec,
+			keys[ibcnfttransfertypes.StoreKey],
+			// ics4wrapper: nft transfer -> fee -> channel
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			movekeeper.NewNftKeeper(moveKeeper),
+			scopedNftTransferKeeper,
+			authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
+		)
+		nftTransferIBCModule := ibcnfttransfer.NewIBCModule(*app.NftTransferKeeper)
+
+		// create move middleware for nft transfer
+		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
+			// receive: move -> nft transfer
+			nftTransferIBCModule,
+			// ics4wrapper: not used
+			nil,
+			moveKeeper,
+		)
+
+		nftTransferStack = ibcfee.NewIBCMiddleware(
+			// receive: channel -> fee -> move -> nft transfer
+			moveMiddleware,
+			*app.IBCFeeKeeper,
+		)
+	}
 
 	///////////////////////
 	// ICA configuration //
 	///////////////////////
 
-	icaHostKeeper := icahostkeeper.NewKeeper(
-		appCodec, keys[icahosttypes.StoreKey],
-		app.GetSubspace(icahosttypes.SubModuleName),
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		scopedICAHostKeeper,
-		app.MsgServiceRouter(),
-	)
-	app.ICAHostKeeper = &icaHostKeeper
+	var icaHostStack porttypes.IBCModule
+	var icaControllerStack porttypes.IBCModule
+	{
+		icaHostKeeper := icahostkeeper.NewKeeper(
+			appCodec, keys[icahosttypes.StoreKey],
+			app.GetSubspace(icahosttypes.SubModuleName),
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			app.AccountKeeper,
+			scopedICAHostKeeper,
+			app.MsgServiceRouter(),
+		)
+		app.ICAHostKeeper = &icaHostKeeper
 
-	icaControllerKeeper := icacontrollerkeeper.NewKeeper(
-		appCodec, keys[icacontrollertypes.StoreKey],
-		app.GetSubspace(icacontrollertypes.SubModuleName),
-		app.IBCFeeKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		scopedICAControllerKeeper,
-		app.MsgServiceRouter(),
-	)
-	app.ICAControllerKeeper = &icaControllerKeeper
+		icaControllerKeeper := icacontrollerkeeper.NewKeeper(
+			appCodec, keys[icacontrollertypes.StoreKey],
+			app.GetSubspace(icacontrollertypes.SubModuleName),
+			app.IBCFeeKeeper,
+			app.IBCKeeper.ChannelKeeper,
+			&app.IBCKeeper.PortKeeper,
+			scopedICAControllerKeeper,
+			app.MsgServiceRouter(),
+		)
+		app.ICAControllerKeeper = &icaControllerKeeper
 
-	icaAuthKeeper := icaauthkeeper.NewKeeper(
-		appCodec, keys[icaauthtypes.StoreKey],
-		*app.ICAControllerKeeper,
-		scopedICAAuthKeeper,
-	)
-	app.ICAAuthKeeper = &icaAuthKeeper
+		icaAuthKeeper := icaauthkeeper.NewKeeper(
+			appCodec, keys[icaauthtypes.StoreKey],
+			*app.ICAControllerKeeper,
+			scopedICAAuthKeeper,
+		)
+		app.ICAAuthKeeper = &icaAuthKeeper
 
-	icaModule := ica.NewAppModule(app.ICAControllerKeeper, app.ICAHostKeeper)
-	icaAuthModule := icaauth.NewAppModule(appCodec, *app.ICAAuthKeeper)
-	icaAuthIBCModule := icaauth.NewIBCModule(*app.ICAAuthKeeper)
-	icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
-	icaHostStack := ibcfee.NewIBCMiddleware(icaHostIBCModule, *app.IBCFeeKeeper)
-	icaControllerIBCModule := icacontroller.NewIBCMiddleware(icaAuthIBCModule, *app.ICAControllerKeeper)
-	icaControllerStack := ibcfee.NewIBCMiddleware(icaControllerIBCModule, *app.IBCFeeKeeper)
+		icaAuthIBCModule := icaauth.NewIBCModule(*app.ICAAuthKeeper)
+		icaHostIBCModule := icahost.NewIBCModule(*app.ICAHostKeeper)
+		icaHostStack = ibcfee.NewIBCMiddleware(icaHostIBCModule, *app.IBCFeeKeeper)
+		icaControllerIBCModule := icacontroller.NewIBCMiddleware(icaAuthIBCModule, *app.ICAControllerKeeper)
+		icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerIBCModule, *app.IBCFeeKeeper)
+	}
 
 	//////////////////////////////
 	// IBC router Configuration //
@@ -614,10 +621,10 @@ func NewMinitiaApp(
 		consensus.NewAppModule(appCodec, *app.ConsensusParamsKeeper),
 		move.NewAppModule(app.AccountKeeper, *app.MoveKeeper),
 		auction.NewAppModule(app.appCodec, *app.AuctionKeeper),
-		transferModule,
-		nftTransferModule,
-		icaModule,
-		icaAuthModule,
+		ibctransfer.NewAppModule(*app.TransferKeeper),
+		ibcnfttransfer.NewAppModule(*app.NftTransferKeeper),
+		ica.NewAppModule(app.ICAControllerKeeper, app.ICAHostKeeper),
+		icaauth.NewAppModule(appCodec, *app.ICAAuthKeeper),
 		ibcfee.NewAppModule(*app.IBCFeeKeeper),
 	)
 
@@ -732,9 +739,11 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
+	factor := mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor)
 	mevLane := mevlane.NewMEVLane(
 		mevConfig,
-		mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor),
+		factor,
+		factor.MatchHandler(),
 	)
 
 	freeConfig := blockbase.LaneConfig{
@@ -745,14 +754,10 @@ func NewMinitiaApp(
 		MaxTxs:          10,
 		SignerExtractor: signerExtractor,
 	}
-	freeLane := freelane.NewFreeLane(
-		freeConfig,
-		blockbase.DefaultTxPriority(),
-		applanes.FreeLaneMatchHandler(
-			app.BankKeeper,
-			app.OPChildKeeper,
-		),
-	)
+	freeLane := initialanes.NewFreeLane(freeConfig, applanes.FreeLaneMatchHandler(
+		app.BankKeeper,
+		app.OPChildKeeper,
+	))
 
 	defaultLaneConfig := blockbase.LaneConfig{
 		Logger:          app.Logger(),
@@ -762,16 +767,16 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
-	defaultLane := baselane.NewDefaultLane(defaultLaneConfig)
+	defaultLane := initialanes.NewDefaultLane(defaultLaneConfig)
 
 	lanes := []block.Lane{mevLane, freeLane, defaultLane}
-	mempool := block.NewLanedMempool(app.Logger(), true, lanes...)
-	app.SetMempool(mempool)
-
-	anteHandler := app.setAnteHandler(mevLane, freeLane)
-	for _, lane := range lanes {
-		lane.SetAnteHandler(anteHandler)
+	mempool, err := block.NewLanedMempool(app.Logger(), lanes)
+	if err != nil {
+		panic(err)
 	}
+
+	app.SetMempool(mempool)
+	anteHandler := app.setAnteHandler(mevLane, freeLane)
 
 	// override the base-app's ABCI methods (CheckTx, PrepareProposal, ProcessProposal)
 	proposalHandlers := mevabci.NewProposalHandler(
@@ -837,7 +842,6 @@ func (app *MinitiaApp) setAnteHandler(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: app.txConfig.SignModeHandler(),
-				SigGasConsumer:  cosmosante.DefaultSigVerificationGasConsumer,
 			},
 			IBCkeeper:     app.IBCKeeper,
 			Codec:         app.appCodec,

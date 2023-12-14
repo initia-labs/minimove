@@ -3,6 +3,7 @@ package lanes
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	"github.com/skip-mev/block-sdk/block/base"
@@ -23,14 +24,19 @@ type opChildKeeper interface {
 // any transaction that is a MsgTimeout, MsgAcknowledgement.
 func FreeLaneMatchHandler(bk bankKeeper, opchildKeeper opChildKeeper) base.MatchHandler {
 	return func(ctx sdk.Context, tx sdk.Tx) bool {
-		// allow ibc messages
+		isIBCMessage := true
 		for _, msg := range tx.GetMsgs() {
 			switch msg.(type) {
+			case *clienttypes.MsgUpdateClient:
 			case *channeltypes.MsgTimeout:
-				return true
 			case *channeltypes.MsgAcknowledgement:
-				return true
+			default:
+				isIBCMessage = false
+				break
 			}
+		}
+		if isIBCMessage {
+			return true
 		}
 
 		feeTx, ok := tx.(sdk.FeeTx)

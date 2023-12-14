@@ -25,6 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 
 	minitiaapp "github.com/initia-labs/minimove/app"
+	"github.com/initia-labs/minimove/types"
 )
 
 const (
@@ -33,6 +34,9 @@ const (
 
 	// FlagRecover defines a flag to initialize the private validator key from a specific seed.
 	FlagRecover = "recover"
+
+	// FlagDenom defines a flag to set default denom a chain operator want to use.
+	FlagDenom = "denom"
 )
 
 type printInfo struct {
@@ -85,6 +89,11 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 				chainID = fmt.Sprintf("test-chain-%v", cometrand.Str(6))
 			}
 
+			denom, err := cmd.Flags().GetString(FlagDenom)
+			if err != nil {
+				return err
+			}
+
 			// Get bip39 mnemonic
 			var mnemonic string
 			recover, _ := cmd.Flags().GetBool(FlagRecover)
@@ -116,7 +125,7 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 			}
 
 			appState, err := json.MarshalIndent(
-				minitiaapp.NewDefaultGenesisState(cdc, mbm), "", " ",
+				minitiaapp.NewDefaultGenesisState(cdc, mbm, denom), "", " ",
 			)
 			if err != nil {
 				return errors.Wrap(err, "Failed to marshall default genesis state")
@@ -153,6 +162,7 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 	cmd.Flags().BoolP(FlagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().Bool(FlagRecover, false, "provide seed phrase to recover existing key instead of creating")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
+	cmd.Flags().String(FlagDenom, types.BaseDenom, "genesis file default denom")
 
 	return cmd
 }

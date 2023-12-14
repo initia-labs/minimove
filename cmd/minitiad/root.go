@@ -29,13 +29,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	cosmosgenutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
+	movecmd "github.com/initia-labs/initia/cmd/move"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
+
 	minitiaapp "github.com/initia-labs/minimove/app"
 	"github.com/initia-labs/minimove/app/params"
 )
-
-// missing flag from cosmos-sdk
-const flagIAVLCacheSize = "iavl-cache-size"
 
 // NewRootCmd creates a new root command for initiad. It is called once in the
 // main function.
@@ -151,7 +150,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
 
 	// add move commands
-	rootCmd.AddCommand(moveCommand())
+	rootCmd.AddCommand(movecmd.MoveCommand())
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
