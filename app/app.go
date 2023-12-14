@@ -115,13 +115,12 @@ import (
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	initialanes "github.com/initia-labs/initia/app/lanes"
 
 	mevabci "github.com/skip-mev/block-sdk/abci"
 	signer_extraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block"
 	blockbase "github.com/skip-mev/block-sdk/block/base"
-	baselane "github.com/skip-mev/block-sdk/lanes/base"
-	freelane "github.com/skip-mev/block-sdk/lanes/free"
 	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
 	"github.com/skip-mev/block-sdk/x/auction"
 	auctionante "github.com/skip-mev/block-sdk/x/auction/ante"
@@ -740,9 +739,11 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
+	factor := mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor)
 	mevLane := mevlane.NewMEVLane(
 		mevConfig,
-		mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor),
+		factor,
+		factor.MatchHandler(),
 	)
 
 	freeConfig := blockbase.LaneConfig{
@@ -753,11 +754,7 @@ func NewMinitiaApp(
 		MaxTxs:          10,
 		SignerExtractor: signerExtractor,
 	}
-	freeLane := freelane.NewFreeLane(
-		freeConfig,
-		blockbase.DefaultTxPriority(),
-		applanes.FreeLaneMatchHandler(),
-	)
+	freeLane := initialanes.NewFreeLane(freeConfig, applanes.FreeLaneMatchHandler())
 
 	defaultLaneConfig := blockbase.LaneConfig{
 		Logger:          app.Logger(),
@@ -767,16 +764,16 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
-	defaultLane := baselane.NewDefaultLane(defaultLaneConfig)
+	defaultLane := initialanes.NewDefaultLane(defaultLaneConfig)
 
 	lanes := []block.Lane{mevLane, freeLane, defaultLane}
-	mempool := block.NewLanedMempool(app.Logger(), true, lanes...)
-	app.SetMempool(mempool)
-
-	anteHandler := app.setAnteHandler(mevLane, freeLane)
-	for _, lane := range lanes {
-		lane.SetAnteHandler(anteHandler)
+	mempool, err := block.NewLanedMempool(app.Logger(), lanes)
+	if err != nil {
+		panic(err)
 	}
+
+	app.SetMempool(mempool)
+	anteHandler := app.setAnteHandler(mevLane, freeLane)
 
 	// override the base-app's ABCI methods (CheckTx, PrepareProposal, ProcessProposal)
 	proposalHandlers := mevabci.NewProposalHandler(
@@ -842,7 +839,6 @@ func (app *MinitiaApp) setAnteHandler(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: app.txConfig.SignModeHandler(),
-				SigGasConsumer:  cosmosante.DefaultSigVerificationGasConsumer,
 			},
 			IBCkeeper:     app.IBCKeeper,
 			Codec:         app.appCodec,
