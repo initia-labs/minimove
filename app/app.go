@@ -121,7 +121,6 @@ import (
 	signer_extraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block"
 	blockbase "github.com/skip-mev/block-sdk/block/base"
-	freelane "github.com/skip-mev/block-sdk/lanes/free"
 	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
 	"github.com/skip-mev/block-sdk/x/auction"
 	auctionante "github.com/skip-mev/block-sdk/x/auction/ante"
@@ -740,9 +739,11 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
+	factor := mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor)
 	mevLane := mevlane.NewMEVLane(
 		mevConfig,
-		mevlane.NewDefaultAuctionFactory(app.txConfig.TxDecoder(), signerExtractor),
+		factor,
+		factor.MatchHandler(),
 	)
 
 	freeConfig := blockbase.LaneConfig{
@@ -753,13 +754,9 @@ func NewMinitiaApp(
 		MaxTxs:          10,
 		SignerExtractor: signerExtractor,
 	}
-	freeLane := freelane.NewFreeLane(
-		freeConfig,
-		blockbase.DefaultTxPriority(),
-		applanes.FreeLaneMatchHandler(),
-	)
+	freeLane := initialanes.NewFreeLane(freeConfig, applanes.FreeLaneMatchHandler())
 
-	priorityLaneConfig := blockbase.LaneConfig{
+	defaultLaneConfig := blockbase.LaneConfig{
 		Logger:          app.Logger(),
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
@@ -767,16 +764,16 @@ func NewMinitiaApp(
 		MaxTxs:          0,
 		SignerExtractor: signerExtractor,
 	}
-	priorityLane := initialanes.NewPriorityLane(priorityLaneConfig)
+	defaultLane := initialanes.NewDefaultLane(defaultLaneConfig)
 
-	lanes := []block.Lane{mevLane, freeLane, priorityLane}
-	mempool := block.NewLanedMempool(app.Logger(), true, lanes...)
-	app.SetMempool(mempool)
-
-	anteHandler := app.setAnteHandler(mevLane, freeLane)
-	for _, lane := range lanes {
-		lane.SetAnteHandler(anteHandler)
+	lanes := []block.Lane{mevLane, freeLane, defaultLane}
+	mempool, err := block.NewLanedMempool(app.Logger(), lanes)
+	if err != nil {
+		panic(err)
 	}
+
+	app.SetMempool(mempool)
+	anteHandler := app.setAnteHandler(mevLane, freeLane)
 
 	// override the base-app's ABCI methods (CheckTx, PrepareProposal, ProcessProposal)
 	proposalHandlers := mevabci.NewProposalHandler(
