@@ -120,15 +120,15 @@ endif
 
 build-linux:
 	mkdir -p $(BUILDDIR)
-	docker build --no-cache --tag initia/minitiad ./
-	docker create --name temp initia/minitiad:latest
+	docker build --no-cache --tag initia/minimove ./
+	docker create --name temp initia/minimove:latest
 	docker cp temp:/usr/local/bin/minitiad $(BUILDDIR)/
 	docker rm temp
 
 build-linux-with-shared-library:
 	mkdir -p $(BUILDDIR)
-	docker build --tag initia/minitiad-shared ./ -f ./shared.Dockerfile
-	docker create --name temp initia/minitiad-shared:latest
+	docker build --tag initia/minimove-shared ./ -f ./shared.Dockerfile
+	docker create --name temp initia/minimove-shared:latest
 	docker cp temp:/usr/local/bin/minitiad $(BUILDDIR)/
 	docker cp temp:/lib/libinitia.so $(BUILDDIR)/
 	docker rm temp
