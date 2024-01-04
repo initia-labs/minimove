@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -14,15 +13,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
-	cosmosgenutil "github.com/cosmos/cosmos-sdk/x/genutil"
-	cosmostypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
 	"github.com/initia-labs/OPinit/x/opchild/client/cli"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 )
 
 // AddGenesisValidatorCmd builds the application's gentx command.
-func AddGenesisValidatorCmd(mbm module.BasicManager, txEncCfg client.TxEncodingConfig, genBalIterator cosmostypes.GenesisBalancesIterator, defaultNodeHome string) *cobra.Command {
+func AddGenesisValidatorCmd(mbm module.BasicManager, txEncCfg client.TxEncodingConfig, genBalIterator genutiltypes.GenesisBalancesIterator, defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-genesis-validator [key_name]",
 		Short: "Add a genesis validator",
@@ -45,17 +44,7 @@ $ %s add-genesis-validator my-key-name --home=/path/to/home/dir --keyring-backen
 			config := serverCtx.Config
 			config.SetRoot(clientCtx.HomeDir)
 
-			genDoc, err := tmtypes.GenesisDocFromFile(config.GenesisFile())
-			if err != nil {
-				return errors.Wrapf(err, "failed to read genesis doc file %s", config.GenesisFile())
-			}
-
-			var genesisState map[string]json.RawMessage
-			if err = json.Unmarshal(genDoc.AppState, &genesisState); err != nil {
-				return errors.Wrap(err, "failed to unmarshal genesis state")
-			}
-
-			_ /*nodeId*/, valPubKey, err := cosmosgenutil.InitializeNodeValidatorFiles(serverCtx.Config)
+			_ /*nodeId*/, valPubKey, err := genutil.InitializeNodeValidatorFiles(serverCtx.Config)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize node validator files")
 			}
@@ -89,24 +78,34 @@ $ %s add-genesis-validator my-key-name --home=/path/to/home/dir --keyring-backen
 				return err
 			}
 
-			opchildState := opchildtypes.GetGenesisStateFromAppState(cdc, genesisState)
+			genFile := config.GenesisFile()
+			appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
+			if err != nil {
+				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
+			}
+
+			opchildState := opchildtypes.GetGenesisStateFromAppState(cdc, appState)
 			opchildState.Validators = append((*opchildState).Validators, validator)
 			if opchildState.Params.BridgeExecutor == "" {
 				opchildState.Params.BridgeExecutor = addr.String()
 			}
 
-			genesisState[opchildtypes.ModuleName] = cdc.MustMarshalJSON(opchildState)
+			opchildGenStateBz, err := cdc.MarshalJSON(opchildState)
+			if err != nil {
+				return fmt.Errorf("failed to marshal opchild genesis state: %w", err)
+			}
+			appState[opchildtypes.ModuleName] = opchildGenStateBz
 
-			if err = mbm.ValidateGenesis(cdc, txEncCfg, genesisState); err != nil {
+			if err = mbm.ValidateGenesis(cdc, txEncCfg, appState); err != nil {
 				return errors.Wrap(err, "failed to validate genesis state")
 			}
-
-			genDoc.AppState, err = json.MarshalIndent(genesisState, "", "  ")
+			appStateJSON, err := json.Marshal(appState)
 			if err != nil {
-				return errors.Wrap(err, "failed to marshal genesis state")
+				return fmt.Errorf("failed to marshal application genesis state: %w", err)
 			}
 
-			if err = cosmosgenutil.ExportGenesisFile(genDoc, config.GenesisFile()); err != nil {
+			genDoc.AppState = appStateJSON
+			if err = genutil.ExportGenesisFile(genDoc, config.GenesisFile()); err != nil {
 				return errors.Wrap(err, "Failed to export genesis file")
 			}
 
