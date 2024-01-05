@@ -1,14 +1,10 @@
-FROM golang:1.19.1-buster AS go-builder
+FROM golang:1.21-bullseye AS go-builder
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apt update
 RUN apt install -y curl git build-essential
 # debug: for live editting in the image
 RUN apt install -y vim
-
-RUN git config --global url."https://x-access-token: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@github.com/".insteadOf "https://github.com/"
-RUN go env -w GOPRIVATE=github.com/initia-labs/*
-
 
 WORKDIR /code
 COPY . /code/
