@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 
+	"github.com/initia-labs/initia/app/params"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
-	"github.com/initia-labs/minimove/app/params"
 )
 
 func MakeEncodingConfig() params.EncodingConfig {

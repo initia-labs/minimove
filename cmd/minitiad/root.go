@@ -35,8 +35,8 @@ import (
 	movecmd "github.com/initia-labs/initia/cmd/move"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 
+	"github.com/initia-labs/initia/app/params"
 	minitiaapp "github.com/initia-labs/minimove/app"
-	"github.com/initia-labs/minimove/app/params"
 )
 
 // NewRootCmd creates a new root command for initiad. It is called once in the
