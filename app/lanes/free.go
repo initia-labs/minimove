@@ -1,10 +1,12 @@
 package lanes
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	"github.com/skip-mev/block-sdk/block/base"
 
@@ -12,11 +14,11 @@ import (
 )
 
 type bankKeeper interface {
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
 type opChildKeeper interface {
-	GetParams(ctx sdk.Context) (params opchildtypes.Params)
+	GetParams(ctx context.Context) (params opchildtypes.Params, err error)
 }
 
 // FreeLaneMatchHandler returns the default match handler for the free lane. The
@@ -32,7 +34,6 @@ func FreeLaneMatchHandler(bk bankKeeper, opchildKeeper opChildKeeper) base.Match
 			case *channeltypes.MsgAcknowledgement:
 			default:
 				isIBCMessage = false
-				break
 			}
 		}
 		if isIBCMessage {
@@ -45,7 +46,11 @@ func FreeLaneMatchHandler(bk bankKeeper, opchildKeeper opChildKeeper) base.Match
 		}
 
 		feePayer := feeTx.FeePayer()
-		params := opchildKeeper.GetParams(ctx)
+		params, err := opchildKeeper.GetParams(ctx)
+		if err != nil {
+			return false
+		}
+
 		for _, minGasPrice := range params.MinGasPrices {
 			denom := minGasPrice.Denom
 			requiredAmount := minGasPrice.Amount.MulInt64(1_000_000_000).TruncateInt()
@@ -56,6 +61,6 @@ func FreeLaneMatchHandler(bk bankKeeper, opchildKeeper opChildKeeper) base.Match
 			}
 		}
 
-		return false
+		return true
 	}
 }
