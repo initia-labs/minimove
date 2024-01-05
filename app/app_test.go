@@ -22,10 +22,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 	"github.com/cosmos/ibc-go/modules/capability"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	"cosmossdk.io/x/upgrade"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	"github.com/cosmos/cosmos-sdk/x/params"
 
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
@@ -89,7 +89,6 @@ func TestInitGenesisOnMigration(t *testing.T) {
 			"bank":                     bank.AppModule{}.ConsensusVersion(),
 			"auth":                     auth.AppModule{}.ConsensusVersion(),
 			"authz":                    authzmodule.AppModule{}.ConsensusVersion(),
-			"params":                   params.AppModule{}.ConsensusVersion(),
 			"upgrade":                  upgrade.AppModule{}.ConsensusVersion(),
 			"capability":               capability.AppModule{}.ConsensusVersion(),
 			"group":                    groupmodule.AppModule{}.ConsensusVersion(),
@@ -126,4 +125,5 @@ func TestGetKey(t *testing.T) {
 		db, nil, true, moveconfig.DefaultMoveConfig(), simtestutil.EmptyAppOptions{})
 
 	require.NotEmpty(t, app.GetKey(banktypes.StoreKey))
+	require.NotEmpty(t, app.GetMemKey(capabilitytypes.MemStoreKey))
 }

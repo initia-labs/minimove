@@ -42,7 +42,6 @@ import (
 // NewRootCmd creates a new root command for initiad. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-
 	sdkConfig := sdk.GetConfig()
 	sdkConfig.SetCoinType(minitiaapp.CoinType)
 
