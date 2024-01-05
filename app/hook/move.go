@@ -1,8 +1,10 @@
 package hook
 
 import (
+	"context"
 	"encoding/json"
 
+	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
@@ -12,14 +14,15 @@ import (
 
 // bridge hook implementation for move
 type MoveBridgeHook struct {
+	ac         address.Codec
 	moveKeeper *movekeeper.Keeper
 }
 
-func NewMoveBridgeHook(moveKeeper *movekeeper.Keeper) MoveBridgeHook {
-	return MoveBridgeHook{moveKeeper}
+func NewMoveBridgeHook(ac address.Codec, moveKeeper *movekeeper.Keeper) MoveBridgeHook {
+	return MoveBridgeHook{ac, moveKeeper}
 }
 
-func (mbh MoveBridgeHook) Hook(ctx sdk.Context, sender sdk.AccAddress, msgBytes []byte) error {
+func (mbh MoveBridgeHook) Hook(ctx context.Context, sender sdk.AccAddress, msgBytes []byte) error {
 	msg := movetypes.MsgExecute{}
 	err := json.Unmarshal(msgBytes, &msg)
 	if err != nil {
@@ -31,7 +34,7 @@ func (mbh MoveBridgeHook) Hook(ctx sdk.Context, sender sdk.AccAddress, msgBytes 
 		return err
 	}
 
-	moduleAddress, err := movetypes.AccAddressFromString(msg.ModuleAddress)
+	moduleAddress, err := movetypes.AccAddressFromString(mbh.ac, msg.ModuleAddress)
 	if err != nil {
 		return err
 	}

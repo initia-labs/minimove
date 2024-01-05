@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"time"
 
-	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 
+	"cosmossdk.io/log"
+	dbm "github.com/cosmos/cosmos-db"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -64,7 +64,7 @@ func setup(db *dbm.DB, withGenesis bool) (*MinitiaApp, GenesisState) {
 	)
 
 	if withGenesis {
-		return app, NewDefaultGenesisState(encCdc.Marshaler, ModuleBasics, types.BaseDenom)
+		return app, NewDefaultGenesisState(encCdc.Codec, app.BasicModuleManager, types.BaseDenom)
 	}
 
 	return app, GenesisState{}
@@ -141,16 +141,26 @@ func SetupWithGenesisAccounts(
 		panic(err)
 	}
 
-	app.InitChain(
-		abci.RequestInitChain{
+	_, err = app.InitChain(
+		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: defaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
 
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1}})
+	_, err = app.FinalizeBlock(&abci.RequestFinalizeBlock{Height: 1})
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = app.Commit()
+	if err != nil {
+		panic(err)
+	}
 
 	return app
 }
