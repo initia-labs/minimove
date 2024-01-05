@@ -30,10 +30,10 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/hashicorp/go-metrics v0.5.2 // indirect
-	github.com/initia-labs/OPinit v0.1.1-beta.1
-	github.com/initia-labs/initia v0.1.2-beta.11.0.20240104113140-eb523b51dfdf
+	github.com/initia-labs/OPinit v0.2.0-beta.0
+	github.com/initia-labs/initia v0.2.0-beta.0
 	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#5
-	github.com/initia-labs/initiavm v0.1.2-beta.6
+	github.com/initia-labs/initiavm v0.1.2-beta.7
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/block-sdk v0.0.0-20231213233341-deceeb0e993b
