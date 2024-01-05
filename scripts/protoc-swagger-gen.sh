@@ -5,7 +5,7 @@ set -eo pipefail
 # clone dependency proto files
 COSMOS_URL=github.com/cosmos/cosmos-sdk
 IBC_URL=github.com/cosmos/ibc-go
-IBC_V=v7
+IBC_V=v8
 INITIA_URL=github.com/initia-labs/initia
 OPINIT_URL=github.com/initia-labs/OPinit
 
