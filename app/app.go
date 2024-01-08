@@ -305,7 +305,7 @@ func NewMinitiaApp(
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
-	moveKeeper := &movekeeper.Keeper{}
+	app.MoveKeeper = &movekeeper.Keeper{}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
@@ -322,7 +322,7 @@ func NewMinitiaApp(
 		appCodec,
 		runtime.NewKVStoreService(keys[banktypes.StoreKey]),
 		app.AccountKeeper,
-		movekeeper.NewMoveBankKeeper(moveKeeper),
+		movekeeper.NewMoveBankKeeper(app.MoveKeeper),
 		app.ModuleAccountAddrs(),
 		authorityAddr,
 	)
@@ -435,7 +435,7 @@ func NewMinitiaApp(
 			transferIBCModule,
 			// ics4wrapper: not used
 			nil,
-			moveKeeper,
+			app.MoveKeeper,
 			ac,
 		)
 
@@ -463,7 +463,7 @@ func NewMinitiaApp(
 			app.IBCKeeper.ChannelKeeper,
 			app.IBCKeeper.PortKeeper,
 			app.AccountKeeper,
-			movekeeper.NewNftKeeper(moveKeeper),
+			movekeeper.NewNftKeeper(app.MoveKeeper),
 			scopedNftTransferKeeper,
 			authorityAddr,
 		)
@@ -475,7 +475,7 @@ func NewMinitiaApp(
 			nftTransferIBCModule,
 			// ics4wrapper: not used
 			nil,
-			moveKeeper,
+			app.MoveKeeper,
 			ac,
 		)
 
@@ -551,7 +551,7 @@ func NewMinitiaApp(
 	// MoveKeeper Configuration //
 	//////////////////////////////
 
-	*moveKeeper = *movekeeper.NewKeeper(
+	*app.MoveKeeper = *movekeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[movetypes.StoreKey]),
 		app.AccountKeeper,
@@ -567,8 +567,6 @@ func NewMinitiaApp(
 		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
 		ac, vc,
 	)
-
-	app.MoveKeeper = moveKeeper
 
 	// x/auction module keeper initialization
 
