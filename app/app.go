@@ -36,6 +36,7 @@ import (
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -49,6 +50,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	cosmosante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -68,8 +70,6 @@ import (
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
-	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
@@ -305,7 +305,7 @@ func NewMinitiaApp(
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
-	moveKeeper := &movekeeper.Keeper{}
+	app.MoveKeeper = &movekeeper.Keeper{}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
@@ -322,7 +322,7 @@ func NewMinitiaApp(
 		appCodec,
 		runtime.NewKVStoreService(keys[banktypes.StoreKey]),
 		app.AccountKeeper,
-		movekeeper.NewMoveBankKeeper(moveKeeper),
+		movekeeper.NewMoveBankKeeper(app.MoveKeeper),
 		app.ModuleAccountAddrs(),
 		authorityAddr,
 	)
@@ -337,7 +337,7 @@ func NewMinitiaApp(
 		runtime.NewKVStoreService(keys[opchildtypes.StoreKey]),
 		app.AccountKeeper,
 		app.BankKeeper,
-		apphook.NewMoveBridgeHook(ac, app.MoveKeeper).Hook,
+		apphook.NewMoveBridgeHook(app.MoveKeeper).Hook,
 		app.MsgServiceRouter(),
 		authorityAddr,
 		vc,
@@ -435,7 +435,7 @@ func NewMinitiaApp(
 			transferIBCModule,
 			// ics4wrapper: not used
 			nil,
-			moveKeeper,
+			app.MoveKeeper,
 			ac,
 		)
 
@@ -463,7 +463,7 @@ func NewMinitiaApp(
 			app.IBCKeeper.ChannelKeeper,
 			app.IBCKeeper.PortKeeper,
 			app.AccountKeeper,
-			movekeeper.NewNftKeeper(moveKeeper),
+			movekeeper.NewNftKeeper(app.MoveKeeper),
 			scopedNftTransferKeeper,
 			authorityAddr,
 		)
@@ -475,7 +475,7 @@ func NewMinitiaApp(
 			nftTransferIBCModule,
 			// ics4wrapper: not used
 			nil,
-			moveKeeper,
+			app.MoveKeeper,
 			ac,
 		)
 
@@ -551,7 +551,7 @@ func NewMinitiaApp(
 	// MoveKeeper Configuration //
 	//////////////////////////////
 
-	*moveKeeper = *movekeeper.NewKeeper(
+	*app.MoveKeeper = *movekeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[movetypes.StoreKey]),
 		app.AccountKeeper,
@@ -567,8 +567,6 @@ func NewMinitiaApp(
 		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
 		ac, vc,
 	)
-
-	app.MoveKeeper = moveKeeper
 
 	// x/auction module keeper initialization
 
@@ -588,7 +586,7 @@ func NewMinitiaApp(
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
 
-	// TODO - add crisis?
+	// TODO - add crisis module
 	// skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -720,7 +718,7 @@ func NewMinitiaApp(
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
 		MaxBlockSpace:   math.LegacyZeroDec(),
-		MaxTxs:          109,
+		MaxTxs:          100,
 		SignerExtractor: signerExtractor,
 	}
 	freeLane := initialanes.NewFreeLane(freeConfig, applanes.FreeLaneMatchHandler(

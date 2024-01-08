@@ -5,35 +5,26 @@ go 1.21.5
 require (
 	cosmossdk.io/api v0.7.2
 	cosmossdk.io/client/v2 v2.0.0-beta.1
-	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/core v0.11.0
-	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/log v1.2.1
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/store v1.0.1
 	cosmossdk.io/x/feegrant v0.1.0
-	cosmossdk.io/x/tx v0.12.0 // indirect
 	cosmossdk.io/x/upgrade v0.1.1
-	github.com/IGLOU-EU/go-wildcard v1.0.3 // indirect
 	github.com/cometbft/cometbft v0.38.2
 	github.com/cosmos/cosmos-db v1.0.0
-	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
 	github.com/cosmos/cosmos-sdk v0.50.2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/cosmos/ibc-go/v8 v8.0.0
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.6.0
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/mux v1.8.1
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
-	github.com/hashicorp/go-metrics v0.5.2 // indirect
 	github.com/initia-labs/OPinit v0.2.0-beta.0
-	github.com/initia-labs/initia v0.2.0-beta.0
+	github.com/initia-labs/initia v0.2.0-beta.1
 	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#5
-	github.com/initia-labs/initiavm v0.1.2-beta.7
+	github.com/initia-labs/initiavm v0.1.2-beta.8
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/block-sdk v0.0.0-20231213233341-deceeb0e993b
@@ -51,11 +42,15 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.4 // indirect
 	cloud.google.com/go/storage v1.30.1 // indirect
+	cosmossdk.io/collections v0.4.0 // indirect
+	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
+	cosmossdk.io/x/tx v0.12.0 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
+	github.com/IGLOU-EU/go-wildcard v1.0.3 // indirect
 	github.com/aws/aws-sdk-go v1.44.224 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
@@ -73,6 +68,7 @@ require (
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/cometbft/cometbft-db v0.9.1 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/iavl v1.0.0 // indirect
 	github.com/cosmos/ics23/go v0.10.0 // indirect
@@ -98,8 +94,10 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -111,11 +109,13 @@ require (
 	github.com/gorilla/handlers v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.7.3 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-metrics v0.5.2 // indirect
 	github.com/hashicorp/go-plugin v1.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
@@ -213,7 +213,7 @@ replace (
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
-	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
+	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
