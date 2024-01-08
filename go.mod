@@ -22,9 +22,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.2.0-beta.0
-	github.com/initia-labs/initia v0.2.0-beta.0
+	github.com/initia-labs/initia v0.2.0-beta.1
 	// we also need to update `LIBINITIAVM_VERSION` of images/private/Dockerfile#5
-	github.com/initia-labs/initiavm v0.1.2-beta.7
+	github.com/initia-labs/initiavm v0.1.2-beta.8
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/block-sdk v0.0.0-20231213233341-deceeb0e993b
