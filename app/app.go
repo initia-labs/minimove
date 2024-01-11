@@ -694,6 +694,7 @@ func NewMinitiaApp(
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
+	app.SetPreBlocker(app.PreBlocker)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetPostHandler(app.MoveKeeper.GetPostHandler())
 	app.SetEndBlocker(app.EndBlocker)
@@ -846,6 +847,11 @@ func (app *MinitiaApp) setAnteHandler(
 
 // Name returns the name of the App
 func (app *MinitiaApp) Name() string { return app.BaseApp.Name() }
+
+// PreBlocker application updates every pre block
+func (app *MinitiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	return app.ModuleManager.PreBlock(ctx)
+}
 
 // BeginBlocker application updates every begin block
 func (app *MinitiaApp) BeginBlocker(ctx sdk.Context) (sdk.BeginBlock, error) {
