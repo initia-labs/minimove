@@ -356,7 +356,7 @@ func NewMinitiaApp(
 		appCodec,
 		homePath,
 		app.BaseApp,
-		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
+		authorityAddr,
 	)
 
 	i := 0
@@ -564,7 +564,7 @@ func NewMinitiaApp(
 		nil, // placeholder for staking keeper
 		nil, // placeholder for reward keeper,
 		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
+		authorityAddr,
 		ac, vc,
 	)
 
@@ -577,7 +577,7 @@ func NewMinitiaApp(
 		app.AccountKeeper,
 		app.BankKeeper,
 		applanes.NewRewardsAddressProvider(authtypes.FeeCollectorName),
-		authtypes.NewModuleAddress(opchildtypes.ModuleName).String(),
+		authorityAddr,
 	)
 	app.AuctionKeeper = &auctionKeeper
 
