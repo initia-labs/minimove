@@ -36,7 +36,7 @@ require (
 
 require (
 	cosmossdk.io/tools/confix v0.1.1
-	github.com/initia-labs/indexer v0.1.0-beta.20.0.20240114070206-0422fed4342d
+	github.com/initia-labs/indexer v0.1.0-beta.20.0.20240115055048-f47cf4294742
 	golang.org/x/sync v0.5.0
 )
 
