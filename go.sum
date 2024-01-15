@@ -723,8 +723,8 @@ github.com/initia-labs/cometbft v0.0.0-20240104081544-34081fc84daf h1:7k3u0huB7O
 github.com/initia-labs/cometbft v0.0.0-20240104081544-34081fc84daf/go.mod h1:PIi48BpzwlHqtV3mzwPyQgOyOnU94BNBimLS2ebBHOg=
 github.com/initia-labs/cosmos-sdk v0.0.0-20240112075606-c97f16c9ec09 h1:0aVTyEDn62UEy6w7SJErefLT7kx31DiBtBpkBhlCUIY=
 github.com/initia-labs/cosmos-sdk v0.0.0-20240112075606-c97f16c9ec09/go.mod h1:n/WQqDh73qdtBmY9Op3sYgiBgTujSfGSd6CNh6GfqvQ=
-github.com/initia-labs/indexer v0.1.0-beta.20.0.20240114070206-0422fed4342d h1:vA72IXFm/ROgZFVH7UO8d4g3ogodTJ1mvv2S57JjbqY=
-github.com/initia-labs/indexer v0.1.0-beta.20.0.20240114070206-0422fed4342d/go.mod h1:BZrjHMq2Dl0OJj4MgnXJumtZTouHJGEykdcH2zg4lh8=
+github.com/initia-labs/indexer v0.1.0-beta.20.0.20240115055048-f47cf4294742 h1:6F+AaPvNLkG7RCm9P4h36p1MhUBvWaNy9mShwI2ta68=
+github.com/initia-labs/indexer v0.1.0-beta.20.0.20240115055048-f47cf4294742/go.mod h1:BZrjHMq2Dl0OJj4MgnXJumtZTouHJGEykdcH2zg4lh8=
 github.com/initia-labs/initia v0.2.0-beta.1 h1:7eNj2V9m/8JZnUi25wisFe+x2BzXElE+gZaEvfKBjYw=
 github.com/initia-labs/initia v0.2.0-beta.1/go.mod h1:9f5Tco/YOJpMhl0gbWH36J8HvLA24fApGFksTLao+3A=
 github.com/initia-labs/initiavm v0.1.2-beta.8 h1:W3scI7Zxkh8p0bttuFN7a8OFcfFOU4Y8H0ndsbYeDwo=
