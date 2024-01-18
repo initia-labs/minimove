@@ -36,6 +36,8 @@ require (
 	golang.org/x/sync v0.5.0
 )
 
+require github.com/initia-labs/indexer v0.1.0-beta.20.0.20240118063243-ca3d472c2cad
+
 require (
 	cloud.google.com/go v0.110.10 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
@@ -130,7 +132,6 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/indexer v0.1.0-beta.20.0.20240118063243-ca3d472c2cad // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
