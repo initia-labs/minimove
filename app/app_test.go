@@ -25,7 +25,6 @@ import (
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	"cosmossdk.io/x/upgrade"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
@@ -67,7 +66,7 @@ func TestInitGenesisOnMigration(t *testing.T) {
 	db := dbm.NewMemDB()
 	logger := log.NewLogger(os.Stdout)
 	app := NewMinitiaApp(
-		logger, db, nil, true, moveconfig.DefaultMoveConfig(), simtestutil.EmptyAppOptions{})
+		logger, db, nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 	ctx := app.NewContextLegacy(true, cmtproto.Header{Height: app.LastBlockHeight()})
 
 	// Create a mock module. This module will serve as the new module we're
@@ -122,7 +121,7 @@ func TestGetKey(t *testing.T) {
 	db := dbm.NewMemDB()
 	app := NewMinitiaApp(
 		log.NewLogger(os.Stdout),
-		db, nil, true, moveconfig.DefaultMoveConfig(), simtestutil.EmptyAppOptions{})
+		db, nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 
 	require.NotEmpty(t, app.GetKey(banktypes.StoreKey))
 	require.NotEmpty(t, app.GetMemKey(capabilitytypes.MemStoreKey))
