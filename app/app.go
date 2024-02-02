@@ -792,7 +792,7 @@ func NewMinitiaApp(
 	}
 
 	// register upgrade handler for later use
-	// app.RegisterUpgradeHandlers(app.configurator)
+	app.RegisterUpgradeHandlers(app.configurator)
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
 
@@ -1095,14 +1095,6 @@ func (app *MinitiaApp) RegisterTendermintService(clientCtx client.Context) {
 
 func (app *MinitiaApp) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
-}
-
-// RegisterUpgradeHandlers returns upgrade handlers
-func (app *MinitiaApp) RegisterUpgradeHandlers(cfg module.Configurator) {
-	app.UpgradeKeeper.SetUpgradeHandler(
-		UpgradeName,
-		NewUpgradeHandler(app).CreateUpgradeHandler(),
-	)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
