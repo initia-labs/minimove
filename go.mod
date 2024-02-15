@@ -39,7 +39,7 @@ require (
 	golang.org/x/sync v0.6.0
 )
 
-require github.com/initia-labs/indexer v0.1.0-beta.20.0.20240129034833-18782f9d72db
+require github.com/initia-labs/indexer v0.1.0-beta.20.0.20240214030756-b501447bda71
 
 require (
 	cloud.google.com/go v0.110.10 // indirect
