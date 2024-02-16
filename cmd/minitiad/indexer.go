@@ -13,6 +13,9 @@ import (
 
 	"github.com/initia-labs/indexer"
 	indexercfg "github.com/initia-labs/indexer/config"
+	"github.com/initia-labs/indexer/service/collector"
+	"github.com/initia-labs/indexer/service/cron/pair"
+	"github.com/initia-labs/indexer/service/dashboard"
 	minitiaapp "github.com/initia-labs/minimove/app"
 )
 
@@ -37,12 +40,16 @@ func preSetupIndexer(svrCtx *server.Context, clientCtx client.Context, ctx conte
 		return nil
 	}
 
+	idxer.GetHandler().RegisterService(collector.CollectorSvc)
+	idxer.GetHandler().RegisterService(dashboard.DashboardSvc)
+	idxer.GetHandler().RegisterCronjob(pair.Tag, pair.Expr, pair.JobInit, pair.JobFunc)
+
 	err = idxer.Validate()
 	if err != nil {
 		return err
 	}
 
-	err = idxer.Start()
+	err = idxer.Start(nil)
 	if err != nil {
 		return err
 	}
