@@ -213,7 +213,6 @@ replace (
 
 	github.com/cosmos/iavl => github.com/initia-labs/iavl v0.0.0-20240208034922-5d81c449d4c0
 
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 => github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1-0.20240124225747-f055ce5b405c
 	github.com/cosmos/ibc-apps/modules/async-icq/v8 => github.com/cosmos/ibc-apps/modules/async-icq/v8 v8.0.1-0.20240124225747-f055ce5b405c
 
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.

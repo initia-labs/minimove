@@ -368,8 +368,8 @@ github.com/cosmos/gogogateway v1.2.0/go.mod h1:iQpLkGWxYcnCdz5iAdLcRBSw3h7NXeOkZ
 github.com/cosmos/gogoproto v1.4.2/go.mod h1:cLxOsn1ljAHSV527CHOtaIP91kK6cCrZETRBrkzItWU=
 github.com/cosmos/gogoproto v1.4.11 h1:LZcMHrx4FjUgrqQSWeaGC1v/TeuVFqSLa43CC6aWR2g=
 github.com/cosmos/gogoproto v1.4.11/go.mod h1:/g39Mh8m17X8Q/GDEs5zYTSNaNnInBSohtaxzQnYq1Y=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1-0.20240124225747-f055ce5b405c h1:ugHoyxZFAUCjkpuUhjNWMF5E4H+8tjibJYRL6RZBZUw=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1-0.20240124225747-f055ce5b405c/go.mod h1:82hPO/tRawbuFad2gPwChvpZ0JEIoNi91LwVneAYCeM=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1 h1:BHn+JWZILxkUT9IrlP1ctUfo9ENGi+EmiZ9om1XSHIw=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.1/go.mod h1:82hPO/tRawbuFad2gPwChvpZ0JEIoNi91LwVneAYCeM=
 github.com/cosmos/ibc-apps/modules/async-icq/v8 v8.0.1-0.20240124225747-f055ce5b405c h1:44QAwcoTqB1jT6p7IogVKZwdKVZykX2fg+iU0Q/LTZ0=
 github.com/cosmos/ibc-apps/modules/async-icq/v8 v8.0.1-0.20240124225747-f055ce5b405c/go.mod h1:D3Q380FpWRFtmUQWLosPxachi6w24Og2t5u/Tww5wtY=
 github.com/cosmos/ibc-go/modules/capability v1.0.0 h1:r/l++byFtn7jHYa09zlAdSeevo8ci1mVZNO9+V0xsLE=
