@@ -11,16 +11,9 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/initia-labs/indexer"
-	indexercfg "github.com/initia-labs/indexer/config"
-	"github.com/initia-labs/indexer/service/collector"
-	"github.com/initia-labs/indexer/service/cron/pair"
-	"github.com/initia-labs/indexer/service/dashboard"
+	indexer "github.com/initia-labs/indexer/v2"
+	indexercfg "github.com/initia-labs/indexer/v2/config"
 	minitiaapp "github.com/initia-labs/minimove/app"
-)
-
-const (
-	FlagIndexer = "indexer"
 )
 
 func addIndexFlag(cmd *cobra.Command) {
@@ -30,32 +23,38 @@ func addIndexFlag(cmd *cobra.Command) {
 func preSetupIndexer(svrCtx *server.Context, clientCtx client.Context, ctx context.Context, g *errgroup.Group, _app types.Application) error {
 	app := _app.(*minitiaapp.MinitiaApp)
 
-	// if indexer is disabled, it returns nil
-	idxer, err := indexer.NewIndexer(svrCtx.Viper, app)
-	if err != nil {
+	// listen all keys
+	keysToListen := []storetypes.StoreKey{}
+
+	// TODO: if it downgrades performacne, have to set only keys for registered submodules and crons
+	keys := app.GetKeys()
+	for _, key := range keys {
+		keysToListen = append(keysToListen, key)
+	}
+	app.CommitMultiStore().AddListeners(keysToListen)
+
+	indexer, err := indexer.NewIndexer(app.GetBaseApp().Logger(), app.GetIndexerKeeper())
+	// if err is not nil, it means there is an error regardless of indexer is nil or not.
+	// else if indexer is nil, it means indexer is disabled and the returned err is nil.
+	if err != nil || indexer == nil {
 		return err
 	}
-	// if idxer is nil, it means indexer is disabled
-	if idxer == nil {
-		return nil
-	}
 
-	idxer.GetHandler().RegisterService(collector.CollectorSvc)
-	idxer.GetHandler().RegisterService(dashboard.DashboardSvc)
-	idxer.GetHandler().RegisterCronjob(pair.Tag, pair.Expr, pair.JobInit, pair.JobFunc)
-
-	err = idxer.Validate()
-	if err != nil {
+	if err = indexer.Validate(); err != nil {
 		return err
 	}
 
-	err = idxer.Start(nil)
-	if err != nil {
+	if err = indexer.Prepare(nil); err != nil {
+		return err
+	}
+
+	app.GetIndexerKeeper().Seal()
+	if err = indexer.Start(nil); err != nil {
 		return err
 	}
 
 	streamingManager := storetypes.StreamingManager{
-		ABCIListeners: []storetypes.ABCIListener{idxer},
+		ABCIListeners: []storetypes.ABCIListener{indexer},
 		StopNodeOnErr: true,
 	}
 	app.SetStreamingManager(streamingManager)

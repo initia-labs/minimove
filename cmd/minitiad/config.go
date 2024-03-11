@@ -7,7 +7,7 @@ import (
 	tmcfg "github.com/cometbft/cometbft/config"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
-	indexerconfig "github.com/initia-labs/indexer/config"
+	indexerconfig "github.com/initia-labs/indexer/v2/config"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 	"github.com/initia-labs/minimove/types"
 )
@@ -43,7 +43,7 @@ func initAppConfig() (string, interface{}) {
 	initiaappConfig := initiaappConfig{
 		Config:        *srvCfg,
 		MoveConfig:    moveconfig.DefaultMoveConfig(),
-		IndexerConfig: indexerconfig.DefaultIndexerConfig(),
+		IndexerConfig: indexerconfig.DefaultConfig(),
 	}
 
 	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate + indexerconfig.DefaultConfigTemplate
