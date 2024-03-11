@@ -161,6 +161,9 @@
           "Params": "MoveParams"
         }
       }
+    },
+    {
+      "url": "./tmp-swagger-gen/indexer/dashboard/v1/query.swagger.json"
     }
   ]
 }
