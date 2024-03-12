@@ -252,6 +252,7 @@ type MinitiaApp struct {
 
 	// fake keeper to indexe
 	IndexerKeeper *indexerkeeper.Keeper
+	indexerModule indexer.AppModuleBasic
 }
 
 // NewMinitiaApp returns a reference to an initialized Initia.
@@ -765,12 +766,11 @@ func NewMinitiaApp(
 		vc,
 		app.ChainID(),
 	)
-	app.IndexerKeeper.RegisterSubmodule(dashboard.Submodule)
-
-	indexerModule := indexer.NewAppModuleBasic(app.IndexerKeeper, app.GetBaseApp().Logger())
-
-	// TODO: register services here
-	//indexerModule.RegisterService(...)
+	err = app.IndexerKeeper.RegisterSubmodule(dashboard.Submodule)
+	if err != nil {
+		panic(err)
+	}
+	app.indexerModule = indexer.NewAppModuleBasic(app.IndexerKeeper)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration and genesis verification.
@@ -780,7 +780,7 @@ func NewMinitiaApp(
 		app.ModuleManager,
 		map[string]module.AppModuleBasic{
 			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			indexertypes.ModuleName: indexerModule,
+			indexertypes.ModuleName: app.indexerModule,
 		})
 	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
 	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
@@ -834,7 +834,7 @@ func NewMinitiaApp(
 	if err != nil {
 		panic(err)
 	}
-	indexerModule.RegisterServices(app.configurator)
+	app.indexerModule.RegisterServices(app.configurator)
 
 	// register upgrade handler for later use
 	app.RegisterUpgradeHandlers(app.configurator)
@@ -1107,6 +1107,9 @@ func (app *MinitiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 
 	// Register grpc-gateway routes for all modules.
 	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+
+	// Register grpc-gateway routes for indexer module.
+	app.indexerModule.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
