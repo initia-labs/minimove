@@ -37869,6 +37869,63 @@ paths:
           format: byte
       tags:
         - Query
+  /indexer/dashboard/v1/chart_data:
+    get:
+      operationId: ChartData
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                    total_value_locked:
+                      type: string
+                      format: int64
+                    tx_count:
+                      type: string
+                      format: int64
+                    active_accounts:
+                      type: string
+                      format: int64
+            description: |-
+              ChartDataResponse is the response type for the Query/ChartData
+              RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          type: string
+      tags:
+        - Query
   /indexer/dashboard/v1/new_addresses:
     get:
       summary: NewAddresses returns the new addresses in range [from, to].
@@ -62663,6 +62720,42 @@ definitions:
           a new module has (a) the same public functions (b) for existing resources, no layout change.
       * `immutable`
           Whether the modules in the package are immutable and cannot be upgraded.
+  indexer.dashboard.v1.ChartData:
+    type: object
+    properties:
+      date:
+        type: string
+      total_value_locked:
+        type: string
+        format: int64
+      tx_count:
+        type: string
+        format: int64
+      active_accounts:
+        type: string
+        format: int64
+  indexer.dashboard.v1.ChartDataResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            date:
+              type: string
+            total_value_locked:
+              type: string
+              format: int64
+            tx_count:
+              type: string
+              format: int64
+            active_accounts:
+              type: string
+              format: int64
+    description: |-
+      ChartDataResponse is the response type for the Query/ChartData
+      RPC method.
   indexer.dashboard.v1.NewAddressesResponse:
     type: object
     properties:
