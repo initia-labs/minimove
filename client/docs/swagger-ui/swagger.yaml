@@ -37980,6 +37980,71 @@ paths:
           format: int64
       tags:
         - Query
+  /indexer/nft/v1/new_addresses:
+    get:
+      summary: Tokens returns the new addresses in range [from, to].
+      operationId: Tokens
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokens:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    collection:
+                      type: string
+                    collection_name:
+                      type: string
+                    token_id:
+                      type: string
+                    description:
+                      type: string
+                    uri:
+                      type: string
+                    object_addr:
+                      type: string
+            description: |-
+              TokensResponse is the response type for the Query/Tokens
+              RPC method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: from
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: to
+          in: query
+          required: false
+          type: string
+          format: int64
+      tags:
+        - Query
 definitions:
   cosmos.auth.v1beta1.AddressBytesToStringResponse:
     type: object
@@ -62765,4 +62830,76 @@ definitions:
           type: string
     description: |-
       NewAddressesResponse is the response type for the Query/NewAddresses
+      RPC method.
+  indexer.nft.v1.Collection:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      uri:
+        type: string
+      object_addr:
+        type: string
+      creator_addr:
+        type: string
+  indexer.nft.v1.CollectionsResponse:
+    type: object
+    properties:
+      collections:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            uri:
+              type: string
+            object_addr:
+              type: string
+            creator_addr:
+              type: string
+    description: |-
+      CollectionsResponse is the response type for the Query/Collections
+      RPC method.
+  indexer.nft.v1.Token:
+    type: object
+    properties:
+      collection:
+        type: string
+      collection_name:
+        type: string
+      token_id:
+        type: string
+      description:
+        type: string
+      uri:
+        type: string
+      object_addr:
+        type: string
+  indexer.nft.v1.TokensResponse:
+    type: object
+    properties:
+      tokens:
+        type: array
+        items:
+          type: object
+          properties:
+            collection:
+              type: string
+            collection_name:
+              type: string
+            token_id:
+              type: string
+            description:
+              type: string
+            uri:
+              type: string
+            object_addr:
+              type: string
+    description: |-
+      TokensResponse is the response type for the Query/Tokens
       RPC method.
