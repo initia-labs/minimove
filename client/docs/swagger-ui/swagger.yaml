@@ -37924,6 +37924,7 @@ paths:
           in: query
           required: false
           type: string
+          format: int64
       tags:
         - Query
   /indexer/dashboard/v1/new_addresses:
