@@ -164,6 +164,9 @@
     },
     {
       "url": "./tmp-swagger-gen/indexer/dashboard/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/indexer/nft/v1/query.swagger.json"
     }
   ]
 }

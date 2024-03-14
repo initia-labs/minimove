@@ -147,7 +147,6 @@ import (
 	indexerkeeper "github.com/initia-labs/indexer/v2/module/keeper"
 	indexertypes "github.com/initia-labs/indexer/v2/module/types"
 	"github.com/initia-labs/indexer/v2/submodule/dashboard"
-	vmwrapper "github.com/initia-labs/indexer/v2/wrapper"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -741,10 +740,6 @@ func NewMinitiaApp(
 	)
 
 	// initialize the indexer fake-keeper
-	wrappedVMKeeper, err := vmwrapper.WrapContractKeeper(app.MoveKeeper)
-	if err != nil {
-		panic(err)
-	}
 	indexerConfig, err := indexerconfig.NewConfig(appOpts)
 	if err != nil {
 		panic(err)
@@ -754,11 +749,11 @@ func NewMinitiaApp(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.OracleKeeper,
-		nil,             // placeholder for distribution keeper
-		nil,             // placeholder for staking keeper
-		nil,             // placeholder for reward keeper,
-		nil,             // placeholder for community pool keeper
-		wrappedVMKeeper, // placeholder for wrapped vm keeper
+		nil, // placeholder for distribution keeper
+		nil, // placeholder for staking keeper
+		nil, // placeholder for reward keeper,
+		nil, // placeholder for community pool keeper
+		indexerkeeper.VMKeeper{Keeper: *app.MoveKeeper}, // placeholder for wrapped vm keeper
 		authtypes.FeeCollectorName,
 		homePath,
 		*indexerConfig,

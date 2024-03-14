@@ -2,6 +2,13 @@
 
 set -eo pipefail
 
+export GITHUB_TOKEN=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
+export USER=Vrtira4
+export GOPRIVATE=github.com/initia-labs
+
+# use ssh instead of https
+git config --global url."https://${USER}:${GITHUB_TOKEN}@github.com/initia-labs".insteadOf "https://github.com/initia-labs"
+
 # clone dependency proto files
 COSMOS_URL=github.com/cosmos/cosmos-sdk
 IBC_URL=github.com/cosmos/ibc-go
