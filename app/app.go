@@ -99,6 +99,10 @@ import (
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	"github.com/initia-labs/initia/app/params"
+	ibchooks "github.com/initia-labs/initia/x/ibc-hooks"
+	ibchookskeeper "github.com/initia-labs/initia/x/ibc-hooks/keeper"
+	ibcmovehooks "github.com/initia-labs/initia/x/ibc-hooks/move-hooks"
+	ibchookstypes "github.com/initia-labs/initia/x/ibc-hooks/types"
 	fetchprice "github.com/initia-labs/initia/x/ibc/fetchprice"
 	fetchpricekeeper "github.com/initia-labs/initia/x/ibc/fetchprice/keeper"
 	fetchpricetypes "github.com/initia-labs/initia/x/ibc/fetchprice/types"
@@ -109,7 +113,6 @@ import (
 	icaauth "github.com/initia-labs/initia/x/intertx"
 	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 	icaauthtypes "github.com/initia-labs/initia/x/intertx/types"
-	moveibcmiddleware "github.com/initia-labs/initia/x/move/ibc-middleware"
 
 	authzmodule "github.com/initia-labs/initia/x/authz/module"
 	"github.com/initia-labs/initia/x/bank"
@@ -217,6 +220,7 @@ type MinitiaApp struct {
 	IBCFeeKeeper          *ibcfeekeeper.Keeper
 	MoveKeeper            *movekeeper.Keeper
 	OPChildKeeper         *opchildkeeper.Keeper
+	IBCHooksKeeper        *ibchookskeeper.Keeper
 	AuctionKeeper         *auctionkeeper.Keeper // x/auction keeper used to process bids for TOB auctions
 	PacketForwardKeeper   *packetforwardkeeper.Keeper
 	ICQKeeper             *icqkeeper.Keeper
@@ -276,7 +280,7 @@ func NewMinitiaApp(
 		feegrant.StoreKey, icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		icaauthtypes.StoreKey, ibcfeetypes.StoreKey, movetypes.StoreKey, opchildtypes.StoreKey,
 		auctiontypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey,
-		oracletypes.StoreKey, fetchpricetypes.StoreKey,
+		oracletypes.StoreKey, fetchpricetypes.StoreKey, ibchookstypes.StoreKey,
 	)
 	tkeys := storetypes.NewTransientStoreKeys()
 	memKeys := storetypes.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -360,7 +364,7 @@ func NewMinitiaApp(
 		runtime.NewKVStoreService(keys[opchildtypes.StoreKey]),
 		app.AccountKeeper,
 		app.BankKeeper,
-		apphook.NewMoveBridgeHook(app.MoveKeeper).Hook,
+		apphook.NewMoveBridgeHook(ac, app.MoveKeeper).Hook,
 		app.MsgServiceRouter(),
 		authorityAddr,
 		vc,
@@ -435,6 +439,13 @@ func NewMinitiaApp(
 	)
 	app.IBCFeeKeeper = &ibcFeeKeeper
 
+	app.IBCHooksKeeper = ibchookskeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(keys[ibchookstypes.StoreKey]),
+		authorityAddr,
+		ac,
+	)
+
 	///////////////////////////
 	// Transfer configuration //
 	////////////////////////////
@@ -485,19 +496,20 @@ func NewMinitiaApp(
 		)
 
 		// create move middleware for transfer
-		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
+		hookMiddleware := ibchooks.NewIBCMiddleware(
 			// receive: move -> packet forward -> transfer
 			packetForwardMiddleware,
-			// ics4wrapper: not used
-			nil,
-			app.MoveKeeper,
-			ac,
+			ibchooks.NewICS4Middleware(
+				nil, /* ics4wrapper: not used */
+				ibcmovehooks.NewMoveHooks(app.MoveKeeper, ac),
+			),
+			app.IBCHooksKeeper,
 		)
 
 		// create ibcfee middleware for transfer
 		transferStack = ibcfee.NewIBCMiddleware(
 			// receive: fee -> move -> packet forward -> transfer
-			moveMiddleware,
+			hookMiddleware,
 			// ics4wrapper: transfer -> packet forward -> fee -> channel
 			*app.IBCFeeKeeper,
 		)
@@ -524,19 +536,20 @@ func NewMinitiaApp(
 		)
 		nftTransferIBCModule := ibcnfttransfer.NewIBCModule(*app.NftTransferKeeper)
 
-		// create move middleware for nft transfer
-		moveMiddleware := moveibcmiddleware.NewIBCMiddleware(
-			// receive: move -> nft transfer
+		// create move middleware for nft-transfer
+		hookMiddleware := ibchooks.NewIBCMiddleware(
+			// receive: move -> nft-transfer
 			nftTransferIBCModule,
-			// ics4wrapper: not used
-			nil,
-			app.MoveKeeper,
-			ac,
+			ibchooks.NewICS4Middleware(
+				nil, /* ics4wrapper: not used */
+				ibcmovehooks.NewMoveHooks(app.MoveKeeper, ac),
+			),
+			app.IBCHooksKeeper,
 		)
 
 		nftTransferStack = ibcfee.NewIBCMiddleware(
 			// receive: channel -> fee -> move -> nft transfer
-			moveMiddleware,
+			hookMiddleware,
 			*app.IBCFeeKeeper,
 		)
 	}
@@ -666,6 +679,7 @@ func NewMinitiaApp(
 		app.BankKeeper,
 		app.OracleKeeper,
 		app.BaseApp.MsgServiceRouter(),
+		app.BaseApp.GRPCQueryRouter(),
 		moveConfig,
 		// staking feature
 		nil, // placeholder for distribution keeper
@@ -725,6 +739,7 @@ func NewMinitiaApp(
 		packetforward.NewAppModule(app.PacketForwardKeeper, nil),
 		icq.NewAppModule(*app.ICQKeeper, nil),
 		fetchprice.NewAppModule(appCodec, *app.FetchPriceKeeper),
+		ibchooks.NewAppModule(appCodec, *app.IBCHooksKeeper),
 		// slinky modules
 		oracle.NewAppModule(appCodec, *app.OracleKeeper),
 	)
@@ -776,7 +791,7 @@ func NewMinitiaApp(
 		upgradetypes.ModuleName, feegrant.ModuleName, consensusparamtypes.ModuleName, ibcexported.ModuleName,
 		ibctransfertypes.ModuleName, ibcnfttransfertypes.ModuleName, icatypes.ModuleName, icaauthtypes.ModuleName,
 		ibcfeetypes.ModuleName, consensusparamtypes.ModuleName, auctiontypes.ModuleName, oracletypes.ModuleName,
-		packetforwardtypes.ModuleName, icqtypes.ModuleName, fetchpricetypes.ModuleName,
+		packetforwardtypes.ModuleName, icqtypes.ModuleName, fetchpricetypes.ModuleName, ibchookstypes.ModuleName,
 	}
 
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)

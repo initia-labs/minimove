@@ -14,7 +14,7 @@ import (
 
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	movetypes "github.com/initia-labs/initia/x/move/types"
-	"github.com/initia-labs/initiavm/precompile"
+	"github.com/initia-labs/movevm/precompile"
 
 	auctiontypes "github.com/skip-mev/block-sdk/x/auction/types"
 )
