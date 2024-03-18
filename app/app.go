@@ -147,6 +147,9 @@ import (
 	indexerkeeper "github.com/initia-labs/indexer/v2/module/keeper"
 	indexertypes "github.com/initia-labs/indexer/v2/module/types"
 	"github.com/initia-labs/indexer/v2/submodule/dashboard"
+	"github.com/initia-labs/indexer/v2/submodule/nft"
+	"github.com/initia-labs/indexer/v2/submodule/pair"
+	"github.com/initia-labs/indexer/v2/submodule/tx"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -754,14 +757,16 @@ func NewMinitiaApp(
 		nil, // placeholder for reward keeper,
 		nil, // placeholder for community pool keeper
 		indexerkeeper.VMKeeper{Keeper: *app.MoveKeeper}, // placeholder for wrapped vm keeper
+		app.TransferKeeper,
+		app.NftTransferKeeper,
 		authtypes.FeeCollectorName,
 		homePath,
-		*indexerConfig,
+		indexerConfig,
 		ac,
 		vc,
 		app.ChainID(),
 	)
-	err = app.IndexerKeeper.RegisterSubmodule(dashboard.Submodule)
+	err = app.IndexerKeeper.RegisterSubmodules(dashboard.Submodule, nft.Submodule, pair.Submodule, tx.Submodule)
 	if err != nil {
 		panic(err)
 	}

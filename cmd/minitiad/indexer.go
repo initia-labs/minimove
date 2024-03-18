@@ -47,8 +47,10 @@ func preSetupIndexer(svrCtx *server.Context, clientCtx client.Context, ctx conte
 	if err = indexer.Prepare(nil); err != nil {
 		return err
 	}
+	if err = app.GetIndexerKeeper().Seal(); err != nil {
+		return err
+	}
 
-	app.GetIndexerKeeper().Seal()
 	if err = indexer.Start(nil); err != nil {
 		return err
 	}
