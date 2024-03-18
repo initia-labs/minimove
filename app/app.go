@@ -760,6 +760,7 @@ func NewMinitiaApp(
 		indexerkeeper.VMKeeper{Keeper: *app.MoveKeeper}, // placeholder for wrapped vm keeper
 		app.TransferKeeper,
 		app.NftTransferKeeper,
+		app.OPChildKeeper,
 		authtypes.FeeCollectorName,
 		homePath,
 		indexerConfig,
