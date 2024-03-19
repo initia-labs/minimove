@@ -38307,6 +38307,8 @@ paths:
                       type: string
                     collection_addr:
                       type: string
+                    collection_name:
+                      type: string
                     nft:
                       type: object
                       properties:
@@ -38463,6 +38465,8 @@ paths:
                     type: string
                   collection_addr:
                     type: string
+                  collection_name:
+                    type: string
                   nft:
                     type: object
                     properties:
@@ -38538,6 +38542,7 @@ paths:
                       format: int64
                     timestamp:
                       type: string
+                      format: date-time
                     gas_used:
                       type: string
                       format: int64
@@ -38548,7 +38553,23 @@ paths:
                       type: string
                       format: int64
                     total_fee:
-                      type: string
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          Coin defines a token with a denomination and an
+                          amount.
+
+
+                          NOTE: The amount field is an Int which implements the
+                          custom method
+
+                          signatures required by gogoproto.
                     proposer:
                       type: string
               pagination:
@@ -63541,6 +63562,8 @@ definitions:
         type: string
       collection_addr:
         type: string
+      collection_name:
+        type: string
       nft:
         type: object
         properties:
@@ -63690,6 +63713,8 @@ definitions:
             type: string
           collection_addr:
             type: string
+          collection_name:
+            type: string
           nft:
             type: object
             properties:
@@ -63721,6 +63746,8 @@ definitions:
             object_addr:
               type: string
             collection_addr:
+              type: string
+            collection_name:
               type: string
             nft:
               type: object
@@ -63768,7 +63795,7 @@ definitions:
                    PageResponse page = 2;
            }
     title: QueryNftsResponse is the response type for the Query/Nfts RPC method
-  indexer.block.v1.Blocks:
+  indexer.block.v1.Block:
     type: object
     properties:
       chain_id:
@@ -63783,6 +63810,7 @@ definitions:
         format: int64
       timestamp:
         type: string
+        format: date-time
       gas_used:
         type: string
         format: int64
@@ -63793,7 +63821,19 @@ definitions:
         type: string
         format: int64
       total_fee:
-        type: string
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
       proposer:
         type: string
   indexer.block.v1.BlocksResponse:
@@ -63816,6 +63856,7 @@ definitions:
               format: int64
             timestamp:
               type: string
+              format: date-time
             gas_used:
               type: string
               format: int64
@@ -63826,7 +63867,22 @@ definitions:
               type: string
               format: int64
             total_fee:
-              type: string
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
             proposer:
               type: string
       pagination:
