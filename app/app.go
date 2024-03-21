@@ -765,7 +765,7 @@ func NewMinitiaApp(
 	}
 	app.IndexerKeeper = indexerkeeper.NewKeeper(
 		appCodec,
-		indexerkeeper.AccountKeeper{AccountKeeper: *app.AccountKeeper},
+		app.AccountKeeper,
 		app.BankKeeper,
 		app.OracleKeeper,
 		nil, // placeholder for distribution keeper
