@@ -170,6 +170,12 @@
     },
     {
       "url": "./tmp-swagger-gen/indexer/block/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/indexer/pair/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/indexer/tx/v1/query.swagger.json"
     }
   ]
 }
