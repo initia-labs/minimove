@@ -39,7 +39,7 @@ require (
 )
 
 require (
-	github.com/initia-labs/indexer/v2 v2.0.0-00010101000000-000000000000
+	github.com/initia-labs/indexer/v2 v2.0.0-20240324071726-3f6b2ae4bf50
 	golang.org/x/sync v0.6.0
 )
 
@@ -147,7 +147,6 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/initiavm v0.2.0-beta.2.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
@@ -251,8 +250,6 @@ replace (
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	github.com/initia-labs/indexer/v2 => ../indexer
 
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
