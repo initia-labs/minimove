@@ -37196,8 +37196,10 @@ paths:
         - Query
   /initia/move/v1/accounts/{address}/modules/{module_name}/view_functions/{function_name}:
     post:
-      summary: ViewFunction execute entry function and return  the function result
-      operationId: ViewFunction
+      summary: |-
+        Deprecated: Use of SendEnabled in params is deprecated.
+        LegacyView execute view function and return the view result.
+      operationId: LegacyView
       responses:
         '200':
           description: A successful response.
@@ -37220,8 +37222,8 @@ paths:
                 type: string
                 format: uint64
             title: |-
-              QueryViewFunctionResponse is the response type for the
-              QueryyViewFunction RPC method
+              QueryLegacyViewResponse is the response type for the
+              QueryLegacyView RPC method
         default:
           description: An unexpected error response.
           schema:
@@ -37291,10 +37293,8 @@ paths:
                   Args is the arguments of a function to execute
                   - number: little endian
                   - string: base64 bytes
-            title: >-
-              QueryViewFunctionRequest is the request type for the
-              QueryyViewFunction
-
+            title: |-
+              QueryLegacyViewRequest is the request type for the QueryLegacyView
               RPC method
       tags:
         - Query
@@ -37970,6 +37970,198 @@ paths:
           format: byte
       tags:
         - Query
+  /initia/move/v1/view:
+    post:
+      summary: View execute view function and return the view result
+      operationId: View
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+              events:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_tag:
+                      type: string
+                    data:
+                      type: string
+                  description: VMEvent is the event emitted from vm.
+              gas_used:
+                type: string
+                format: uint64
+            title: |-
+              QueryViewResponse is the response type for the
+              QueryView RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              address:
+                type: string
+                title: Address is the owner address of the module to query
+              module_name:
+                type: string
+                title: ModuleName is the module name of the entry function to query
+              function_name:
+                type: string
+                title: FunctionName is the name of a function to query
+              type_args:
+                type: array
+                items:
+                  type: string
+                title: |-
+                  TypeArgs is the type arguments of a function to execute
+                  ex) "0x1::BasicCoin::Initia", "bool", "u8", "u64"
+              args:
+                type: array
+                items:
+                  type: string
+                  format: byte
+                title: |-
+                  Args is the arguments of a function to execute
+                  - number: little endian
+                  - string: base64 bytes
+            title: |-
+              QueryViewRequest is the request type for the QueryView
+              RPC method
+      tags:
+        - Query
+  /initia/move/v1/view/batch:
+    post:
+      summary: ViewBatch execute multiple view functions and return the view results
+      operationId: ViewBatch
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              responses:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data:
+                      type: string
+                    events:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          type_tag:
+                            type: string
+                          data:
+                            type: string
+                        description: VMEvent is the event emitted from vm.
+                    gas_used:
+                      type: string
+                      format: uint64
+                  title: |-
+                    QueryViewResponse is the response type for the
+                    QueryView RPC method
+            title: |-
+              QueryViewBatchResponse is the response type for the
+              QueryViewBatch RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              requests:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      title: Address is the owner address of the module to query
+                    module_name:
+                      type: string
+                      title: >-
+                        ModuleName is the module name of the entry function to
+                        query
+                    function_name:
+                      type: string
+                      title: FunctionName is the name of a function to query
+                    type_args:
+                      type: array
+                      items:
+                        type: string
+                      title: |-
+                        TypeArgs is the type arguments of a function to execute
+                        ex) "0x1::BasicCoin::Initia", "bool", "u8", "u64"
+                    args:
+                      type: array
+                      items:
+                        type: string
+                        format: byte
+                      title: |-
+                        Args is the arguments of a function to execute
+                        - number: little endian
+                        - string: base64 bytes
+                  title: |-
+                    QueryViewRequest is the request type for the QueryView
+                    RPC method
+            title: |-
+              QueryViewBatchRequest is the request type for the QueryViewBatch
+              RPC method
+      tags:
+        - Query
   /indexer/dashboard/v1/chart_data:
     get:
       summary: ChartData returns the chart data in daily basis.
@@ -37997,6 +38189,9 @@ paths:
                       type: string
                       format: int64
                     new_accounts:
+                      type: string
+                      format: int64
+                    tx_total_count:
                       type: string
                       format: int64
                   title: >-
@@ -38166,7 +38361,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /indexer/nft/v1/collection:
+  /indexer/nft/v1/collections:
     get:
       summary: Collections queries all the collections of an account
       operationId: Collections
@@ -38201,7 +38396,9 @@ paths:
                               type: string
                             length:
                               type: string
-                          title: NftHandle is an embedded message for CollectionData
+                          title: >-
+                            TokenHandle is an embedded message for
+                            CollectionData
                       title: Collection is the message for a collection of NFTs
                   title: >-
                     IndexedCollection is wrapped Collection with its object
@@ -38322,7 +38519,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /indexer/nft/v1/collection/{collection_addr}:
+  /indexer/nft/v1/collections/{collection_addr}:
     get:
       summary: Collection queries a collection by its address
       operationId: Collection
@@ -38355,7 +38552,7 @@ paths:
                             type: string
                           length:
                             type: string
-                        title: NftHandle is an embedded message for CollectionData
+                        title: TokenHandle is an embedded message for CollectionData
                     title: Collection is the message for a collection of NFTs
                 title: >-
                   IndexedCollection is wrapped Collection with its object
@@ -38392,10 +38589,10 @@ paths:
           type: string
       tags:
         - Query
-  /indexer/nft/v1/nft:
+  /indexer/nft/v1/tokens:
     get:
-      summary: Nfts queries all the NFTs of an account
-      operationId: Nfts
+      summary: Tokens queries all the NFTs of an account
+      operationId: Tokens
       responses:
         '200':
           description: A successful response.
@@ -38412,6 +38609,8 @@ paths:
                     collection_addr:
                       type: string
                     collection_name:
+                      type: string
+                    owner_addr:
                       type: string
                     nft:
                       type: object
@@ -38430,7 +38629,7 @@ paths:
                           type: string
                       title: NFT is the message for a single NFT
                   title: >-
-                    IndexedNft is wrapped NFT with its object address and
+                    IndexedToken is wrapped NFT with its object address and
                     collection address
               pagination:
                 type: object
@@ -38461,7 +38660,7 @@ paths:
                            PageResponse page = 2;
                    }
             title: >-
-              QueryNftsResponse is the response type for the Query/Nfts RPC
+              QueryTokensResponse is the response type for the Query/Tokens RPC
               method
         default:
           description: An unexpected error response.
@@ -38486,11 +38685,15 @@ paths:
                       type: string
                       format: byte
       parameters:
-        - name: account
+        - name: collection_addr
           in: query
           required: false
           type: string
-        - name: collection
+        - name: token_id
+          in: query
+          required: false
+          type: string
+        - name: owner
           in: query
           required: false
           type: string
@@ -38550,74 +38753,6 @@ paths:
           in: query
           required: false
           type: boolean
-      tags:
-        - Query
-  /indexer/nft/v1/nft/{token_addr}:
-    get:
-      summary: Nft queries a NFT by its address
-      operationId: Nft
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              token:
-                type: object
-                properties:
-                  object_addr:
-                    type: string
-                  collection_addr:
-                    type: string
-                  collection_name:
-                    type: string
-                  nft:
-                    type: object
-                    properties:
-                      collection:
-                        type: object
-                        properties:
-                          inner:
-                            type: string
-                        title: InnerCollection is inner data of NFT
-                      description:
-                        type: string
-                      token_id:
-                        type: string
-                      uri:
-                        type: string
-                    title: NFT is the message for a single NFT
-                title: >-
-                  IndexedNft is wrapped NFT with its object address and
-                  collection address
-            title: QueryNftResponse is the response type for the Query/Nft RPC method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: token_addr
-          in: path
-          required: true
-          type: string
       tags:
         - Query
   /indexer/block/v1/avg_blocktime:
@@ -38946,6 +39081,428 @@ paths:
           in: query
           required: false
           type: boolean
+      tags:
+        - Query
+  /indexer/tx/v1/tx:
+    get:
+      summary: Tx queries all the collections of an account
+      operationId: Tx
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tx:
+                description: txs is the list of queried transactions.
+                type: object
+                properties:
+                  height:
+                    type: string
+                    format: int64
+                    title: The block height
+                  txhash:
+                    type: string
+                    description: The transaction hash.
+                  codespace:
+                    type: string
+                    title: Namespace for the Code
+                  code:
+                    type: integer
+                    format: int64
+                    description: Response code.
+                  data:
+                    type: string
+                    description: Result bytes, if any.
+                  raw_log:
+                    type: string
+                    description: >-
+                      The output of the application's logger (raw string). May
+                      be
+
+                      non-deterministic.
+                  logs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        msg_index:
+                          type: integer
+                          format: int64
+                        log:
+                          type: string
+                        events:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                              attributes:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    key:
+                                      type: string
+                                    value:
+                                      type: string
+                                  description: >-
+                                    Attribute defines an attribute wrapper where
+                                    the key and value are
+
+                                    strings instead of raw bytes.
+                            description: >-
+                              StringEvent defines en Event object wrapper where
+                              all the attributes
+
+                              contain key/value pairs that are strings instead
+                              of raw bytes.
+                          description: >-
+                            Events contains a slice of Event objects that were
+                            emitted during some
+
+                            execution.
+                      description: >-
+                        ABCIMessageLog defines a structure containing an indexed
+                        tx ABCI message log.
+                    description: >-
+                      The output of the application's logger (typed). May be
+                      non-deterministic.
+                  info:
+                    type: string
+                    description: Additional information. May be non-deterministic.
+                  gas_wanted:
+                    type: string
+                    format: int64
+                    description: Amount of gas requested for transaction.
+                  gas_used:
+                    type: string
+                    format: int64
+                    description: Amount of gas consumed by transaction.
+                  tx:
+                    description: The request transaction bytes.
+                    type: object
+                    properties:
+                      type_url:
+                        type: string
+                        description: >-
+                          A URL/resource name that uniquely identifies the type
+                          of the serialized
+
+                          protocol buffer message. This string must contain at
+                          least
+
+                          one "/" character. The last segment of the URL's path
+                          must represent
+
+                          the fully qualified name of the type (as in
+
+                          `path/google.protobuf.Duration`). The name should be
+                          in a canonical form
+
+                          (e.g., leading "." is not accepted).
+
+
+                          In practice, teams usually precompile into the binary
+                          all types that they
+
+                          expect it to use in the context of Any. However, for
+                          URLs which use the
+
+                          scheme `http`, `https`, or no scheme, one can
+                          optionally set up a type
+
+                          server that maps type URLs to message definitions as
+                          follows:
+
+
+                          * If no scheme is provided, `https` is assumed.
+
+                          * An HTTP GET on the URL must yield a
+                          [google.protobuf.Type][]
+                            value in binary format, or produce an error.
+                          * Applications are allowed to cache lookup results
+                          based on the
+                            URL, or have them precompiled into a binary to avoid any
+                            lookup. Therefore, binary compatibility needs to be preserved
+                            on changes to types. (Use versioned type names to manage
+                            breaking changes.)
+
+                          Note: this functionality is not currently available in
+                          the official
+
+                          protobuf release, and it is not used for type URLs
+                          beginning with
+
+                          type.googleapis.com.
+
+
+                          Schemes other than `http`, `https` (or the empty
+                          scheme) might be
+
+                          used with implementation specific semantics.
+                      value:
+                        type: string
+                        format: byte
+                        description: >-
+                          Must be a valid serialized protocol buffer of the
+                          above specified type.
+                  timestamp:
+                    type: string
+                    description: >-
+                      Time of the previous block. For heights > 1, it's the
+                      weighted median of
+
+                      the timestamps of the valid votes in the block.LastCommit.
+                      For height == 1,
+
+                      it's genesis time.
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        attributes:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              key:
+                                type: string
+                              value:
+                                type: string
+                              index:
+                                type: boolean
+                            description: >-
+                              EventAttribute is a single key-value pair,
+                              associated with an event.
+                      description: >-
+                        Event allows application developers to attach additional
+                        information to
+
+                        ResponseFinalizeBlock and ResponseCheckTx.
+
+                        Later, transactions may be queried using these events.
+                    description: >-
+                      Events defines all the events emitted by processing a
+                      transaction. Note,
+
+                      these events include those emitted by processing all the
+                      messages and those
+
+                      emitted from the ante. Whereas Logs contains the events,
+                      with
+
+                      additional metadata, emitted only by processing the
+                      messages.
+
+
+                      Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
+            title: QueryTxResponse is the response type for the Query/Txs RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                    value:
+                      type: string
+                      format: byte
+                      description: >-
+                        Must be a valid serialized protocol buffer of the above
+                        specified type.
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+                        // or ...
+                        if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+                          foo = any.unpack(Foo.getDefaultInstance());
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
+                         ...
+                         foo := &pb.Foo{}
+                         if err := any.UnmarshalTo(foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      parameters:
+        - name: tx_hash
+          description: address is the address to query txs for.
+          in: query
+          required: false
+          type: string
       tags:
         - Query
   /indexer/tx/v1/txs:
@@ -63812,6 +64369,58 @@ definitions:
       denom:
         type: string
     description: QueryDenomResponse is the response type for the Query/Denom RPC method.
+  initia.move.v1.QueryLegacyViewRequest:
+    type: object
+    properties:
+      address:
+        type: string
+        title: Address is the owner address of the module to query
+      module_name:
+        type: string
+        title: ModuleName is the module name of the entry function to query
+      function_name:
+        type: string
+        title: FunctionName is the name of a function to query
+      type_args:
+        type: array
+        items:
+          type: string
+        title: |-
+          TypeArgs is the type arguments of a function to execute
+          ex) "0x1::BasicCoin::Initia", "bool", "u8", "u64"
+      args:
+        type: array
+        items:
+          type: string
+          format: byte
+        title: |-
+          Args is the arguments of a function to execute
+          - number: little endian
+          - string: base64 bytes
+    title: |-
+      QueryLegacyViewRequest is the request type for the QueryLegacyView
+      RPC method
+  initia.move.v1.QueryLegacyViewResponse:
+    type: object
+    properties:
+      data:
+        type: string
+      events:
+        type: array
+        items:
+          type: object
+          properties:
+            type_tag:
+              type: string
+            data:
+              type: string
+          description: VMEvent is the event emitted from vm.
+      gas_used:
+        type: string
+        format: uint64
+    title: |-
+      QueryLegacyViewResponse is the response type for the
+      QueryLegacyView RPC method
   initia.move.v1.QueryMetadataResponse:
     type: object
     properties:
@@ -64114,7 +64723,75 @@ definitions:
     title: |-
       QueryTableInfoResponse is the response type for the Query/TableInfo RPC
       method
-  initia.move.v1.QueryViewFunctionRequest:
+  initia.move.v1.QueryViewBatchRequest:
+    type: object
+    properties:
+      requests:
+        type: array
+        items:
+          type: object
+          properties:
+            address:
+              type: string
+              title: Address is the owner address of the module to query
+            module_name:
+              type: string
+              title: ModuleName is the module name of the entry function to query
+            function_name:
+              type: string
+              title: FunctionName is the name of a function to query
+            type_args:
+              type: array
+              items:
+                type: string
+              title: |-
+                TypeArgs is the type arguments of a function to execute
+                ex) "0x1::BasicCoin::Initia", "bool", "u8", "u64"
+            args:
+              type: array
+              items:
+                type: string
+                format: byte
+              title: |-
+                Args is the arguments of a function to execute
+                - number: little endian
+                - string: base64 bytes
+          title: |-
+            QueryViewRequest is the request type for the QueryView
+            RPC method
+    title: |-
+      QueryViewBatchRequest is the request type for the QueryViewBatch
+      RPC method
+  initia.move.v1.QueryViewBatchResponse:
+    type: object
+    properties:
+      responses:
+        type: array
+        items:
+          type: object
+          properties:
+            data:
+              type: string
+            events:
+              type: array
+              items:
+                type: object
+                properties:
+                  type_tag:
+                    type: string
+                  data:
+                    type: string
+                description: VMEvent is the event emitted from vm.
+            gas_used:
+              type: string
+              format: uint64
+          title: |-
+            QueryViewResponse is the response type for the
+            QueryView RPC method
+    title: |-
+      QueryViewBatchResponse is the response type for the
+      QueryViewBatch RPC method
+  initia.move.v1.QueryViewRequest:
     type: object
     properties:
       address:
@@ -64143,9 +64820,9 @@ definitions:
           - number: little endian
           - string: base64 bytes
     title: |-
-      QueryViewFunctionRequest is the request type for the QueryyViewFunction
+      QueryViewRequest is the request type for the QueryView
       RPC method
-  initia.move.v1.QueryViewFunctionResponse:
+  initia.move.v1.QueryViewResponse:
     type: object
     properties:
       data:
@@ -64164,8 +64841,8 @@ definitions:
         type: string
         format: uint64
     title: |-
-      QueryViewFunctionResponse is the response type for the
-      QueryyViewFunction RPC method
+      QueryViewResponse is the response type for the
+      QueryView RPC method
   initia.move.v1.Resource:
     type: object
     properties:
@@ -64269,6 +64946,9 @@ definitions:
       new_accounts:
         type: string
         format: int64
+      tx_total_count:
+        type: string
+        format: int64
     title: ChartData is a struct that holds the data for the dashboard chart
   indexer.dashboard.v1.ChartDataResponse:
     type: object
@@ -64290,6 +64970,9 @@ definitions:
               type: string
               format: int64
             new_accounts:
+              type: string
+              format: int64
+            tx_total_count:
               type: string
               format: int64
           title: ChartData is a struct that holds the data for the dashboard chart
@@ -64357,7 +65040,7 @@ definitions:
             type: string
           length:
             type: string
-        title: NftHandle is an embedded message for CollectionData
+        title: TokenHandle is an embedded message for CollectionData
     title: Collection is the message for a collection of NFTs
   indexer.nft.v1.IndexedCollection:
     type: object
@@ -64382,10 +65065,10 @@ definitions:
                 type: string
               length:
                 type: string
-            title: NftHandle is an embedded message for CollectionData
+            title: TokenHandle is an embedded message for CollectionData
         title: Collection is the message for a collection of NFTs
     title: IndexedCollection is wrapped Collection with its object address
-  indexer.nft.v1.IndexedNft:
+  indexer.nft.v1.IndexedToken:
     type: object
     properties:
       object_addr:
@@ -64393,6 +65076,8 @@ definitions:
       collection_addr:
         type: string
       collection_name:
+        type: string
+      owner_addr:
         type: string
       nft:
         type: object
@@ -64410,37 +65095,13 @@ definitions:
           uri:
             type: string
         title: NFT is the message for a single NFT
-    title: IndexedNft is wrapped NFT with its object address and collection address
+    title: IndexedToken is wrapped NFT with its object address and collection address
   indexer.nft.v1.InnerCollection:
     type: object
     properties:
       inner:
         type: string
     title: InnerCollection is inner data of NFT
-  indexer.nft.v1.Nft:
-    type: object
-    properties:
-      collection:
-        type: object
-        properties:
-          inner:
-            type: string
-        title: InnerCollection is inner data of NFT
-      description:
-        type: string
-      token_id:
-        type: string
-      uri:
-        type: string
-    title: NFT is the message for a single NFT
-  indexer.nft.v1.NftHandle:
-    type: object
-    properties:
-      handle:
-        type: string
-      length:
-        type: string
-    title: NftHandle is an embedded message for CollectionData
   indexer.nft.v1.QueryCollectionResponse:
     type: object
     properties:
@@ -64467,7 +65128,7 @@ definitions:
                     type: string
                   length:
                     type: string
-                title: NftHandle is an embedded message for CollectionData
+                title: TokenHandle is an embedded message for CollectionData
             title: Collection is the message for a collection of NFTs
         title: IndexedCollection is wrapped Collection with its object address
     title: >-
@@ -64501,7 +65162,7 @@ definitions:
                       type: string
                     length:
                       type: string
-                  title: NftHandle is an embedded message for CollectionData
+                  title: TokenHandle is an embedded message for CollectionData
               title: Collection is the message for a collection of NFTs
           title: IndexedCollection is wrapped Collection with its object address
       pagination:
@@ -64533,39 +65194,7 @@ definitions:
     title: >-
       QueryCollectionsResponse is the response type for the Query/Collections
       RPC method
-  indexer.nft.v1.QueryNftResponse:
-    type: object
-    properties:
-      token:
-        type: object
-        properties:
-          object_addr:
-            type: string
-          collection_addr:
-            type: string
-          collection_name:
-            type: string
-          nft:
-            type: object
-            properties:
-              collection:
-                type: object
-                properties:
-                  inner:
-                    type: string
-                title: InnerCollection is inner data of NFT
-              description:
-                type: string
-              token_id:
-                type: string
-              uri:
-                type: string
-            title: NFT is the message for a single NFT
-        title: >-
-          IndexedNft is wrapped NFT with its object address and collection
-          address
-    title: QueryNftResponse is the response type for the Query/Nft RPC method
-  indexer.nft.v1.QueryNftsResponse:
+  indexer.nft.v1.QueryTokensResponse:
     type: object
     properties:
       tokens:
@@ -64578,6 +65207,8 @@ definitions:
             collection_addr:
               type: string
             collection_name:
+              type: string
+            owner_addr:
               type: string
             nft:
               type: object
@@ -64596,7 +65227,7 @@ definitions:
                   type: string
               title: NFT is the message for a single NFT
           title: >-
-            IndexedNft is wrapped NFT with its object address and collection
+            IndexedToken is wrapped NFT with its object address and collection
             address
       pagination:
         type: object
@@ -64624,7 +65255,31 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-    title: QueryNftsResponse is the response type for the Query/Nfts RPC method
+    title: QueryTokensResponse is the response type for the Query/Tokens RPC method
+  indexer.nft.v1.Token:
+    type: object
+    properties:
+      collection:
+        type: object
+        properties:
+          inner:
+            type: string
+        title: InnerCollection is inner data of NFT
+      description:
+        type: string
+      token_id:
+        type: string
+      uri:
+        type: string
+    title: NFT is the message for a single NFT
+  indexer.nft.v1.TokenHandle:
+    type: object
+    properties:
+      handle:
+        type: string
+      length:
+        type: string
+    title: TokenHandle is an embedded message for CollectionData
   indexer.block.v1.AvgBlockTimeResponse:
     type: object
     properties:
@@ -64788,6 +65443,211 @@ definitions:
                    PageResponse page = 2;
            }
     title: QueryPairsResponse is the response type for the Query/Pairs RPC method
+  indexer.tx.v1.QueryTxResponse:
+    type: object
+    properties:
+      tx:
+        description: txs is the list of queried transactions.
+        type: object
+        properties:
+          height:
+            type: string
+            format: int64
+            title: The block height
+          txhash:
+            type: string
+            description: The transaction hash.
+          codespace:
+            type: string
+            title: Namespace for the Code
+          code:
+            type: integer
+            format: int64
+            description: Response code.
+          data:
+            type: string
+            description: Result bytes, if any.
+          raw_log:
+            type: string
+            description: |-
+              The output of the application's logger (raw string). May be
+              non-deterministic.
+          logs:
+            type: array
+            items:
+              type: object
+              properties:
+                msg_index:
+                  type: integer
+                  format: int64
+                log:
+                  type: string
+                events:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      attributes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            value:
+                              type: string
+                          description: >-
+                            Attribute defines an attribute wrapper where the key
+                            and value are
+
+                            strings instead of raw bytes.
+                    description: >-
+                      StringEvent defines en Event object wrapper where all the
+                      attributes
+
+                      contain key/value pairs that are strings instead of raw
+                      bytes.
+                  description: >-
+                    Events contains a slice of Event objects that were emitted
+                    during some
+
+                    execution.
+              description: >-
+                ABCIMessageLog defines a structure containing an indexed tx ABCI
+                message log.
+            description: >-
+              The output of the application's logger (typed). May be
+              non-deterministic.
+          info:
+            type: string
+            description: Additional information. May be non-deterministic.
+          gas_wanted:
+            type: string
+            format: int64
+            description: Amount of gas requested for transaction.
+          gas_used:
+            type: string
+            format: int64
+            description: Amount of gas consumed by transaction.
+          tx:
+            description: The request transaction bytes.
+            type: object
+            properties:
+              type_url:
+                type: string
+                description: >-
+                  A URL/resource name that uniquely identifies the type of the
+                  serialized
+
+                  protocol buffer message. This string must contain at least
+
+                  one "/" character. The last segment of the URL's path must
+                  represent
+
+                  the fully qualified name of the type (as in
+
+                  `path/google.protobuf.Duration`). The name should be in a
+                  canonical form
+
+                  (e.g., leading "." is not accepted).
+
+
+                  In practice, teams usually precompile into the binary all
+                  types that they
+
+                  expect it to use in the context of Any. However, for URLs
+                  which use the
+
+                  scheme `http`, `https`, or no scheme, one can optionally set
+                  up a type
+
+                  server that maps type URLs to message definitions as follows:
+
+
+                  * If no scheme is provided, `https` is assumed.
+
+                  * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                    value in binary format, or produce an error.
+                  * Applications are allowed to cache lookup results based on
+                  the
+                    URL, or have them precompiled into a binary to avoid any
+                    lookup. Therefore, binary compatibility needs to be preserved
+                    on changes to types. (Use versioned type names to manage
+                    breaking changes.)
+
+                  Note: this functionality is not currently available in the
+                  official
+
+                  protobuf release, and it is not used for type URLs beginning
+                  with
+
+                  type.googleapis.com.
+
+
+                  Schemes other than `http`, `https` (or the empty scheme) might
+                  be
+
+                  used with implementation specific semantics.
+              value:
+                type: string
+                format: byte
+                description: >-
+                  Must be a valid serialized protocol buffer of the above
+                  specified type.
+          timestamp:
+            type: string
+            description: >-
+              Time of the previous block. For heights > 1, it's the weighted
+              median of
+
+              the timestamps of the valid votes in the block.LastCommit. For
+              height == 1,
+
+              it's genesis time.
+          events:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key:
+                        type: string
+                      value:
+                        type: string
+                      index:
+                        type: boolean
+                    description: >-
+                      EventAttribute is a single key-value pair, associated with
+                      an event.
+              description: >-
+                Event allows application developers to attach additional
+                information to
+
+                ResponseFinalizeBlock and ResponseCheckTx.
+
+                Later, transactions may be queried using these events.
+            description: >-
+              Events defines all the events emitted by processing a transaction.
+              Note,
+
+              these events include those emitted by processing all the messages
+              and those
+
+              emitted from the ante. Whereas Logs contains the events, with
+
+              additional metadata, emitted only by processing the messages.
+
+
+              Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
+    title: QueryTxResponse is the response type for the Query/Txs RPC method
   indexer.tx.v1.QueryTxsResponse:
     type: object
     properties:

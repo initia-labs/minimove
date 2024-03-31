@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -145,15 +144,15 @@ import (
 	appkeepers "github.com/initia-labs/minimove/app/keepers"
 	applanes "github.com/initia-labs/minimove/app/lanes"
 
-	indexerconfig "github.com/initia-labs/indexer/v2/config"
-	indexer "github.com/initia-labs/indexer/v2/module"
-	indexerkeeper "github.com/initia-labs/indexer/v2/module/keeper"
-	indexertypes "github.com/initia-labs/indexer/v2/module/types"
-	blocksubmodule "github.com/initia-labs/indexer/v2/submodule/block"
-	"github.com/initia-labs/indexer/v2/submodule/dashboard"
-	"github.com/initia-labs/indexer/v2/submodule/nft"
-	"github.com/initia-labs/indexer/v2/submodule/pair"
-	"github.com/initia-labs/indexer/v2/submodule/tx"
+	indexerconfig "github.com/initia-labs/kvindexer/config"
+	indexer "github.com/initia-labs/kvindexer/module"
+	indexerkeeper "github.com/initia-labs/kvindexer/module/keeper"
+	indexertypes "github.com/initia-labs/kvindexer/module/types"
+	blocksubmodule "github.com/initia-labs/kvindexer/submodule/block"
+	"github.com/initia-labs/kvindexer/submodule/dashboard"
+	"github.com/initia-labs/kvindexer/submodule/nft"
+	"github.com/initia-labs/kvindexer/submodule/pair"
+	"github.com/initia-labs/kvindexer/submodule/tx"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -773,6 +772,7 @@ func NewMinitiaApp(
 		nil, // placeholder for reward keeper,
 		nil, // placeholder for community pool keeper
 		indexerkeeper.VMKeeper{Keeper: *app.MoveKeeper}, // placeholder for wrapped vm keeper
+		app.IBCKeeper,
 		app.TransferKeeper,
 		app.NftTransferKeeper,
 		app.OPChildKeeper,
@@ -1235,13 +1235,6 @@ func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 // TxConfig implements the TestingApp interface.
 func (app *MinitiaApp) TxConfig() client.TxConfig {
 	return app.txConfig
-}
-
-// ChainID gets chainID from private fields of BaseApp
-// Should be removed once SDK 0.50.x will be adopted
-func (app *MinitiaApp) ChainID() string { // TODO: remove this method once chain updates to v0.50.x
-	field := reflect.ValueOf(app.BaseApp).Elem().FieldByName("chainID")
-	return field.String()
 }
 
 func (app *MinitiaApp) GetIndexerKeeper() *indexerkeeper.Keeper {

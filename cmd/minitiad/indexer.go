@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 
-	indexer "github.com/initia-labs/indexer/v2"
-	indexercfg "github.com/initia-labs/indexer/v2/config"
+	indexer "github.com/initia-labs/kvindexer"
+	indexercfg "github.com/initia-labs/kvindexer/config"
 	minitiaapp "github.com/initia-labs/minimove/app"
 )
 

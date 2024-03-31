@@ -7,7 +7,7 @@ import (
 	tmcfg "github.com/cometbft/cometbft/config"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
-	indexerconfig "github.com/initia-labs/indexer/v2/config"
+	indexerconfig "github.com/initia-labs/kvindexer/config"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 	"github.com/initia-labs/minimove/types"
 )
