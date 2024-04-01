@@ -39,7 +39,7 @@ require (
 )
 
 require (
-	github.com/initia-labs/kvindexer v0.0.0-20240401084600-95d13d65718d
+	github.com/initia-labs/kvindexer v0.0.0-20240401102605-826e4b9f11b4
 	golang.org/x/sync v0.6.0
 )
 
@@ -243,6 +243,8 @@ replace (
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	github.com/initia-labs/kvindexer => ../kvindexer
 
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
