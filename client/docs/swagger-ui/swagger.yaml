@@ -38191,9 +38191,6 @@ paths:
                     new_accounts:
                       type: string
                       format: int64
-                    tx_total_count:
-                      type: string
-                      format: int64
                   title: >-
                     ChartData is a struct that holds the data for the dashboard
                     chart
@@ -65968,9 +65965,6 @@ definitions:
       new_accounts:
         type: string
         format: int64
-      tx_total_count:
-        type: string
-        format: int64
     title: ChartData is a struct that holds the data for the dashboard chart
   indexer.dashboard.v1.ChartDataResponse:
     type: object
@@ -65992,9 +65986,6 @@ definitions:
               type: string
               format: int64
             new_accounts:
-              type: string
-              format: int64
-            tx_total_count:
               type: string
               format: int64
           title: ChartData is a struct that holds the data for the dashboard chart
