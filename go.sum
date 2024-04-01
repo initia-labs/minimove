@@ -739,8 +739,6 @@ github.com/initia-labs/iavl v0.0.0-20240208034922-5d81c449d4c0 h1:GQ7/UD5mB6q104
 github.com/initia-labs/iavl v0.0.0-20240208034922-5d81c449d4c0/go.mod h1:CmTGqMnRnucjxbjduneZXT+0vPgNElYvdefjX2q9tYc=
 github.com/initia-labs/initia v0.2.3 h1:btg3UoX6oy7LOcsy03rZaYmxDk5RvOyBY+hQ4EtuxUg=
 github.com/initia-labs/initia v0.2.3/go.mod h1:xLkPASIv+6EuE7BHCxB3ag2K9+rUwJ/6AC5fkYmSejw=
-github.com/initia-labs/kvindexer v0.0.0-20240401103836-cc4422477323 h1:gZJo0U85RggOIR7/V7r7yQeLo51hK5fUgusxjJ/E5qU=
-github.com/initia-labs/kvindexer v0.0.0-20240401103836-cc4422477323/go.mod h1:/8UocVw2OkUKogFP6fWXHJ9pKp5vsvGp3Tg9TlH6oy8=
 github.com/initia-labs/kvindexer v0.0.0-20240401111949-2115a98d81ab h1:HIftetixblsgHoaR7wBR/6rAHqESo4NivhjfsPQvmZ8=
 github.com/initia-labs/kvindexer v0.0.0-20240401111949-2115a98d81ab/go.mod h1:/8UocVw2OkUKogFP6fWXHJ9pKp5vsvGp3Tg9TlH6oy8=
 github.com/initia-labs/movevm v0.2.2 h1:T0FwprEEDWhNfPREthNDvRr+IGg9N7eQg+zXvT8V/U4=
