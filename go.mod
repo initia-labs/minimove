@@ -39,7 +39,7 @@ require (
 )
 
 require (
-	github.com/initia-labs/kvindexer v0.0.0-20240401111949-2115a98d81ab
+	github.com/initia-labs/kvindexer v0.0.0-20240401113017-037a90253622
 	golang.org/x/sync v0.6.0
 )
 
