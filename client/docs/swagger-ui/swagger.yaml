@@ -39018,7 +39018,7 @@ paths:
                       type: string
                       format: byte
       parameters:
-        - name: is_fungible
+        - name: is_non_fungible
           in: query
           required: false
           type: boolean
