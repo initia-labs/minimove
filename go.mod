@@ -24,7 +24,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.2.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.2.2
+	github.com/initia-labs/OPinit v0.2.3-0.20240409080116-b1905ecee383
 	github.com/initia-labs/initia v0.2.3
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
 	github.com/initia-labs/movevm v0.2.2
@@ -133,6 +133,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/initia-labs/OPinit/api v0.0.0-20240409080116-b1905ecee383 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
