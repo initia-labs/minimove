@@ -38162,275 +38162,29 @@ paths:
               RPC method
       tags:
         - Query
-  /indexer/dashboard/v1/chart_data:
+  /indexer/version:
     get:
-      summary: ChartData returns the chart data in daily basis.
-      operationId: ChartData
+      summary: Version queries all the collections of an account
+      operationId: Version
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              data:
+              versions:
                 type: array
                 items:
                   type: object
                   properties:
-                    date:
+                    submodule:
                       type: string
-                    total_value_locked:
+                    version:
                       type: string
-                      format: int64
-                    tx_count:
-                      type: string
-                      format: int64
-                    active_accounts:
-                      type: string
-                      format: int64
-                    new_accounts:
-                      type: string
-                      format: int64
-                  title: >-
-                    ChartData is a struct that holds the data for the dashboard
-                    chart
-            description: |-
-              ChartDataResponse is the response type for the Query/ChartData
-              RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: limit
-          in: query
-          required: false
-          type: string
-          format: int64
-      tags:
-        - Query
-  /indexer/dashboard/v1/new_accounts:
-    get:
-      summary: NewAccounts returns the new accounts in range [from, to].
-      operationId: NewAccounts
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              addresses:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    height:
-                      type: string
-                      format: int64
-                    accounts:
-                      type: array
-                      items:
-                        type: string
-                  title: >-
-                    AccountsPerHeight is a struct that holds the account
-                    addresses for a given height
-
-                    NOTE: not all address are guaranteed to be present in the
-                    list. it's just a representation format
-              pagination:
-                description: pagination defines the pagination in the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: |-
-              NewAccountsResponse is the response type for the Query/NewAccounts
-              RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /indexer/nft/v1/collections/by_account/{account}:
-    get:
-      summary: Collections queries all the collections of an account
-      operationId: CollectionsByAccount
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              collections:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    object_addr:
-                      type: string
-                    collection:
-                      type: object
-                      properties:
-                        creator:
-                          type: string
-                        description:
-                          type: string
-                        name:
-                          type: string
-                        uri:
-                          type: string
-                        nfts:
-                          type: object
-                          properties:
-                            handle:
-                              type: string
-                            length:
-                              type: string
-                          title: >-
-                            TokenHandle is an embedded message for
-                            CollectionData
-                      title: Collection is the message for a collection of NFTs
-                  title: >-
-                    IndexedCollection is wrapped Collection with its object
-                    address
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
+                  title: SubmoduleVersion defines the version of the submodule
             title: >-
-              QueryCollectionsResponse is the response type for the
-              Query/Collections RPC method
+              QueryVersionResponse is the response type for the Query/Version
+              RPC method
         default:
           description: An unexpected error response.
           schema:
@@ -38453,465 +38207,6 @@ paths:
                     value:
                       type: string
                       format: byte
-      parameters:
-        - name: account
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /indexer/nft/v1/collections/{collection_addr}:
-    get:
-      summary: Collection queries a collection by its address
-      operationId: Collection
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              collection:
-                type: object
-                properties:
-                  object_addr:
-                    type: string
-                  collection:
-                    type: object
-                    properties:
-                      creator:
-                        type: string
-                      description:
-                        type: string
-                      name:
-                        type: string
-                      uri:
-                        type: string
-                      nfts:
-                        type: object
-                        properties:
-                          handle:
-                            type: string
-                          length:
-                            type: string
-                        title: TokenHandle is an embedded message for CollectionData
-                    title: Collection is the message for a collection of NFTs
-                title: >-
-                  IndexedCollection is wrapped Collection with its object
-                  address
-            title: >-
-              QueryCollectionResponse is the response type for the
-              Query/Collection RPC method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: collection_addr
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /indexer/nft/v1/tokens/by_account/{account}:
-    get:
-      summary: TokensByACcount queries all the NFTs of an account
-      operationId: TokensByAccount
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              tokens:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    object_addr:
-                      type: string
-                    collection_addr:
-                      type: string
-                    collection_name:
-                      type: string
-                    owner_addr:
-                      type: string
-                    nft:
-                      type: object
-                      properties:
-                        collection:
-                          type: object
-                          properties:
-                            inner:
-                              type: string
-                          title: InnerCollection is inner data of NFT
-                        description:
-                          type: string
-                        token_id:
-                          type: string
-                        uri:
-                          type: string
-                      title: NFT is the message for a single NFT
-                  title: >-
-                    IndexedToken is wrapped NFT with its object address and
-                    collection address
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-            title: >-
-              QueryTokensResponse is the response type for the Query/Tokens RPC
-              method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: account
-          in: path
-          required: true
-          type: string
-        - name: collection_addr
-          in: query
-          required: false
-          type: string
-        - name: token_id
-          in: query
-          required: false
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /indexer/nft/v1/tokens/by_collection/{collection_addr}:
-    get:
-      summary: TokensByCollection queries all the NFTs of a collection
-      operationId: TokensByCollection
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              tokens:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    object_addr:
-                      type: string
-                    collection_addr:
-                      type: string
-                    collection_name:
-                      type: string
-                    owner_addr:
-                      type: string
-                    nft:
-                      type: object
-                      properties:
-                        collection:
-                          type: object
-                          properties:
-                            inner:
-                              type: string
-                          title: InnerCollection is inner data of NFT
-                        description:
-                          type: string
-                        token_id:
-                          type: string
-                        uri:
-                          type: string
-                      title: NFT is the message for a single NFT
-                  title: >-
-                    IndexedToken is wrapped NFT with its object address and
-                    collection address
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-            title: >-
-              QueryTokensResponse is the response type for the Query/Tokens RPC
-              method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: collection_addr
-          in: path
-          required: true
-          type: string
-        - name: token_id
-          in: query
-          required: false
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /indexer/block/v1/avg_blocktime:
@@ -39225,142 +38520,6 @@ paths:
           required: true
           type: string
           format: int64
-      tags:
-        - Query
-  /indexer/pair/v1/pairs:
-    get:
-      summary: Pairs queries all the collections of an account
-      operationId: Pairs
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              pairs:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    l1:
-                      type: string
-                    l2:
-                      type: string
-                  title: Pair is a struct that holds the information of a pair
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-            title: >-
-              QueryPairsResponse is the response type for the Query/Pairs RPC
-              method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: is_non_fungible
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
       tags:
         - Query
   /indexer/tx/v1/txs:
@@ -39871,7 +39030,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /indexer/tx/v1/txs/by_account/{address}:
+  /indexer/tx/v1/txs/by_account/{account}:
     get:
       summary: TxsByAccount queries all the collections of given account
       operationId: TxsByAccount
@@ -40321,8 +39480,8 @@ paths:
                           "value": "1.212s"
                         }
       parameters:
-        - name: address
-          description: address is the address to query txs for.
+        - name: account
+          description: account is the account address to query txs for.
           in: path
           required: true
           type: string
@@ -41318,10 +40477,702 @@ paths:
                         }
       parameters:
         - name: tx_hash
-          description: address is the address to query txs for.
+          description: tx_hash is a hash string of the transaction to query.
           in: path
           required: true
           type: string
+      tags:
+        - Query
+  /indexer/nft/v1/collections/by_account/{account}:
+    get:
+      summary: Collections queries all the collections of an account
+      operationId: CollectionsByAccount
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              collections:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    object_addr:
+                      type: string
+                    collection:
+                      type: object
+                      properties:
+                        creator:
+                          type: string
+                        description:
+                          type: string
+                        name:
+                          type: string
+                        uri:
+                          type: string
+                        nfts:
+                          type: object
+                          properties:
+                            handle:
+                              type: string
+                            length:
+                              type: string
+                          title: >-
+                            TokenHandle is an embedded message for
+                            CollectionData
+                      title: Collection is the message for a collection of NFTs
+                  title: >-
+                    IndexedCollection is wrapped Collection with its object
+                    address
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+            title: >-
+              QueryCollectionsResponse is the response type for the
+              Query/Collections RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: account
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /indexer/nft/v1/collections/{collection_addr}:
+    get:
+      summary: Collection queries a collection by its address
+      operationId: Collection
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              collection:
+                type: object
+                properties:
+                  object_addr:
+                    type: string
+                  collection:
+                    type: object
+                    properties:
+                      creator:
+                        type: string
+                      description:
+                        type: string
+                      name:
+                        type: string
+                      uri:
+                        type: string
+                      nfts:
+                        type: object
+                        properties:
+                          handle:
+                            type: string
+                          length:
+                            type: string
+                        title: TokenHandle is an embedded message for CollectionData
+                    title: Collection is the message for a collection of NFTs
+                title: >-
+                  IndexedCollection is wrapped Collection with its object
+                  address
+            title: >-
+              QueryCollectionResponse is the response type for the
+              Query/Collection RPC method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: collection_addr
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /indexer/nft/v1/tokens/by_account/{account}:
+    get:
+      summary: TokensByACcount queries all the NFTs of an account
+      operationId: TokensByAccount
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokens:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    object_addr:
+                      type: string
+                    collection_addr:
+                      type: string
+                    collection_name:
+                      type: string
+                    owner_addr:
+                      type: string
+                    nft:
+                      type: object
+                      properties:
+                        collection:
+                          type: object
+                          properties:
+                            inner:
+                              type: string
+                          title: InnerCollection is inner data of NFT
+                        description:
+                          type: string
+                        token_id:
+                          type: string
+                        uri:
+                          type: string
+                      title: NFT is the message for a single NFT
+                  title: >-
+                    IndexedToken is wrapped NFT with its object address and
+                    collection address
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+            title: >-
+              QueryTokensResponse is the response type for the Query/Tokens RPC
+              method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: account
+          in: path
+          required: true
+          type: string
+        - name: collection_addr
+          in: query
+          required: false
+          type: string
+        - name: token_id
+          in: query
+          required: false
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /indexer/nft/v1/tokens/by_collection/{collection_addr}:
+    get:
+      summary: TokensByCollection queries all the NFTs of a collection
+      operationId: TokensByCollection
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              tokens:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    object_addr:
+                      type: string
+                    collection_addr:
+                      type: string
+                    collection_name:
+                      type: string
+                    owner_addr:
+                      type: string
+                    nft:
+                      type: object
+                      properties:
+                        collection:
+                          type: object
+                          properties:
+                            inner:
+                              type: string
+                          title: InnerCollection is inner data of NFT
+                        description:
+                          type: string
+                        token_id:
+                          type: string
+                        uri:
+                          type: string
+                      title: NFT is the message for a single NFT
+                  title: >-
+                    IndexedToken is wrapped NFT with its object address and
+                    collection address
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+            title: >-
+              QueryTokensResponse is the response type for the Query/Tokens RPC
+              method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: collection_addr
+          in: path
+          required: true
+          type: string
+        - name: token_id
+          in: query
+          required: false
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /indexer/pair/v1/pairs:
+    get:
+      summary: Pairs queries all the collections of an account
+      operationId: Pairs
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              pairs:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    l1:
+                      type: string
+                    l2:
+                      type: string
+                  title: Pair is a struct that holds the information of a pair
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+            title: >-
+              QueryPairsResponse is the response type for the Query/Pairs RPC
+              method
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: is_non_fungible
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
 definitions:
@@ -66219,367 +66070,28 @@ definitions:
       data:
         type: string
     description: VMEvent is the event emitted from vm.
-  indexer.dashboard.v1.AccountsPerHeight:
+  indexer.version.QueryVersionResponse:
     type: object
     properties:
-      height:
-        type: string
-        format: int64
-      accounts:
-        type: array
-        items:
-          type: string
-    title: >-
-      AccountsPerHeight is a struct that holds the account addresses for a given
-      height
-
-      NOTE: not all address are guaranteed to be present in the list. it's just
-      a representation format
-  indexer.dashboard.v1.ChartData:
-    type: object
-    properties:
-      date:
-        type: string
-      total_value_locked:
-        type: string
-        format: int64
-      tx_count:
-        type: string
-        format: int64
-      active_accounts:
-        type: string
-        format: int64
-      new_accounts:
-        type: string
-        format: int64
-    title: ChartData is a struct that holds the data for the dashboard chart
-  indexer.dashboard.v1.ChartDataResponse:
-    type: object
-    properties:
-      data:
+      versions:
         type: array
         items:
           type: object
           properties:
-            date:
+            submodule:
               type: string
-            total_value_locked:
+            version:
               type: string
-              format: int64
-            tx_count:
-              type: string
-              format: int64
-            active_accounts:
-              type: string
-              format: int64
-            new_accounts:
-              type: string
-              format: int64
-          title: ChartData is a struct that holds the data for the dashboard chart
-    description: |-
-      ChartDataResponse is the response type for the Query/ChartData
-      RPC method.
-  indexer.dashboard.v1.NewAccountsResponse:
+          title: SubmoduleVersion defines the version of the submodule
+    title: QueryVersionResponse is the response type for the Query/Version RPC method
+  indexer.version.SubmoduleVersion:
     type: object
     properties:
-      addresses:
-        type: array
-        items:
-          type: object
-          properties:
-            height:
-              type: string
-              format: int64
-            accounts:
-              type: array
-              items:
-                type: string
-          title: >-
-            AccountsPerHeight is a struct that holds the account addresses for a
-            given height
-
-            NOTE: not all address are guaranteed to be present in the list. it's
-            just a representation format
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: |-
-      NewAccountsResponse is the response type for the Query/NewAccounts
-      RPC method.
-  indexer.nft.v1.Collection:
-    type: object
-    properties:
-      creator:
+      submodule:
         type: string
-      description:
+      version:
         type: string
-      name:
-        type: string
-      uri:
-        type: string
-      nfts:
-        type: object
-        properties:
-          handle:
-            type: string
-          length:
-            type: string
-        title: TokenHandle is an embedded message for CollectionData
-    title: Collection is the message for a collection of NFTs
-  indexer.nft.v1.IndexedCollection:
-    type: object
-    properties:
-      object_addr:
-        type: string
-      collection:
-        type: object
-        properties:
-          creator:
-            type: string
-          description:
-            type: string
-          name:
-            type: string
-          uri:
-            type: string
-          nfts:
-            type: object
-            properties:
-              handle:
-                type: string
-              length:
-                type: string
-            title: TokenHandle is an embedded message for CollectionData
-        title: Collection is the message for a collection of NFTs
-    title: IndexedCollection is wrapped Collection with its object address
-  indexer.nft.v1.IndexedToken:
-    type: object
-    properties:
-      object_addr:
-        type: string
-      collection_addr:
-        type: string
-      collection_name:
-        type: string
-      owner_addr:
-        type: string
-      nft:
-        type: object
-        properties:
-          collection:
-            type: object
-            properties:
-              inner:
-                type: string
-            title: InnerCollection is inner data of NFT
-          description:
-            type: string
-          token_id:
-            type: string
-          uri:
-            type: string
-        title: NFT is the message for a single NFT
-    title: IndexedToken is wrapped NFT with its object address and collection address
-  indexer.nft.v1.InnerCollection:
-    type: object
-    properties:
-      inner:
-        type: string
-    title: InnerCollection is inner data of NFT
-  indexer.nft.v1.QueryCollectionResponse:
-    type: object
-    properties:
-      collection:
-        type: object
-        properties:
-          object_addr:
-            type: string
-          collection:
-            type: object
-            properties:
-              creator:
-                type: string
-              description:
-                type: string
-              name:
-                type: string
-              uri:
-                type: string
-              nfts:
-                type: object
-                properties:
-                  handle:
-                    type: string
-                  length:
-                    type: string
-                title: TokenHandle is an embedded message for CollectionData
-            title: Collection is the message for a collection of NFTs
-        title: IndexedCollection is wrapped Collection with its object address
-    title: >-
-      QueryCollectionResponse is the response type for the Query/Collection RPC
-      method
-  indexer.nft.v1.QueryCollectionsResponse:
-    type: object
-    properties:
-      collections:
-        type: array
-        items:
-          type: object
-          properties:
-            object_addr:
-              type: string
-            collection:
-              type: object
-              properties:
-                creator:
-                  type: string
-                description:
-                  type: string
-                name:
-                  type: string
-                uri:
-                  type: string
-                nfts:
-                  type: object
-                  properties:
-                    handle:
-                      type: string
-                    length:
-                      type: string
-                  title: TokenHandle is an embedded message for CollectionData
-              title: Collection is the message for a collection of NFTs
-          title: IndexedCollection is wrapped Collection with its object address
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-    title: >-
-      QueryCollectionsResponse is the response type for the Query/Collections
-      RPC method
-  indexer.nft.v1.QueryTokensResponse:
-    type: object
-    properties:
-      tokens:
-        type: array
-        items:
-          type: object
-          properties:
-            object_addr:
-              type: string
-            collection_addr:
-              type: string
-            collection_name:
-              type: string
-            owner_addr:
-              type: string
-            nft:
-              type: object
-              properties:
-                collection:
-                  type: object
-                  properties:
-                    inner:
-                      type: string
-                  title: InnerCollection is inner data of NFT
-                description:
-                  type: string
-                token_id:
-                  type: string
-                uri:
-                  type: string
-              title: NFT is the message for a single NFT
-          title: >-
-            IndexedToken is wrapped NFT with its object address and collection
-            address
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-    title: QueryTokensResponse is the response type for the Query/Tokens RPC method
-  indexer.nft.v1.Token:
-    type: object
-    properties:
-      collection:
-        type: object
-        properties:
-          inner:
-            type: string
-        title: InnerCollection is inner data of NFT
-      description:
-        type: string
-      token_id:
-        type: string
-      uri:
-        type: string
-    title: NFT is the message for a single NFT
-  indexer.nft.v1.TokenHandle:
-    type: object
-    properties:
-      handle:
-        type: string
-      length:
-        type: string
-    title: TokenHandle is an embedded message for CollectionData
+    title: SubmoduleVersion defines the version of the submodule
   indexer.block.v1.AvgBlockTimeResponse:
     type: object
     properties:
@@ -66806,54 +66318,6 @@ definitions:
     title: >-
       Proposer represents the proposer of a block: for minitia, its the L2
       operator
-  indexer.pair.v1.Pair:
-    type: object
-    properties:
-      l1:
-        type: string
-      l2:
-        type: string
-    title: Pair is a struct that holds the information of a pair
-  indexer.pair.v1.QueryPairsResponse:
-    type: object
-    properties:
-      pairs:
-        type: array
-        items:
-          type: object
-          properties:
-            l1:
-              type: string
-            l2:
-              type: string
-          title: Pair is a struct that holds the information of a pair
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
-    title: QueryPairsResponse is the response type for the Query/Pairs RPC method
   indexer.tx.v1.QueryTxResponse:
     type: object
     properties:
@@ -67303,3 +66767,309 @@ definitions:
                    PageResponse page = 2;
            }
     title: QueryTxsResponse is the response type for the Query/Txs RPC method
+  indexer.nft.v1.Collection:
+    type: object
+    properties:
+      creator:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      uri:
+        type: string
+      nfts:
+        type: object
+        properties:
+          handle:
+            type: string
+          length:
+            type: string
+        title: TokenHandle is an embedded message for CollectionData
+    title: Collection is the message for a collection of NFTs
+  indexer.nft.v1.IndexedCollection:
+    type: object
+    properties:
+      object_addr:
+        type: string
+      collection:
+        type: object
+        properties:
+          creator:
+            type: string
+          description:
+            type: string
+          name:
+            type: string
+          uri:
+            type: string
+          nfts:
+            type: object
+            properties:
+              handle:
+                type: string
+              length:
+                type: string
+            title: TokenHandle is an embedded message for CollectionData
+        title: Collection is the message for a collection of NFTs
+    title: IndexedCollection is wrapped Collection with its object address
+  indexer.nft.v1.IndexedToken:
+    type: object
+    properties:
+      object_addr:
+        type: string
+      collection_addr:
+        type: string
+      collection_name:
+        type: string
+      owner_addr:
+        type: string
+      nft:
+        type: object
+        properties:
+          collection:
+            type: object
+            properties:
+              inner:
+                type: string
+            title: InnerCollection is inner data of NFT
+          description:
+            type: string
+          token_id:
+            type: string
+          uri:
+            type: string
+        title: NFT is the message for a single NFT
+    title: IndexedToken is wrapped NFT with its object address and collection address
+  indexer.nft.v1.InnerCollection:
+    type: object
+    properties:
+      inner:
+        type: string
+    title: InnerCollection is inner data of NFT
+  indexer.nft.v1.QueryCollectionResponse:
+    type: object
+    properties:
+      collection:
+        type: object
+        properties:
+          object_addr:
+            type: string
+          collection:
+            type: object
+            properties:
+              creator:
+                type: string
+              description:
+                type: string
+              name:
+                type: string
+              uri:
+                type: string
+              nfts:
+                type: object
+                properties:
+                  handle:
+                    type: string
+                  length:
+                    type: string
+                title: TokenHandle is an embedded message for CollectionData
+            title: Collection is the message for a collection of NFTs
+        title: IndexedCollection is wrapped Collection with its object address
+    title: >-
+      QueryCollectionResponse is the response type for the Query/Collection RPC
+      method
+  indexer.nft.v1.QueryCollectionsResponse:
+    type: object
+    properties:
+      collections:
+        type: array
+        items:
+          type: object
+          properties:
+            object_addr:
+              type: string
+            collection:
+              type: object
+              properties:
+                creator:
+                  type: string
+                description:
+                  type: string
+                name:
+                  type: string
+                uri:
+                  type: string
+                nfts:
+                  type: object
+                  properties:
+                    handle:
+                      type: string
+                    length:
+                      type: string
+                  title: TokenHandle is an embedded message for CollectionData
+              title: Collection is the message for a collection of NFTs
+          title: IndexedCollection is wrapped Collection with its object address
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+    title: >-
+      QueryCollectionsResponse is the response type for the Query/Collections
+      RPC method
+  indexer.nft.v1.QueryTokensResponse:
+    type: object
+    properties:
+      tokens:
+        type: array
+        items:
+          type: object
+          properties:
+            object_addr:
+              type: string
+            collection_addr:
+              type: string
+            collection_name:
+              type: string
+            owner_addr:
+              type: string
+            nft:
+              type: object
+              properties:
+                collection:
+                  type: object
+                  properties:
+                    inner:
+                      type: string
+                  title: InnerCollection is inner data of NFT
+                description:
+                  type: string
+                token_id:
+                  type: string
+                uri:
+                  type: string
+              title: NFT is the message for a single NFT
+          title: >-
+            IndexedToken is wrapped NFT with its object address and collection
+            address
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+    title: QueryTokensResponse is the response type for the Query/Tokens RPC method
+  indexer.nft.v1.Token:
+    type: object
+    properties:
+      collection:
+        type: object
+        properties:
+          inner:
+            type: string
+        title: InnerCollection is inner data of NFT
+      description:
+        type: string
+      token_id:
+        type: string
+      uri:
+        type: string
+    title: NFT is the message for a single NFT
+  indexer.nft.v1.TokenHandle:
+    type: object
+    properties:
+      handle:
+        type: string
+      length:
+        type: string
+    title: TokenHandle is an embedded message for CollectionData
+  indexer.pair.v1.Pair:
+    type: object
+    properties:
+      l1:
+        type: string
+      l2:
+        type: string
+    title: Pair is a struct that holds the information of a pair
+  indexer.pair.v1.QueryPairsResponse:
+    type: object
+    properties:
+      pairs:
+        type: array
+        items:
+          type: object
+          properties:
+            l1:
+              type: string
+            l2:
+              type: string
+          title: Pair is a struct that holds the information of a pair
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+    title: QueryPairsResponse is the response type for the Query/Pairs RPC method
