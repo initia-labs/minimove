@@ -507,7 +507,7 @@ func NewMinitiaApp(
 			packetForwardMiddleware,
 			ibchooks.NewICS4Middleware(
 				nil, /* ics4wrapper: not used */
-				ibcmovehooks.NewMoveHooks(app.MoveKeeper, ac),
+				ibcmovehooks.NewMoveHooks(appCodec, ac, app.MoveKeeper),
 			),
 			app.IBCHooksKeeper,
 		)
@@ -548,7 +548,7 @@ func NewMinitiaApp(
 			nftTransferIBCModule,
 			ibchooks.NewICS4Middleware(
 				nil, /* ics4wrapper: not used */
-				ibcmovehooks.NewMoveHooks(app.MoveKeeper, ac),
+				ibcmovehooks.NewMoveHooks(appCodec, ac, app.MoveKeeper),
 			),
 			app.IBCHooksKeeper,
 		)
