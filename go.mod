@@ -27,9 +27,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.2.3-0.20240409080116-b1905ecee383
-	github.com/initia-labs/initia v0.2.4-0.20240409080346-53268a13c723
+	github.com/initia-labs/initia v0.2.4-0.20240413062341-427c8bd071ad
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
-	github.com/initia-labs/movevm v0.2.4
+	github.com/initia-labs/movevm v0.2.5
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/block-sdk v0.0.0-20231213233341-deceeb0e993b
