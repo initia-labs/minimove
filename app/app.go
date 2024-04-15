@@ -776,7 +776,7 @@ func NewMinitiaApp(
 		nil, // placeholder for staking keeper
 		nil, // placeholder for reward keeper,
 		nil, // placeholder for community pool keeper
-		indexerkeeper.VMKeeper{Keeper: *app.MoveKeeper}, // placeholder for wrapped vm keeper
+		indexerkeeper.VMKeeper{Keeper: app.MoveKeeper}, // placeholder for wrapped vm keeper
 		app.IBCKeeper,
 		app.TransferKeeper,
 		app.NftTransferKeeper,
