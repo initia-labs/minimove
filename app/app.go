@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -678,7 +679,15 @@ func NewMinitiaApp(
 	// MoveKeeper Configuration //
 	//////////////////////////////
 
-	*app.MoveKeeper = *movekeeper.NewKeeper(
+	queryWhitelist := movetypes.DefaultVMQueryWhiteList(ac)
+	queryWhitelist.Custom["chain_id"] = func(ctx context.Context, _ []byte) ([]byte, error) {
+		return []byte(sdk.UnwrapSDKContext(ctx).ChainID()), nil
+	}
+	queryWhitelist.Stargate["/slinky.oracle.v1.Query/GetPrices"] = movetypes.ProtoSet{
+		Request:  &oracletypes.GetPricesRequest{},
+		Response: &oracletypes.GetPricesResponse{},
+	}
+	*app.MoveKeeper = movekeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(keys[movetypes.StoreKey]),
 		app.AccountKeeper,
@@ -695,7 +704,7 @@ func NewMinitiaApp(
 		authtypes.FeeCollectorName,
 		authorityAddr,
 		ac, vc,
-	)
+	).WithVMQueryWhitelist(queryWhitelist)
 
 	// x/auction module keeper initialization
 
