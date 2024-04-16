@@ -4,20 +4,19 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "indexer"
+      - "main"
     tags:
-      - "indexer-v*"
+      - "-v*"
     paths:
       - "**.go"
       - "go.mod"
       - "go.sum"
   pull_request:
     branches:
-      - "indexer"
+      - "main"
     paths:
       - "**.go"
       - "go.mod"
-      - "go.sum"
 
 env:
   REGISTRY: ghcr.io
