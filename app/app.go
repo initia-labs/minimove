@@ -148,7 +148,6 @@ import (
 	indexerconfig "github.com/initia-labs/kvindexer/config"
 	indexer "github.com/initia-labs/kvindexer/module"
 	indexerkeeper "github.com/initia-labs/kvindexer/module/keeper"
-	indexertypes "github.com/initia-labs/kvindexer/module/types"
 	blocksubmodule "github.com/initia-labs/kvindexer/submodule/block"
 	"github.com/initia-labs/kvindexer/submodule/nft"
 	"github.com/initia-labs/kvindexer/submodule/pair"
@@ -256,7 +255,7 @@ type MinitiaApp struct {
 	// Override of BaseApp's CheckTx
 	checkTxHandler mevlane.CheckTx
 
-	// fake keeper to indexe
+	// fake keeper to indexer
 	IndexerKeeper *indexerkeeper.Keeper
 	indexerModule indexer.AppModuleBasic
 }
@@ -811,7 +810,6 @@ func NewMinitiaApp(
 		app.ModuleManager,
 		map[string]module.AppModuleBasic{
 			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			indexertypes.ModuleName: app.indexerModule,
 		})
 	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
 	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
