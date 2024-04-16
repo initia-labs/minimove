@@ -184,6 +184,7 @@ func genesisCommand(encodingConfig params.EncodingConfig, basicManager module.Ba
 	cmd.AddCommand(
 		genutilcli.AddGenesisAccountCmd(minitiaapp.DefaultNodeHome, ac),
 		opchildcli.AddGenesisValidatorCmd(basicManager, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, minitiaapp.DefaultNodeHome),
+		opchildcli.AddFeeWhitelistCmd(minitiaapp.DefaultNodeHome, ac),
 		genutilcli.ValidateGenesisCmd(basicManager),
 		genutilcli.GenTxCmd(basicManager, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, minitiaapp.DefaultNodeHome, ac),
 	)
