@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
     tags:
-      - "-v*"
+      - "v*"
     paths:
       - "**.go"
       - "go.mod"
@@ -17,6 +17,7 @@ on:
     paths:
       - "**.go"
       - "go.mod"
+      - "go.sum"
 
 env:
   REGISTRY: ghcr.io
