@@ -14,6 +14,7 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
@@ -145,8 +146,9 @@ import (
 	appkeepers "github.com/initia-labs/minimove/app/keepers"
 	applanes "github.com/initia-labs/minimove/app/lanes"
 
+	indexer "github.com/initia-labs/kvindexer"
 	indexerconfig "github.com/initia-labs/kvindexer/config"
-	indexer "github.com/initia-labs/kvindexer/module"
+	indexermodule "github.com/initia-labs/kvindexer/module"
 	indexerkeeper "github.com/initia-labs/kvindexer/module/keeper"
 	blocksubmodule "github.com/initia-labs/kvindexer/submodule/block"
 	"github.com/initia-labs/kvindexer/submodule/nft"
@@ -256,8 +258,8 @@ type MinitiaApp struct {
 	checkTxHandler mevlane.CheckTx
 
 	// fake keeper to indexer
-	IndexerKeeper *indexerkeeper.Keeper
-	indexerModule indexer.AppModuleBasic
+	indexerKeeper *indexerkeeper.Keeper
+	indexerModule indexermodule.AppModuleBasic
 }
 
 // NewMinitiaApp returns a reference to an initialized Initia.
@@ -770,37 +772,7 @@ func NewMinitiaApp(
 		oracle.NewAppModule(appCodec, *app.OracleKeeper),
 	)
 
-	// initialize the indexer fake-keeper
-	indexerConfig, err := indexerconfig.NewConfig(appOpts)
-	if err != nil {
-		panic(err)
-	}
-	app.IndexerKeeper = indexerkeeper.NewKeeper(
-		appCodec,
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.OracleKeeper,
-		nil, // placeholder for distribution keeper
-		nil, // placeholder for staking keeper
-		nil, // placeholder for reward keeper,
-		nil, // placeholder for community pool keeper
-		indexerkeeper.VMKeeper{Keeper: app.MoveKeeper}, // placeholder for wrapped vm keeper
-		app.IBCKeeper,
-		app.TransferKeeper,
-		app.NftTransferKeeper,
-		app.OPChildKeeper,
-		authtypes.FeeCollectorName,
-		homePath,
-		indexerConfig,
-		ac,
-		vc,
-		app.ChainID(),
-	)
-	err = app.IndexerKeeper.RegisterSubmodules(nft.Submodule, pair.Submodule, tx.Submodule, blocksubmodule.Submodule)
-	if err != nil {
-		panic(err)
-	}
-	app.indexerModule = indexer.NewAppModuleBasic(app.IndexerKeeper)
+	app.setupIndexer(appOpts, homePath, ac, vc, appCodec, legacyAmino, interfaceRegistry)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration and genesis verification.
@@ -1248,11 +1220,73 @@ func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 func (app *MinitiaApp) TxConfig() client.TxConfig {
 	return app.txConfig
 }
+func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath string, ac, vc address.Codec, appCodec codec.Codec, legacyAmino *codec.LegacyAmino, interfaceRegistry types.InterfaceRegistry) error {
+	// initialize the indexer fake-keeper
+	indexerConfig, err := indexerconfig.NewConfig(appOpts)
+	if err != nil {
+		panic(err)
+	}
+	app.indexerKeeper = indexerkeeper.NewKeeper(
+		appCodec,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.OracleKeeper,
+		nil, // placeholder for distribution keeper
+		nil, // placeholder for staking keeper
+		nil, // placeholder for reward keeper,
+		nil, // placeholder for community pool keeper
+		indexerkeeper.VMKeeper{Keeper: app.MoveKeeper}, // placeholder for wrapped vm keeper
+		app.IBCKeeper,
+		app.TransferKeeper,
+		app.NftTransferKeeper,
+		app.OPChildKeeper,
+		authtypes.FeeCollectorName,
+		homePath,
+		indexerConfig,
+		ac,
+		vc,
+		app.ChainID(),
+	)
+	err = app.indexerKeeper.RegisterSubmodules(nft.Submodule, pair.Submodule, tx.Submodule, blocksubmodule.Submodule)
+	if err != nil {
+		panic(err)
+	}
+	app.indexerModule = indexermodule.NewAppModuleBasic(app.indexerKeeper)
+	// Add your implementation here
 
-func (app *MinitiaApp) GetIndexerKeeper() *indexerkeeper.Keeper {
-	return app.IndexerKeeper
-}
+	keys := app.indexerKeeper.GetRequiredKeys()
+	keysToListen := []storetypes.StoreKey{}
+	for _, key := range keys {
+		keysToListen = append(keysToListen, *key)
+	}
+	app.CommitMultiStore().AddListeners(keysToListen)
 
-func (app MinitiaApp) GetKeys() map[string]*storetypes.KVStoreKey {
-	return app.keys
+	indexer, err := indexer.NewIndexer(app.GetBaseApp().Logger(), app.indexerKeeper)
+	if err != nil || indexer == nil {
+		return nil
+	}
+
+	if err = indexer.Validate(); err != nil {
+		return err
+	}
+
+	if err = indexer.Prepare(nil); err != nil {
+		return err
+	}
+
+	if err = app.indexerKeeper.Seal(); err != nil {
+		return err
+	}
+
+	if err = indexer.Start(nil); err != nil {
+		return err
+	}
+
+	streamingManager := storetypes.StreamingManager{
+		ABCIListeners: []storetypes.ABCIListener{indexer},
+		StopNodeOnErr: true,
+	}
+	app.SetStreamingManager(streamingManager)
+
+	return nil
 }

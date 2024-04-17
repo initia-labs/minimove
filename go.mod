@@ -40,10 +40,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 )
 
-require (
-	github.com/initia-labs/kvindexer v0.0.0-20240415125345-a01972443303
-	golang.org/x/sync v0.6.0
-)
+require github.com/initia-labs/kvindexer v0.0.0-20240417082202-9eab8f93c93f
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
@@ -199,6 +196,7 @@ require (
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
