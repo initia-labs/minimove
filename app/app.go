@@ -125,6 +125,7 @@ import (
 
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
+	opchildlanes "github.com/initia-labs/OPinit/x/opchild/lanes"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	initialanes "github.com/initia-labs/initia/app/lanes"
 
@@ -144,7 +145,6 @@ import (
 	appante "github.com/initia-labs/minimove/app/ante"
 	apphook "github.com/initia-labs/minimove/app/hook"
 	appkeepers "github.com/initia-labs/minimove/app/keepers"
-	applanes "github.com/initia-labs/minimove/app/lanes"
 
 	indexer "github.com/initia-labs/kvindexer"
 	indexerconfig "github.com/initia-labs/kvindexer/config"
@@ -727,7 +727,7 @@ func NewMinitiaApp(
 		app.keys[auctiontypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		applanes.NewRewardsAddressProvider(authtypes.FeeCollectorName),
+		opchildlanes.NewRewardsAddressProvider(authtypes.FeeCollectorName),
 		authorityAddr,
 	)
 	app.AuctionKeeper = &auctionKeeper
@@ -888,7 +888,10 @@ func NewMinitiaApp(
 		MaxTxs:          100,
 		SignerExtractor: signerExtractor,
 	}
-	freeLane := initialanes.NewFreeLane(freeConfig, applanes.FreeLaneMatchHandler())
+	freeLane := initialanes.NewFreeLane(
+		freeConfig,
+		opchildlanes.NewFreeLaneMatchHandler(ac, app.OPChildKeeper).MatchHandler(),
+	)
 
 	defaultLaneConfig := blockbase.LaneConfig{
 		Logger:          app.Logger(),
