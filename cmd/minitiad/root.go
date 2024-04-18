@@ -148,7 +148,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 		pruning.Cmd(a.newApp, minitiaapp.DefaultNodeHome),
 		snapshot.Cmd(a.newApp),
 	)
-
 	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands

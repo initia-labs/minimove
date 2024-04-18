@@ -7,6 +7,7 @@ import (
 	tmcfg "github.com/cometbft/cometbft/config"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
+	indexerconfig "github.com/initia-labs/kvindexer/config"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 	"github.com/initia-labs/minimove/types"
 )
@@ -14,7 +15,8 @@ import (
 // initiaappConfig initia specify app config
 type initiaappConfig struct {
 	serverconfig.Config
-	MoveConfig moveconfig.MoveConfig `mapstructure:"move"`
+	MoveConfig    moveconfig.MoveConfig       `mapstructure:"move"`
+	IndexerConfig indexerconfig.IndexerConfig `mapstructure:"indexer"`
 }
 
 // initAppConfig helps to override default appConfig template and configs.
@@ -39,11 +41,12 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.MinGasPrices = fmt.Sprintf("0%s", types.BaseDenom)
 
 	initiaappConfig := initiaappConfig{
-		Config:     *srvCfg,
-		MoveConfig: moveconfig.DefaultMoveConfig(),
+		Config:        *srvCfg,
+		MoveConfig:    moveconfig.DefaultMoveConfig(),
+		IndexerConfig: indexerconfig.DefaultConfig(),
 	}
 
-	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate
+	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate + indexerconfig.DefaultConfigTemplate
 
 	return initiaappTemplate, initiaappConfig
 }
