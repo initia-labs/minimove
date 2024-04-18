@@ -40,7 +40,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 )
 
-require github.com/initia-labs/kvindexer v0.0.0-20240418044849-0d589c3cc150
+require github.com/initia-labs/kvindexer v0.0.0-20240418093352-6571df86158d
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
