@@ -772,7 +772,9 @@ func NewMinitiaApp(
 		oracle.NewAppModule(appCodec, *app.OracleKeeper),
 	)
 
-	app.setupIndexer(appOpts, homePath, ac, vc, appCodec, legacyAmino, interfaceRegistry)
+	if err := app.setupIndexer(appOpts, homePath, ac, vc, appCodec); err != nil {
+		panic(err)
+	}
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration and genesis verification.
@@ -1223,7 +1225,7 @@ func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 func (app *MinitiaApp) TxConfig() client.TxConfig {
 	return app.txConfig
 }
-func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath string, ac, vc address.Codec, appCodec codec.Codec, legacyAmino *codec.LegacyAmino, interfaceRegistry types.InterfaceRegistry) error {
+func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath string, ac, vc address.Codec, appCodec codec.Codec) error {
 	// initialize the indexer fake-keeper
 	indexerConfig, err := indexerconfig.NewConfig(appOpts)
 	if err != nil {
@@ -1248,7 +1250,6 @@ func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath str
 		indexerConfig,
 		ac,
 		vc,
-		app.ChainID(),
 	)
 	err = app.indexerKeeper.RegisterSubmodules(nft.Submodule, pair.Submodule, tx.Submodule, blocksubmodule.Submodule)
 	if err != nil {
@@ -1256,13 +1257,6 @@ func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath str
 	}
 	app.indexerModule = indexermodule.NewAppModuleBasic(app.indexerKeeper)
 	// Add your implementation here
-
-	keys := app.indexerKeeper.GetRequiredKeys()
-	keysToListen := []storetypes.StoreKey{}
-	for _, key := range keys {
-		keysToListen = append(keysToListen, *key)
-	}
-	app.CommitMultiStore().AddListeners(keysToListen)
 
 	indexer, err := indexer.NewIndexer(app.GetBaseApp().Logger(), app.indexerKeeper)
 	if err != nil || indexer == nil {
@@ -1290,6 +1284,22 @@ func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath str
 		StopNodeOnErr: true,
 	}
 	app.SetStreamingManager(streamingManager)
+
+	return nil
+}
+
+// Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
+// This method blocks on the closure of both the prometheus server, and the oracle-service
+func (app *MinitiaApp) Close() error {
+	if app.indexerKeeper != nil {
+		if err := app.indexerKeeper.Close(); err != nil {
+			return err
+		}
+	}
+
+	if err := app.BaseApp.Close(); err != nil {
+		return err
+	}
 
 	return nil
 }
