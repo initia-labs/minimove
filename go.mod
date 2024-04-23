@@ -40,7 +40,13 @@ require (
 	github.com/stretchr/testify v1.9.0
 )
 
-require github.com/initia-labs/kvindexer v0.0.0-20240418093352-6571df86158d
+require (
+	github.com/initia-labs/kvindexer v0.1.0
+	github.com/initia-labs/kvindexer/submodules/block v0.0.0-20240422090640-64a5325af759
+	github.com/initia-labs/kvindexer/submodules/move-nft v0.0.0-20240422090640-64a5325af759
+	github.com/initia-labs/kvindexer/submodules/pair v0.0.0-20240422090640-64a5325af759
+	github.com/initia-labs/kvindexer/submodules/tx v0.0.0-20240422090640-64a5325af759
+)
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
@@ -233,6 +239,8 @@ replace (
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
 
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	github.com/initia-labs/kvindexer => github.com/initia-labs/kvindexer v0.0.0-20240422090640-64a5325af759
 
 	// Downgraded to avoid bugs in following commits which caused simulations to fail.
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
