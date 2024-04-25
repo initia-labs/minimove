@@ -244,8 +244,6 @@ type MinitiaApp struct {
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAAuthKeeper       capabilitykeeper.ScopedKeeper
-	ScopedICQKeeper           capabilitykeeper.ScopedKeeper
-	ScopedFetchPriceKeeper    capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	ModuleManager      *module.Manager
