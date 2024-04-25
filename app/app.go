@@ -149,12 +149,12 @@ import (
 	// kvindexer
 	indexer "github.com/initia-labs/kvindexer"
 	indexerconfig "github.com/initia-labs/kvindexer/config"
-	indexermodule "github.com/initia-labs/kvindexer/module"
-	indexerkeeper "github.com/initia-labs/kvindexer/module/keeper"
-	blocksubmodule "github.com/initia-labs/kvindexer/submodule/block"
-	"github.com/initia-labs/kvindexer/submodule/nft"
-	"github.com/initia-labs/kvindexer/submodule/pair"
-	"github.com/initia-labs/kvindexer/submodule/tx"
+	blocksubmodule "github.com/initia-labs/kvindexer/submodules/block"
+	nft "github.com/initia-labs/kvindexer/submodules/move-nft"
+	pair "github.com/initia-labs/kvindexer/submodules/pair"
+	tx "github.com/initia-labs/kvindexer/submodules/tx"
+	indexermodule "github.com/initia-labs/kvindexer/x/kvindexer"
+	indexerkeeper "github.com/initia-labs/kvindexer/x/kvindexer/keeper"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -1232,24 +1232,30 @@ func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath str
 	}
 	app.indexerKeeper = indexerkeeper.NewKeeper(
 		appCodec,
-		app.AccountKeeper,
-		app.BankKeeper,
-		nil, // placeholder for distribution keeper
-		nil, // placeholder for staking keeper
-		nil, // placeholder for reward keeper,
-		nil, // placeholder for community pool keeper
-		indexerkeeper.VMKeeper{Keeper: app.MoveKeeper}, // placeholder for wrapped vm keeper
-		app.IBCKeeper,
-		app.TransferKeeper,
-		app.NftTransferKeeper,
-		app.OPChildKeeper,
-		authtypes.FeeCollectorName,
+		"move",
 		homePath,
 		indexerConfig,
 		ac,
 		vc,
 	)
-	err = app.indexerKeeper.RegisterSubmodules(nft.Submodule, pair.Submodule, tx.Submodule, blocksubmodule.Submodule)
+
+	smBlock, err := blocksubmodule.NewBlockSubmodule(appCodec, app.indexerKeeper, app.OPChildKeeper)
+	if err != nil {
+		panic(err)
+	}
+	smTx, err := tx.NewTxSubmodule(appCodec, app.indexerKeeper)
+	if err != nil {
+		panic(err)
+	}
+	smPair, err := pair.NewPairSubmodule(appCodec, app.indexerKeeper, app.IBCKeeper.ChannelKeeper, app.TransferKeeper)
+	if err != nil {
+		panic(err)
+	}
+	smNft, err := nft.NewMoveNftSubmodule(ac, appCodec, app.indexerKeeper, app.MoveKeeper, smPair)
+	if err != nil {
+		panic(err)
+	}
+	err = app.indexerKeeper.RegisterSubmodules(smBlock, smTx, smPair, smNft)
 	if err != nil {
 		panic(err)
 	}
