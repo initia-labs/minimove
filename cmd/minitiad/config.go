@@ -7,8 +7,8 @@ import (
 	tmcfg "github.com/cometbft/cometbft/config"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
-	indexerconfig "github.com/initia-labs/kvindexer/config"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
+	indexerconfig "github.com/initia-labs/kvindexer/config"
 	"github.com/initia-labs/minimove/types"
 )
 
@@ -39,6 +39,14 @@ func initAppConfig() (string, interface{}) {
 	//
 	// In simapp, we set the min gas prices to 0.
 	srvCfg.MinGasPrices = fmt.Sprintf("0%s", types.BaseDenom)
+
+	// Enable API and unsafe CORS (CORS allowed from any host)
+	srvCfg.API.Enable = true
+	srvCfg.API.EnableUnsafeCORS = true
+	srvCfg.API.Address = "tcp://0.0.0.0:1317"
+
+	srvCfg.GRPC.Enable = true
+	srvCfg.GRPC.Address = "tcp://0.0.0.0:9090"
 
 	initiaappConfig := initiaappConfig{
 		Config:        *srvCfg,
