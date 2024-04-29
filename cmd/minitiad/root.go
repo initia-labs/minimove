@@ -57,7 +57,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	sdkConfig.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	sdkConfig.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
 	sdkConfig.SetAddressVerifier(minitiaapp.VerifyAddressLen())
-	sdkConfig.Seal()
+	//sdkConfig.Seal() // Had to comment this part because cosmos/relayer uses sdkConfig.GetConfig() directly 🤷
 
 	encodingConfig := minitiaapp.MakeEncodingConfig()
 	basicManager := minitiaapp.BasicManager()
@@ -163,6 +163,9 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 
 	// add move commands
 	rootCmd.AddCommand(movecmd.MoveCommand(ac))
+
+	// add launcher command
+	rootCmd.AddCommand(LauncherCmd(encodingConfig, basicManager))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {

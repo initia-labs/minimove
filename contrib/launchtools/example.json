@@ -1,0 +1,95 @@
+{
+  "l2_config": {
+    "chain_id": "newmetric-test-minimove-126",
+    "denom": "umin",
+    "moniker": "sequencer",
+    "account_prefix": "init",
+    "gas_prices": "0.15umin"
+  },
+  "op_bridge": {
+    "submission_start_time": "2024-04-03T18:26:05.713Z",
+    "submit_target": "l1"
+  },
+  "l1_config": {
+    "chain_id": "mahalo-2",
+    "faucet_url": "https://faucet-api.mahalo-2.initia.xyz/claim-with-ip",
+    "rpc_url": "http://34.87.121.251:26657",
+    "rest_url": "http://34.87.121.251:1317",
+    "grpc_url": "34.87.121.251:9090",
+    "ws_url": "ws://34.87.121.251:26657/websocket",
+    "account_prefix": "init",
+    "gas_prices": "0.15uinit"
+  },
+  "system_keys": {
+    "validator": {
+      "address": "init15n9xp8vapc48jrq85gklla9e9d74w47fdx9hh7",
+      "mnemonic": "lady artwork observe slab labor depth response autumn debate humor image ugly method awful lyrics bomb accident able quiz junk raccoon limit poet weird"
+    },
+    "executor": {
+      "address": "init199d062ns49qagtct5gd9r7rjqpwvmqap0mhmlh",
+      "mnemonic": "question cricket photo cloud just impose cherry session desk hurry over rude describe merit scatter favorite few avocado flush wrap habit kiss wrist firm"
+    },
+    "output": {
+      "address": "init1cc2l0jdghgk54fcm5lhxx0r3apggdr5kryadja",
+      "mnemonic": "sunny genre clean glue recycle grocery coil dog float two vacuum reunion bar chest service success april invite crumble wisdom secret love issue vague"
+    },
+    "challenger": {
+      "address": "init1pp3r738z47cchyhz95h6wzct073u62hwz4mp3a",
+      "mnemonic": "anchor kite safe artist olympic candy letter stage cricket artwork possible gap insect piano energy shoe riot original worry item claim cook bulb garment"
+    },
+    "submitter": {
+      "address": "init10kwuyc9zeuj735m8f8lwg7q4gtvdp4jcn33hj8",
+      "mnemonic": "section proof short great custom affair benefit arrest topic year damage lake citizen maximum term script maze axis image kiwi exotic brick trend shine"
+    },
+    "relayer": {
+      "address": "init1wv7uvp5gnrj72zd7gwhvyxck6tkdtjp6wvvsey",
+      "mnemonic": "slim police bamboo task icon mimic tenant cancel inform clutch raise reform cigar believe gossip vendor east liar slush confirm before lava profit rally"
+    }
+  },
+  "user_keys": [
+    {
+      "name": "user1",
+      "address": "init1uex2ecg2knu95y4d0zgz2thn99ac4ql0ststd3",
+      "mnemonic": "ocean weekend wheel unfair blossom energy valley kitchen wood right solar chef crucial pact correct amused select stereo kick live pond top creek gossip"
+    },
+    {
+      "name": "user2",
+      "address": "init17ay45t0dvp5cj2uh3k0xzug7lup3f394xru6kx",
+      "mnemonic": "wide hundred stem glare face pink melt right sniff trouble smoke mutual lizard act repeat ivory special rude gloom control opera vintage empower primary"
+    }
+  ],
+  "genesis_accounts": [
+    {
+      "address": "init15n9xp8vapc48jrq85gklla9e9d74w47fdx9hh7",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init10kwuyc9zeuj735m8f8lwg7q4gtvdp4jcn33hj8",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init199d062ns49qagtct5gd9r7rjqpwvmqap0mhmlh",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init1cc2l0jdghgk54fcm5lhxx0r3apggdr5kryadja",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init1pp3r738z47cchyhz95h6wzct073u62hwz4mp3a",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init1wv7uvp5gnrj72zd7gwhvyxck6tkdtjp6wvvsey",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init1uex2ecg2knu95y4d0zgz2thn99ac4ql0ststd3",
+      "coins": "1000000000000000umin"
+    },
+    {
+      "address": "init17ay45t0dvp5cj2uh3k0xzug7lup3f394xru6kx",
+      "coins": "1000000000000000umin"
+    }
+  ]
+}
