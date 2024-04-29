@@ -36710,6 +36710,7 @@ paths:
         - Query
   /opinit/opchild/v1/bridge_info:
     get:
+      summary: BridgeInfo queries the bridge information.
       operationId: BridgeInfo
       responses:
         '200':
@@ -36730,6 +36731,17 @@ paths:
                   bridge_addr:
                     type: string
                     description: bridge_addr is the address of the bridge on l1.
+                  l1_chain_id:
+                    type: string
+                    description: l1_chain_id is the chain id of the l1 chain.
+                  l1_client_id:
+                    type: string
+                    description: >-
+                      l1_client_id is the IBC client ID, which is allocated for
+                      l1 chain, in l2 chain state.
+
+                      This is used to verify the validator set in oracle update
+                      messages.
                   bridge_config:
                     description: bridge_config is the configuration of the bridge.
                     type: object
@@ -39739,8 +39751,10 @@ paths:
                           type: string
                           title: >-
                             actually minitias have no identity because they
-                            haven't MsgCreateValidator, but we decided to keep
-                            this field for compatibility with L1
+                            haven't MsgCreateValidator,
+
+                            but we decided to keep this field for compatibility
+                            with L1
                         operator_address:
                           type: string
                       title: >-
@@ -39909,8 +39923,10 @@ paths:
                         type: string
                         title: >-
                           actually minitias have no identity because they
-                          haven't MsgCreateValidator, but we decided to keep
-                          this field for compatibility with L1
+                          haven't MsgCreateValidator,
+
+                          but we decided to keep this field for compatibility
+                          with L1
                       operator_address:
                         type: string
                     title: >-
@@ -41981,7 +41997,9 @@ paths:
                    }
             title: >-
               QueryCollectionsResponse is the response type for the
-              Query/Collections RPC method
+              Query/Collections RPC
+
+              method
         default:
           description: An unexpected error response.
           schema:
@@ -42107,7 +42125,9 @@ paths:
                   address
             title: >-
               QueryCollectionResponse is the response type for the
-              Query/Collection RPC method
+              Query/Collection RPC
+
+              method
         default:
           description: An unexpected error response.
           schema:
@@ -66748,6 +66768,16 @@ definitions:
       bridge_addr:
         type: string
         description: bridge_addr is the address of the bridge on l1.
+      l1_chain_id:
+        type: string
+        description: l1_chain_id is the chain id of the l1 chain.
+      l1_client_id:
+        type: string
+        description: >-
+          l1_client_id is the IBC client ID, which is allocated for l1 chain, in
+          l2 chain state.
+
+          This is used to verify the validator set in oracle update messages.
       bridge_config:
         description: bridge_config is the configuration of the bridge.
         type: object
@@ -66835,7 +66865,7 @@ definitions:
         items:
           type: string
         description: the list of addresses that are allowed to pay zero fee.
-    description: Params defines the set of move parameters.
+    description: Params defines the set of opchild parameters.
   opinit.opchild.v1.QueryBridgeInfoResponse:
     type: object
     properties:
@@ -66852,6 +66882,17 @@ definitions:
           bridge_addr:
             type: string
             description: bridge_addr is the address of the bridge on l1.
+          l1_chain_id:
+            type: string
+            description: l1_chain_id is the chain id of the l1 chain.
+          l1_client_id:
+            type: string
+            description: >-
+              l1_client_id is the IBC client ID, which is allocated for l1
+              chain, in l2 chain state.
+
+              This is used to verify the validator set in oracle update
+              messages.
           bridge_config:
             description: bridge_config is the configuration of the bridge.
             type: object
@@ -68408,8 +68449,9 @@ definitions:
             type: string
             title: >-
               actually minitias have no identity because they haven't
-              MsgCreateValidator, but we decided to keep this field for
-              compatibility with L1
+              MsgCreateValidator,
+
+              but we decided to keep this field for compatibility with L1
           operator_address:
             type: string
         title: >-
@@ -68470,8 +68512,9 @@ definitions:
                 type: string
                 title: >-
                   actually minitias have no identity because they haven't
-                  MsgCreateValidator, but we decided to keep this field for
-                  compatibility with L1
+                  MsgCreateValidator,
+
+                  but we decided to keep this field for compatibility with L1
               operator_address:
                 type: string
             title: >-
@@ -68535,8 +68578,9 @@ definitions:
                   type: string
                   title: >-
                     actually minitias have no identity because they haven't
-                    MsgCreateValidator, but we decided to keep this field for
-                    compatibility with L1
+                    MsgCreateValidator,
+
+                    but we decided to keep this field for compatibility with L1
                 operator_address:
                   type: string
               title: >-
@@ -68572,8 +68616,9 @@ definitions:
         type: string
         title: >-
           actually minitias have no identity because they haven't
-          MsgCreateValidator, but we decided to keep this field for
-          compatibility with L1
+          MsgCreateValidator,
+
+          but we decided to keep this field for compatibility with L1
       operator_address:
         type: string
     title: >-
@@ -69137,7 +69182,7 @@ definitions:
                 title: TokenHandle is an embedded message for CollectionData
             title: Collection is the message for a collection of NFTs
         title: IndexedCollection is wrapped Collection with its object address
-    title: >-
+    title: |-
       QueryCollectionResponse is the response type for the Query/Collection RPC
       method
   indexer.nft.v1.QueryCollectionsResponse:
@@ -69199,7 +69244,9 @@ definitions:
            }
     title: >-
       QueryCollectionsResponse is the response type for the Query/Collections
-      RPC method
+      RPC
+
+      method
   indexer.nft.v1.QueryTokensResponse:
     type: object
     properties:

@@ -22,7 +22,7 @@ git clone -b $INITIA_VERSION https://$INITIA_URL
 git clone -b $OPINIT_VERSION https://$OPINIT_URL
 git clone -b $COSMOS_SDK_VERSION https://$COSMOS_URL
 git clone -b $IBC_VERSION https://$IBC_URL
-git clone -b move https://$INDEXER_URL
+git clone -b $INDEXER_VERSION https://$INDEXER_URL
 cd ..
 
 
