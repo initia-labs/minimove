@@ -45,6 +45,9 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.API.EnableUnsafeCORS = true
 	srvCfg.API.Address = "tcp://0.0.0.0:1317"
 
+	srvCfg.GRPC.Enable = true
+	srvCfg.GRPC.Address = "tcp://0.0.0.0:9090"
+
 	initiaappConfig := initiaappConfig{
 		Config:        *srvCfg,
 		MoveConfig:    moveconfig.DefaultMoveConfig(),
