@@ -46,7 +46,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.API.Address = "tcp://0.0.0.0:1317"
 
 	srvCfg.GRPC.Enable = true
-	srvCfg.GRPC.Address = "tcp://0.0.0.0:9090"
+	srvCfg.GRPC.Address = "0.0.0.0:9090"
 
 	initiaappConfig := initiaappConfig{
 		Config:        *srvCfg,
