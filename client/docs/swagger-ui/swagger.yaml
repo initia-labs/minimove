@@ -39564,7 +39564,7 @@ paths:
         - Query
   /indexer/version:
     get:
-      summary: Version queries all the collections of an account
+      summary: Version queries all the versions of the submodules
       operationId: Versions
       responses:
         '200':
@@ -39611,6 +39611,7 @@ paths:
         - Query
   /indexer/vmtype:
     get:
+      summary: VMType queries the type of the Minitia's VM
       operationId: VMType
       responses:
         '200':
@@ -39759,7 +39760,7 @@ paths:
                           type: string
                       title: >-
                         Proposer represents the proposer of a block: for
-                        minitia, its the L2 operator
+                        minitia, it is the L2 operator
                   title: Block represents a indexed block in a blockchain
               pagination:
                 description: pagination defines the pagination in the response.
@@ -39931,9 +39932,9 @@ paths:
                         type: string
                     title: >-
                       Proposer represents the proposer of a block: for minitia,
-                      its the L2 operator
+                      it is the L2 operator
                 title: Block represents a indexed block in a blockchain
-            description: BlockResponse defines the response for the Blocks RPC.
+            description: BlockResponse defines the response for the Block RPC.
         default:
           description: An unexpected error response.
           schema:
@@ -40474,7 +40475,7 @@ paths:
         - Query
   /indexer/tx/v1/txs/by_account/{account}:
     get:
-      summary: TxsByAccount queries all the collections of given account
+      summary: TxsByAccount queries all transactions of given account
       operationId: TxsByAccount
       responses:
         '200':
@@ -40987,7 +40988,7 @@ paths:
         - Query
   /indexer/tx/v1/txs/by_height/{height}:
     get:
-      summary: TxsByHeight queries all the collections of given height
+      summary: TxsByHeight queries all transactions of given height
       operationId: TxsByHeight
       responses:
         '200':
@@ -42487,7 +42488,7 @@ paths:
         - Query
   /indexer/pair/v1/pairs:
     get:
-      summary: Pairs queries all the collections of an account
+      summary: Pairs queries all the pairs of L1 and L2
       operationId: Pairs
       responses:
         '200':
@@ -68455,7 +68456,7 @@ definitions:
           operator_address:
             type: string
         title: >-
-          Proposer represents the proposer of a block: for minitia, its the L2
+          Proposer represents the proposer of a block: for minitia, it is the L2
           operator
     title: Block represents a indexed block in a blockchain
   indexer.block.v1.BlockResponse:
@@ -68518,10 +68519,10 @@ definitions:
               operator_address:
                 type: string
             title: >-
-              Proposer represents the proposer of a block: for minitia, its the
-              L2 operator
+              Proposer represents the proposer of a block: for minitia, it is
+              the L2 operator
         title: Block represents a indexed block in a blockchain
-    description: BlockResponse defines the response for the Blocks RPC.
+    description: BlockResponse defines the response for the Block RPC.
   indexer.block.v1.BlocksResponse:
     type: object
     properties:
@@ -68584,7 +68585,7 @@ definitions:
                 operator_address:
                   type: string
               title: >-
-                Proposer represents the proposer of a block: for minitia, its
+                Proposer represents the proposer of a block: for minitia, it is
                 the L2 operator
           title: Block represents a indexed block in a blockchain
       pagination:
@@ -68622,7 +68623,7 @@ definitions:
       operator_address:
         type: string
     title: >-
-      Proposer represents the proposer of a block: for minitia, its the L2
+      Proposer represents the proposer of a block: for minitia, it is the L2
       operator
   indexer.tx.v1.QueryTxResponse:
     type: object
