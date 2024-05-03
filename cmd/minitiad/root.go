@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"github.com/initia-labs/OPinit/contrib/launchtools"
 	"io"
 	"os"
 	"path"
@@ -167,13 +165,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 	rootCmd.AddCommand(movecmd.MoveCommand(ac))
 
 	// add launch commands
-	rootCmd.AddCommand(launchtools.LaunchCmd(
-		a.newApp,
-		func(denom string) map[string]json.RawMessage {
-			return minitiaapp.NewDefaultGenesisState(encodingConfig.Codec, basicManager, denom)
-		},
-		DefaultLaunchStepFactories,
-	))
+	rootCmd.AddCommand(LaunchCommand(a, encodingConfig, basicManager))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
