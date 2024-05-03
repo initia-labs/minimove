@@ -2,12 +2,15 @@ package main
 
 import (
 	"encoding/json"
+
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"github.com/initia-labs/OPinit/contrib/launchtools"
 	"github.com/initia-labs/OPinit/contrib/launchtools/steps"
 	"github.com/initia-labs/initia/app/params"
 	minitiaapp "github.com/initia-labs/minimove/app"
-	"github.com/spf13/cobra"
 )
 
 // DefaultLaunchStepFactories is a list of default launch step factories.
@@ -39,9 +42,9 @@ var DefaultLaunchStepFactories = []launchtools.LauncherStepFuncFactory[launchtoo
 	steps.StopApp,
 }
 
-func LaunchCommand(ac appCreator, enc params.EncodingConfig, mbm module.BasicManager) *cobra.Command {
+func LaunchCommand(ac *appCreator, enc params.EncodingConfig, mbm module.BasicManager) *cobra.Command {
 	return launchtools.LaunchCmd(
-		ac.newApp,
+		ac,
 		func(denom string) map[string]json.RawMessage {
 			return minitiaapp.NewDefaultGenesisState(enc.Codec, mbm, denom)
 		},

@@ -139,17 +139,17 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, basicManager module.BasicManager) {
-	a := &appCreator{nil, encodingConfig}
+	a := &appCreator{}
 	// you can get app from a.app in post setup handler
 
 	rootCmd.AddCommand(
 		InitCmd(basicManager, minitiaapp.DefaultNodeHome),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
-		pruning.Cmd(a.newApp, minitiaapp.DefaultNodeHome),
-		snapshot.Cmd(a.newApp),
+		pruning.Cmd(a.AppCreator(), minitiaapp.DefaultNodeHome),
+		snapshot.Cmd(a.AppCreator()),
 	)
-	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.newApp, a.appExport, addModuleInitFlags)
+	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -242,25 +242,30 @@ func txCommand() *cobra.Command {
 }
 
 type appCreator struct {
-	app            servertypes.Application
-	encodingConfig params.EncodingConfig
+	app servertypes.Application
 }
 
 // newApp is an AppCreator
-func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
-	baseappOptions := server.DefaultBaseappOptions(appOpts)
+func (a *appCreator) AppCreator() servertypes.AppCreator {
+	return func(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+		baseappOptions := server.DefaultBaseappOptions(appOpts)
 
-	app := minitiaapp.NewMinitiaApp(
-		logger, db, traceStore, true,
-		moveconfig.GetConfig(appOpts),
-		appOpts,
-		baseappOptions...,
-	)
+		app := minitiaapp.NewMinitiaApp(
+			logger, db, traceStore, true,
+			moveconfig.GetConfig(appOpts),
+			appOpts,
+			baseappOptions...,
+		)
 
-	// store app in creator
-	a.app = app
+		// store app in creator
+		a.app = app
 
-	return app
+		return app
+	}
+}
+
+func (a *appCreator) App() servertypes.Application {
+	return a.app
 }
 
 func (a appCreator) appExport(
