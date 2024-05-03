@@ -27,10 +27,10 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.2.6
 	github.com/initia-labs/initia v0.2.7
-	github.com/initia-labs/kvindexer v0.1.2
+	github.com/initia-labs/kvindexer v0.1.3
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
-	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.1
-	github.com/initia-labs/kvindexer/submodules/move-pair v0.1.0
+	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.2
+	github.com/initia-labs/kvindexer/submodules/pair v0.1.1
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
 	github.com/initia-labs/movevm v0.2.7
@@ -262,7 +262,7 @@ replace (
 // initia custom
 replace (
 	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240425025334-db711cb7c25d
-	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20240425031032-6bc18cf6e67d
+	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20240502043911-a4bdb8e06769
 	github.com/cosmos/iavl => github.com/initia-labs/iavl v0.0.0-20240415085037-7e81233cdd9e
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20240419124350-4275a05abe2c
 	github.com/skip-mev/slinky => github.com/initia-labs/slinky v0.0.0-20240418051646-d45167cc66b1
