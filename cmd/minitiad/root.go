@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"io"
 	"os"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/errgroup"
 
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
@@ -57,7 +59,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	sdkConfig.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	sdkConfig.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
 	sdkConfig.SetAddressVerifier(minitiaapp.VerifyAddressLen())
-	//sdkConfig.Seal()
+
+	// seal moved to post setup
+	// sdkConfig.Seal()
 
 	encodingConfig := minitiaapp.MakeEncodingConfig()
 	basicManager := minitiaapp.BasicManager()
@@ -149,7 +153,13 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 		pruning.Cmd(a.AppCreator(), minitiaapp.DefaultNodeHome),
 		snapshot.Cmd(a.AppCreator()),
 	)
-	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, addModuleInitFlags)
+	server.AddCommandsWithStartCmdOptions(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, server.StartCmdOptions{
+		AddFlags: addModuleInitFlags,
+		PostSetup: func(svrCtx *server.Context, clientCtx client.Context, ctx context.Context, g *errgroup.Group) error {
+			sdk.GetConfig().Seal()
+			return nil
+		},
+	})
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
