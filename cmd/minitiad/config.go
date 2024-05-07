@@ -69,6 +69,10 @@ func initTendermintConfig() *tmcfg.Config {
 	cfg.Consensus.CreateEmptyBlocks = false
 	cfg.Consensus.CreateEmptyBlocksInterval = time.Minute
 
+	// rpc configure
+	cfg.RPC.ListenAddress = "tcp://0.0.0.0:26657"
+	cfg.RPC.CORSAllowedOrigins = []string{"*"}
+
 	// block time to 0.5s
 	cfg.Consensus.TimeoutPropose = 300 * time.Millisecond
 	cfg.Consensus.TimeoutProposeDelta = 500 * time.Millisecond
