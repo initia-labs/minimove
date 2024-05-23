@@ -39,6 +39,8 @@ func initAppConfig() (string, interface{}) {
 	//
 	// In simapp, we set the min gas prices to 0.
 	srvCfg.MinGasPrices = fmt.Sprintf("0%s", types.BaseDenom)
+	srvCfg.Mempool.MaxTxs = 2000
+	srvCfg.QueryGasLimit = 3000000
 
 	// Enable API and unsafe CORS (CORS allowed from any host)
 	srvCfg.API.Enable = true
