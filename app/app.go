@@ -915,23 +915,23 @@ func NewMinitiaApp(
 	app.SetMempool(mempool)
 	anteHandler := app.setAnteHandler(mevLane, freeLane)
 
-	// NOTE seems this optional, to reduce mempool logic cost
-	// skip this for now
-	//
 	// set the ante handler for each lane
 	//
-	// opt := []blockbase.LaneOption{
-	// 	blockbase.WithAnteHandler(anteHandler),
-	// }
-	// mevLane.WithOptions(
-	// 	opt...,
-	// )
-	// freeLane.(*blockbase.BaseLane).WithOptions(
-	// 	opt...,
-	// )
-	// defaultLane.(*blockbase.BaseLane).WithOptions(
-	// 	opt...,
-	// )
+	opt := []blockbase.LaneOption{
+		blockbase.WithAnteHandler(anteHandler),
+	}
+	systemLane.(*blockbase.BaseLane).WithOptions(
+		opt...,
+	)
+	mevLane.WithOptions(
+		opt...,
+	)
+	freeLane.(*blockbase.BaseLane).WithOptions(
+		opt...,
+	)
+	defaultLane.(*blockbase.BaseLane).WithOptions(
+		opt...,
+	)
 
 	// override the base-app's ABCI methods (CheckTx, PrepareProposal, ProcessProposal)
 	proposalHandlers := mevabci.NewProposalHandler(
