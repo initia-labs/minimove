@@ -26,7 +26,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.2.10
-	github.com/initia-labs/initia v0.2.19
+	github.com/initia-labs/initia v0.2.21
 	github.com/initia-labs/kvindexer v0.1.3
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.3
@@ -34,7 +34,7 @@ require (
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#5
-	github.com/initia-labs/movevm v0.2.11
+	github.com/initia-labs/movevm v0.2.12
 	github.com/noble-assets/forwarding v0.0.0-20240416085758-ed8e9efaf69a
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
