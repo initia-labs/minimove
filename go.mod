@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.2
 
 require (
-	cosmossdk.io/api v0.7.4
+	cosmossdk.io/api v0.7.5
 	cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	cosmossdk.io/core v0.11.0
 	cosmossdk.io/errors v1.0.1
@@ -17,7 +17,7 @@ require (
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/cometbft/cometbft v0.38.7
 	github.com/cosmos/cosmos-db v1.0.2
-	github.com/cosmos/cosmos-sdk v0.50.6
+	github.com/cosmos/cosmos-sdk v0.50.7-0.20240517114248-b99ca2c1fded
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.12
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
@@ -25,15 +25,15 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.2.1
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.3.1
-	github.com/initia-labs/initia v0.3.2
+	github.com/initia-labs/OPinit v0.3.2
+	github.com/initia-labs/initia v0.3.3
 	github.com/initia-labs/kvindexer v0.1.3
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.3
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.1
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
-	github.com/initia-labs/movevm v0.3.1
+	github.com/initia-labs/movevm v0.3.3
 	github.com/noble-assets/forwarding/v2 v2.0.0-20240514101621-172acc02aac6
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
@@ -45,6 +45,8 @@ require (
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/sync v0.7.0
 )
+
+require golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
@@ -219,7 +221,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
@@ -247,6 +248,9 @@ replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+	// Use latest iavl version to fix working hash issue for initial version.
+	github.com/cosmos/iavl => github.com/cosmos/iavl v1.1.4
+
 	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
@@ -264,6 +268,5 @@ replace (
 replace (
 	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240621094738-408dc5262680
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20240502043911-a4bdb8e06769
-	github.com/cosmos/iavl => github.com/initia-labs/iavl v0.0.0-20240415085037-7e81233cdd9e
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20240419124350-4275a05abe2c
 )
