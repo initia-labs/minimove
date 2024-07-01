@@ -802,6 +802,8 @@ github.com/initia-labs/initia v0.3.3 h1:82ZkXki6CG+F+rPDBVpTzzSQY8NalXIZ0LnYSWNd
 github.com/initia-labs/initia v0.3.3/go.mod h1:1yWifo9GnhIvwDtCTTN6kb2mfq2On+oel6ha/rBXaQQ=
 github.com/initia-labs/kvindexer v0.1.3 h1:TLkgJjp5TiPnH+OzYfk7ZKQTKqGOfSte59Y3gasob+o=
 github.com/initia-labs/kvindexer v0.1.3/go.mod h1:rvAmgCAmEs4KM8sRRPcyTqNNwi8s2JiHybiFkYfp4KE=
+github.com/initia-labs/kvindexer v0.1.4 h1:dtdDuIFjLCXVTnHCPw8LIl6ry1cnwNhQyRtQdHpCGGU=
+github.com/initia-labs/kvindexer v0.1.4/go.mod h1:rvAmgCAmEs4KM8sRRPcyTqNNwi8s2JiHybiFkYfp4KE=
 github.com/initia-labs/kvindexer/submodules/block v0.1.0 h1:y+EXnksd/I2F96mzIoQA64nZUZON2P+99YrSzeLCLoY=
 github.com/initia-labs/kvindexer/submodules/block v0.1.0/go.mod h1:4c+c59wVAnjuaJv/pcDYaUkeVmOqVV+orqEjya/RIjo=
 github.com/initia-labs/kvindexer/submodules/move-nft v0.1.3 h1:0Gx1x2ZeIa8/UQ6aSUx/ePDHNCOd3HS8EL3WIQGf1lU=
