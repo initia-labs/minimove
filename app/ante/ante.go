@@ -11,6 +11,7 @@ import (
 
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	initiaante "github.com/initia-labs/initia/app/ante"
 	moveante "github.com/initia-labs/initia/x/move/ante"
 
 	"github.com/skip-mev/block-sdk/v2/block"
@@ -73,6 +74,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
+		initiaante.NewAccountNumberDecorator(options.AccountKeeper),
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
 		moveante.NewGasPricesDecorator(),
