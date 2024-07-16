@@ -6,7 +6,9 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
@@ -41,6 +43,9 @@ import (
 	minitiaapp "github.com/initia-labs/minimove/app"
 
 	opchildcli "github.com/initia-labs/OPinit/x/opchild/client/cli"
+	kvindexerconfig "github.com/initia-labs/kvindexer/config"
+	kvindexerstore "github.com/initia-labs/kvindexer/store"
+	kvindexerkeeper "github.com/initia-labs/kvindexer/x/kvindexer/keeper"
 )
 
 // NewRootCmd creates a new root command for initiad. It is called once in the
@@ -260,8 +265,14 @@ func (a *appCreator) AppCreator() servertypes.AppCreator {
 	return func(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 		baseappOptions := server.DefaultBaseappOptions(appOpts)
 
+		dbDir, kvdbConfig := getDBConfig(appOpts)
+		kvindexerDB, err := kvindexerstore.OpenDB(dbDir, kvindexerkeeper.StoreName, kvdbConfig.BackendConfig)
+		if err != nil {
+			panic(err)
+		}
+
 		app := minitiaapp.NewMinitiaApp(
-			logger, db, traceStore, true,
+			logger, db, kvindexerDB, traceStore, true,
 			moveconfig.GetConfig(appOpts),
 			appOpts,
 			baseappOptions...,
@@ -296,13 +307,13 @@ func (a appCreator) appExport(
 
 	var initiaApp *minitiaapp.MinitiaApp
 	if height != -1 {
-		initiaApp = minitiaapp.NewMinitiaApp(logger, db, traceStore, false, moveconfig.DefaultMoveConfig(), appOpts)
+		initiaApp = minitiaapp.NewMinitiaApp(logger, db, dbm.NewMemDB(), traceStore, false, moveconfig.DefaultMoveConfig(), appOpts)
 
 		if err := initiaApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		initiaApp = minitiaapp.NewMinitiaApp(logger, db, traceStore, true, moveconfig.DefaultMoveConfig(), appOpts)
+		initiaApp = minitiaapp.NewMinitiaApp(logger, db, dbm.NewMemDB(), traceStore, true, moveconfig.DefaultMoveConfig(), appOpts)
 	}
 
 	return initiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
@@ -350,4 +361,24 @@ func readEnv(clientCtx client.Context) (client.Context, error) {
 	}
 
 	return clientCtx, nil
+}
+
+// getDBConfig returns the database configuration for the EVM indexer
+func getDBConfig(appOpts servertypes.AppOptions) (string, *kvindexerconfig.IndexerConfig) {
+	rootDir := cast.ToString(appOpts.Get("home"))
+	dbDir := cast.ToString(appOpts.Get("db_dir"))
+	dbBackend, err := kvindexerconfig.NewConfig(appOpts)
+	if err != nil {
+		panic(err)
+	}
+
+	return rootify(dbDir, rootDir), dbBackend
+}
+
+// helper function to make config creation independent of root dir
+func rootify(path, root string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	return filepath.Join(root, path)
 }
