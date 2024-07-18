@@ -66,7 +66,7 @@ func TestInitGenesisOnMigration(t *testing.T) {
 	db := dbm.NewMemDB()
 	logger := log.NewLogger(os.Stdout)
 	app := NewMinitiaApp(
-		logger, db, nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+		logger, db, dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 	ctx := app.NewContextLegacy(true, cmtproto.Header{Height: app.LastBlockHeight()})
 
 	// Create a mock module. This module will serve as the new module we're
@@ -122,7 +122,7 @@ func TestGetKey(t *testing.T) {
 	db := dbm.NewMemDB()
 	app := NewMinitiaApp(
 		log.NewLogger(os.Stdout),
-		db, nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+		db, dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 
 	require.NotEmpty(t, app.GetKey(banktypes.StoreKey))
 	require.NotEmpty(t, app.GetMemKey(capabilitytypes.MemStoreKey))

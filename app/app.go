@@ -271,6 +271,7 @@ type MinitiaApp struct {
 func NewMinitiaApp(
 	logger log.Logger,
 	db dbm.DB,
+	kvindexerDB dbm.DB,
 	traceStore io.Writer,
 	loadLatest bool,
 	moveConfig moveconfig.MoveConfig,
@@ -770,7 +771,7 @@ func NewMinitiaApp(
 		marketmap.NewAppModule(appCodec, app.MarketMapKeeper),
 	)
 
-	if err := app.setupIndexer(appOpts, homePath, ac, vc, appCodec); err != nil {
+	if err := app.setupIndexer(appOpts, kvindexerDB, ac, vc, appCodec); err != nil {
 		panic(err)
 	}
 
@@ -1269,7 +1270,7 @@ func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 func (app *MinitiaApp) TxConfig() client.TxConfig {
 	return app.txConfig
 }
-func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath string, ac, vc address.Codec, appCodec codec.Codec) error {
+func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, kvindexerDB dbm.DB, ac, vc address.Codec, appCodec codec.Codec) error {
 	// initialize the indexer fake-keeper
 	indexerConfig, err := indexerconfig.NewConfig(appOpts)
 	if err != nil {
@@ -1278,7 +1279,7 @@ func (app *MinitiaApp) setupIndexer(appOpts servertypes.AppOptions, homePath str
 	app.indexerKeeper = indexerkeeper.NewKeeper(
 		appCodec,
 		"move",
-		homePath,
+		kvindexerDB,
 		indexerConfig,
 		ac,
 		vc,
