@@ -60,4 +60,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            minimove${{ env.VERSION }}_Darwin_${{ env.ARCH_NAME }}.tar.gz
+            minimove_${{ env.VERSION }}_Darwin_${{ env.ARCH_NAME }}.tar.gz
