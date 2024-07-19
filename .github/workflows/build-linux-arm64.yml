@@ -37,14 +37,14 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         run: |
-          # BuildKit 활성화 및 새 빌더 생성
+          # Activate BuildKit and create a new builder
           docker buildx create --use --name arm64-builder --platform linux/arm64
           docker buildx inspect --bootstrap
 
-          # ARM64용 이미지 빌드
+          # Building images for ARM64
           docker buildx build --platform linux/arm64 --load --tag minitia/minitiad-shared:arm64 . -f Dockerfile.arm64
 
-          # ARM64 이미지를 사용하여 빌드 결과물 추출
+          # Extract build output using ARM64 images
           mkdir -p ./build
           docker create --name temp minitia/minitiad-shared:arm64
           docker cp temp:/usr/local/bin/minitiad ./build/
@@ -52,7 +52,7 @@ jobs:
           docker cp temp:/lib/libcompiler.so ./build/
           docker rm temp
 
-          # 결과물 패키징
+          # Packaging of results
           cd ./build
           mkdir -p minimove_${VERSION}
           mv minitiad minimove_${VERSION}/
@@ -61,12 +61,12 @@ jobs:
           tar -czvf minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz minimove_${VERSION}
           mv minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz ../
 
-          # 빌드 결과 확인
+          # Check build results
           cd ..
           ls -l
           file minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz
 
-          # 빌더 제거
+          # remove builder
           docker buildx rm arm64-builder
 
       - name: List files
