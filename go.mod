@@ -27,9 +27,9 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.3.2
 	github.com/initia-labs/initia v0.3.4
-	github.com/initia-labs/kvindexer v0.1.3
+	github.com/initia-labs/kvindexer v0.1.6
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
-	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.3
+	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.4
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.1
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
 	// we also need to update `LIBMOVEVM_VERSION` of images/private/Dockerfile#5
@@ -63,6 +63,7 @@ require (
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // indirect
+	github.com/allegro/bigcache/v3 v3.1.0 // indirect
 	github.com/aptos-labs/serde-reflection/serde-generate/runtime/golang v0.0.0-20231213012317-73b6bbf74833 // indirect
 	github.com/avast/retry-go/v4 v4.5.1 // indirect
 	github.com/aws/aws-sdk-go v1.44.312 // indirect
