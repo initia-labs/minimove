@@ -3,11 +3,13 @@ package app
 import (
 	"golang.org/x/exp/maps"
 
+	// cosmos mod modules
 	"cosmossdk.io/x/feegrant"
 	feegrantmodule "cosmossdk.io/x/feegrant/module"
 	"cosmossdk.io/x/upgrade"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	// cosmos modules
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -21,11 +23,12 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-	"github.com/cosmos/ibc-go/modules/capability"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
+	// ibc modules
 	packetforward "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
+	"github.com/cosmos/ibc-go/modules/capability"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
@@ -37,6 +40,7 @@ import (
 	solomachine "github.com/cosmos/ibc-go/v8/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
+	// initia ibc modules
 	ibchooks "github.com/initia-labs/initia/x/ibc-hooks"
 	ibchookstypes "github.com/initia-labs/initia/x/ibc-hooks/types"
 	ibcnfttransfer "github.com/initia-labs/initia/x/ibc/nft-transfer"
@@ -44,14 +48,17 @@ import (
 	icaauth "github.com/initia-labs/initia/x/intertx"
 	icaauthtypes "github.com/initia-labs/initia/x/intertx/types"
 
+	// initia modules
 	authzmodule "github.com/initia-labs/initia/x/authz/module"
 	"github.com/initia-labs/initia/x/bank"
 	"github.com/initia-labs/initia/x/move"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
+	// opinit modules
 	opchild "github.com/initia-labs/OPinit/x/opchild"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 
+	// skip-mev modules
 	"github.com/skip-mev/block-sdk/v2/x/auction"
 	auctiontypes "github.com/skip-mev/block-sdk/v2/x/auction/types"
 	marketmap "github.com/skip-mev/slinky/x/marketmap"
@@ -62,7 +69,6 @@ import (
 	// noble forwarding keeper
 	forwarding "github.com/noble-assets/forwarding/v2/x/forwarding"
 	forwardingtypes "github.com/noble-assets/forwarding/v2/x/forwarding/types"
-	// kvindexer
 )
 
 // module account permissions

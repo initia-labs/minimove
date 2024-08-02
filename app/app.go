@@ -12,16 +12,19 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
+	// cosmos mod modules
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	// cometbft modules
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmos "github.com/cometbft/cometbft/libs/os"
 
+	// cosmos modules
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -49,24 +52,28 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/gogoproto/proto"
 
+	// ibc modules
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
+	// initia ibc modules
 	"github.com/initia-labs/initia/app/params"
 	ibctestingtypes "github.com/initia-labs/initia/x/ibc/testing/types"
 	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 
+	// initia modules
 	cryptocodec "github.com/initia-labs/initia/crypto/codec"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
+	// skip-mev modules
 	blockchecktx "github.com/skip-mev/block-sdk/v2/abci/checktx"
 
+	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
 
-	// kvindexer
-
+	// kvindexer modules
 	kvindexermodule "github.com/initia-labs/kvindexer/x/kvindexer"
 	kvindexerkeeper "github.com/initia-labs/kvindexer/x/kvindexer/keeper"
 
