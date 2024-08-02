@@ -287,7 +287,6 @@ func NewMinitiaApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	// setup BlockSDK
-
 	mempool, anteHandler, checkTx, prepareProposalHandler, processProposalHandler, err := setupBlockSDK(app, mempoolMaxTxs)
 	if err != nil {
 		tmos.Exit(err.Error())
