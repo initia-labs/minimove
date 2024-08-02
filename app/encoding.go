@@ -4,7 +4,6 @@ import (
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/log"
-	db "github.com/cosmos/cosmos-db"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
@@ -17,7 +16,7 @@ import (
 )
 
 func MakeEncodingConfig() params.EncodingConfig {
-	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), db.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
 		Codec:             tempApp.AppCodec(),
@@ -29,7 +28,7 @@ func MakeEncodingConfig() params.EncodingConfig {
 }
 
 func AutoCliOpts() autocli.AppOptions {
-	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), db.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
 	modules := make(map[string]appmodule.AppModule, 0)
 	for _, m := range tempApp.ModuleManager.Modules {
 		if moduleWithName, ok := m.(module.HasName); ok {
