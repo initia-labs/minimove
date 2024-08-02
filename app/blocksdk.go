@@ -18,8 +18,6 @@ import (
 	mevlane "github.com/skip-mev/block-sdk/v2/lanes/mev"
 
 	appante "github.com/initia-labs/minimove/app/ante"
-	// noble forwarding keeper
-	// kvindexer
 )
 
 func setupBlockSDK(
