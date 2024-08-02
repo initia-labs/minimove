@@ -93,7 +93,7 @@ var (
 func init() {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+AppName)
@@ -250,7 +250,7 @@ func NewMinitiaApp(
 	if kvIndexerKeeper, kvIndexerModule, streamingManager, err := setupIndexer(app, appOpts, kvindexerDB); err != nil {
 		tmos.Exit(err.Error())
 	} else if kvIndexerKeeper != nil && kvIndexerModule != nil && streamingManager != nil {
-		// register kvindexer keeper and module
+		// register kvindexer keeper and module, and register services.
 		app.SetKVIndexer(kvIndexerKeeper, kvIndexerModule)
 
 		// override base-app's streaming manager
@@ -263,14 +263,14 @@ func NewMinitiaApp(
 	// register executor change plans for later use
 	err = app.RegisterExecutorChangePlans()
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
 
 	reflectionSvc, err := runtimeservices.NewReflectionService()
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
@@ -310,7 +310,7 @@ func NewMinitiaApp(
 	// annotations are correct.
 	protoFiles, err := proto.MergedRegistry()
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 	err = msgservice.ValidateProtoAnnotations(protoFiles)
 	if err != nil {
@@ -361,13 +361,13 @@ func (app *MinitiaApp) setPostHandler() {
 		posthandler.HandlerOptions{},
 	)
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 
 	app.SetPostHandler(postHandler)
 }
 
-// SetKVIndexer sets the kvindexer keeper and module for the app.
+// SetKVIndexer sets the kvindexer keeper and module for the app and registers the services.
 func (app *MinitiaApp) SetKVIndexer(kvIndexerKeeper *kvindexerkeeper.Keeper, kvIndexerModule *kvindexermodule.AppModuleBasic) {
 	app.kvIndexerKeeper = kvIndexerKeeper
 	app.kvIndexerModule = kvIndexerModule
@@ -396,10 +396,10 @@ func (app *MinitiaApp) EndBlocker(ctx sdk.Context) (sdk.EndBlock, error) {
 func (app *MinitiaApp) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 	if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 	return app.ModuleManager.InitGenesis(ctx, app.appCodec, genesisState)
 }
@@ -515,7 +515,7 @@ func (app *MinitiaApp) RegisterNodeService(clientCtx client.Context, cfg config.
 func RegisterSwaggerAPI(rtr *mux.Router) {
 	statikFS, err := fs.New()
 	if err != nil {
-		panic(err)
+		tmos.Exit(err.Error())
 	}
 
 	staticServer := http.FileServer(statikFS)
