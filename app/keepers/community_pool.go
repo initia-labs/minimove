@@ -15,7 +15,7 @@ type CommunityPoolKeeper struct {
 	feeCollectorName string
 }
 
-func NewCommunityPoolKeeper(bk BankKeeper, feeCollectorName string) CommunityPoolKeeper {
+func newCommunityPoolKeeper(bk BankKeeper, feeCollectorName string) CommunityPoolKeeper {
 	return CommunityPoolKeeper{
 		bk:               bk,
 		feeCollectorName: feeCollectorName,
