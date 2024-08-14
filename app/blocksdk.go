@@ -105,18 +105,9 @@ func setupBlockSDK(
 	opt := []blockbase.LaneOption{
 		blockbase.WithAnteHandler(anteHandler),
 	}
-	systemLane.(*blockbase.BaseLane).WithOptions(
-		opt...,
-	)
-	mevLane.WithOptions(
-		opt...,
-	)
-	freeLane.(*blockbase.BaseLane).WithOptions(
-		opt...,
-	)
-	defaultLane.(*blockbase.BaseLane).WithOptions(
-		opt...,
-	)
+	for _, lane := range lanes {
+		lane.(*blockbase.BaseLane).WithOptions(opt...)
+	}
 
 	mevCheckTx := blockchecktx.NewMEVCheckTxHandler(
 		app.BaseApp,
