@@ -2,6 +2,7 @@ package ante
 
 import (
 	"cosmossdk.io/errors"
+	txsigning "cosmossdk.io/x/tx/signing"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -94,4 +95,14 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+func CreateAnteHandlerForOPinit(ak ante.AccountKeeper, signModeHandler *txsigning.HandlerMap) sdk.AnteHandler {
+	return sdk.ChainAnteDecorators(
+		ante.NewSetPubKeyDecorator(ak),
+		ante.NewValidateSigCountDecorator(ak),
+		ante.NewSigGasConsumeDecorator(ak, ante.DefaultSigVerificationGasConsumer),
+		ante.NewSigVerificationDecorator(ak, signModeHandler),
+		ante.NewIncrementSequenceDecorator(ak),
+	)
 }

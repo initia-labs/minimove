@@ -13,6 +13,7 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -81,7 +82,7 @@ import (
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
-	apphook "github.com/initia-labs/minimove/app/hook"
+	"github.com/initia-labs/minimove/app/ante"
 
 	// noble forwarding keeper
 	forwarding "github.com/noble-assets/forwarding/v2/x/forwarding"
@@ -135,6 +136,7 @@ type AppKeepers struct {
 func NewAppKeeper(
 	ac, vc, cc address.Codec,
 	appCodec codec.Codec,
+	txConfig client.TxConfig,
 	bApp *baseapp.BaseApp,
 	legacyAmino *codec.LegacyAmino,
 	maccPerms map[string][]string,
@@ -235,8 +237,9 @@ func NewAppKeeper(
 		runtime.NewKVStoreService(appKeepers.keys[opchildtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
-		apphook.NewMoveBridgeHook(ac, appKeepers.MoveKeeper).Hook,
 		appKeepers.OracleKeeper,
+		ante.CreateAnteHandlerForOPinit(appKeepers.AccountKeeper, txConfig.SignModeHandler()),
+		txConfig.TxDecoder(),
 		bApp.MsgServiceRouter(),
 		authorityAddr,
 		ac,

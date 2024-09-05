@@ -37516,6 +37516,9 @@ paths:
                         type: string
                         format: uint64
                         description: The the first l2 block will be recorded on l1.
+                      oracle_enabled:
+                        type: boolean
+                        description: oracle_enabled is a flag to enable oracle.
                       metadata:
                         type: string
                         format: byte
@@ -39978,6 +39981,9 @@ paths:
                   contract_shared_revenue_ratio:
                     type: string
                     title: 'CSR: Percentage of fees distributed to developers'
+                  script_enabled:
+                    type: boolean
+                    title: flag whether to enable script execution
                   allowed_publishers:
                     type: array
                     items:
@@ -68938,6 +68944,9 @@ definitions:
             type: string
             format: uint64
             description: The the first l2 block will be recorded on l1.
+          oracle_enabled:
+            type: boolean
+            description: oracle_enabled is a flag to enable oracle.
           metadata:
             type: string
             format: byte
@@ -69066,6 +69075,9 @@ definitions:
                 type: string
                 format: uint64
                 description: The the first l2 block will be recorded on l1.
+              oracle_enabled:
+                type: boolean
+                description: oracle_enabled is a flag to enable oracle.
               metadata:
                 type: string
                 format: byte
@@ -69839,6 +69851,9 @@ definitions:
         type: string
         format: uint64
         description: The the first l2 block will be recorded on l1.
+      oracle_enabled:
+        type: boolean
+        description: oracle_enabled is a flag to enable oracle.
       metadata:
         type: string
         format: byte
@@ -69884,6 +69899,9 @@ definitions:
       contract_shared_revenue_ratio:
         type: string
         title: 'CSR: Percentage of fees distributed to developers'
+      script_enabled:
+        type: boolean
+        title: flag whether to enable script execution
       allowed_publishers:
         type: array
         items:
@@ -70065,6 +70083,9 @@ definitions:
           contract_shared_revenue_ratio:
             type: string
             title: 'CSR: Percentage of fees distributed to developers'
+          script_enabled:
+            type: boolean
+            title: flag whether to enable script execution
           allowed_publishers:
             type: array
             items:
