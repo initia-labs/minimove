@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"io"
 	"os"
@@ -11,7 +10,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/sync/errgroup"
 
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
@@ -95,6 +93,11 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		Use:   basename,
 		Short: "minitia App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			// except for launch command, seal the config
+			if cmd.Name() != "launch" {
+				sdk.GetConfig().Seal()
+			}
+
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
@@ -156,13 +159,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 		pruning.Cmd(a.AppCreator(), minitiaapp.DefaultNodeHome),
 		snapshot.Cmd(a.AppCreator()),
 	)
-	server.AddCommandsWithStartCmdOptions(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, server.StartCmdOptions{
-		AddFlags: addModuleInitFlags,
-		PostSetup: func(svrCtx *server.Context, clientCtx client.Context, ctx context.Context, g *errgroup.Group) error {
-			sdk.GetConfig().Seal()
-			return nil
-		},
-	})
+	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
