@@ -180,6 +180,9 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 
 	// add launch commands
 	rootCmd.AddCommand(LaunchCommand(a, encodingConfig, basicManager))
+	rootCmd.AddCommand(
+		NewMultipleRollbackCmd(a.AppCreator()),
+	)
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
