@@ -274,6 +274,6 @@ replace (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240920025550-5f9e1f33d35f
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240920052708-9503a2ea4a25
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20240802003717-19c0b4ad450d
 )
