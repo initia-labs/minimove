@@ -32,6 +32,9 @@ blocks after the given height are removed from the blockchain.
 			if err != nil {
 				return err
 			}
+			if height <= 0 {
+				return fmt.Errorf("height must be greater than 0")
+			}
 
 			dataDir := filepath.Join(ctx.Config.RootDir, "data")
 			db, err := dbm.NewDB("application", server.GetAppDBBackend(ctx.Viper), dataDir)
@@ -39,6 +42,10 @@ blocks after the given height are removed from the blockchain.
 				return err
 			}
 			app := appCreator(ctx.Logger, db, nil, ctx.Viper)
+			if curHeight := app.CommitMultiStore().LatestVersion(); height >= curHeight {
+				return fmt.Errorf("height must be less than the current height %d", curHeight)
+			}
+
 			// rollback CometBFT state
 			height, hash, err := cmtcmd.RollbackMultipleState(ctx.Config, height)
 			if err != nil {
