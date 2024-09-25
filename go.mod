@@ -25,8 +25,8 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.5.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.5.0
-	github.com/initia-labs/initia v0.5.0
+	github.com/initia-labs/OPinit v0.5.1
+	github.com/initia-labs/initia v0.5.1
 	github.com/initia-labs/kvindexer v0.1.8
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.5
@@ -166,7 +166,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/OPinit/api v0.5.0 // indirect
+	github.com/initia-labs/OPinit/api v0.5.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/jsternberg/zap-logfmt v1.3.0 // indirect
@@ -277,7 +277,7 @@ replace (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240925074544-6cf7d75a37c3
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20240925132752-ff8ff0126261
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20240802003717-19c0b4ad450d
 
 	// use custom version until this PR is merged
