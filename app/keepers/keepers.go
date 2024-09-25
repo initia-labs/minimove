@@ -77,10 +77,10 @@ import (
 
 	auctionkeeper "github.com/skip-mev/block-sdk/v2/x/auction/keeper"
 	auctiontypes "github.com/skip-mev/block-sdk/v2/x/auction/types"
-	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	marketmapkeeper "github.com/skip-mev/connect/v2/x/marketmap/keeper"
+	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	oraclekeeper "github.com/skip-mev/connect/v2/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
 	"github.com/initia-labs/minimove/app/ante"
 
@@ -119,7 +119,7 @@ type AppKeepers struct {
 	IBCHooksKeeper        *ibchookskeeper.Keeper
 	AuctionKeeper         *auctionkeeper.Keeper // x/auction keeper used to process bids for TOB auctions
 	PacketForwardKeeper   *packetforwardkeeper.Keeper
-	OracleKeeper          *oraclekeeper.Keeper // x/oracle keeper used for the slinky oracle
+	OracleKeeper          *oraclekeeper.Keeper // x/oracle keeper used for the connect oracle
 	MarketMapKeeper       *marketmapkeeper.Keeper
 	ForwardingKeeper      *forwardingkeeper.Keeper
 	RatelimitKeeper       *ratelimitkeeper.Keeper
@@ -546,7 +546,7 @@ func NewAppKeeper(
 	queryWhitelist.Custom["chain_id"] = func(ctx context.Context, _ []byte) ([]byte, error) {
 		return []byte(sdk.UnwrapSDKContext(ctx).ChainID()), nil
 	}
-	queryWhitelist.Stargate["/slinky.oracle.v1.Query/GetPrices"] = movetypes.ProtoSet{
+	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetPrices"] = movetypes.ProtoSet{
 		Request:  &oracletypes.GetPricesRequest{},
 		Response: &oracletypes.GetPricesResponse{},
 	}

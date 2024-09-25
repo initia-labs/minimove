@@ -14,16 +14,16 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctypes "github.com/cosmos/ibc-go/v8/modules/core/types"
 
-	l2slinky "github.com/initia-labs/OPinit/x/opchild/l2slinky"
+	l2connect "github.com/initia-labs/OPinit/x/opchild/l2connect"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	"github.com/initia-labs/initia/app/genesis_markets"
 	movetypes "github.com/initia-labs/initia/x/move/types"
 	"github.com/initia-labs/movevm/precompile"
 
 	auctiontypes "github.com/skip-mev/block-sdk/v2/x/auction/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
+	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
+	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 )
 
 // GenesisState - The genesis state of the blockchain is represented here as a map of raw json
@@ -78,7 +78,7 @@ func (genState GenesisState) AddMarketData(cdc codec.JSONCodec, ac address.Codec
 
 	// Initialize all markets plus ReservedCPTimestamp
 	currencyPairGenesis := make([]oracletypes.CurrencyPairGenesis, len(markets)+1)
-	cp, err := slinkytypes.CurrencyPairFromString(l2slinky.ReservedCPTimestamp)
+	cp, err := connecttypes.CurrencyPairFromString(l2connect.ReservedCPTimestamp)
 	if err != nil {
 		panic(err)
 	}
