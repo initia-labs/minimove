@@ -25,8 +25,8 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.5.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.5.1
-	github.com/initia-labs/initia v0.5.1
+	github.com/initia-labs/OPinit v0.5.2
+	github.com/initia-labs/initia v0.5.2
 	github.com/initia-labs/kvindexer v0.1.8
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.5
