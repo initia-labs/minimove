@@ -173,7 +173,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 	ac := encodingConfig.TxConfig.SigningContext().AddressCodec()
 
 	// add move commands
-	rootCmd.AddCommand(movecmd.MoveCommand(ac))
+	rootCmd.AddCommand(movecmd.MoveCommand(ac, true))
 
 	// add launch commands
 	rootCmd.AddCommand(LaunchCommand(a, encodingConfig, basicManager))
