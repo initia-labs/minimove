@@ -41,7 +41,7 @@ func setupBlockSDK(
 		Logger:          app.Logger(),
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.01"),
+		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.1"),
 		MaxTxs:          1,
 		SignerExtractor: signerExtractor,
 	}, opchildlanes.SystemLaneMatchHandler())
@@ -51,7 +51,7 @@ func setupBlockSDK(
 		Logger:          app.Logger(),
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.09"),
+		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.1"),
 		MaxTxs:          100,
 		SignerExtractor: signerExtractor,
 	}, factory, factory.MatchHandler())
@@ -69,7 +69,7 @@ func setupBlockSDK(
 		Logger:          app.Logger(),
 		TxEncoder:       app.txConfig.TxEncoder(),
 		TxDecoder:       app.txConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.8"),
+		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.7"),
 		MaxTxs:          mempoolMaxTxs,
 		SignerExtractor: signerExtractor,
 	})
