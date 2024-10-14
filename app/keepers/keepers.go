@@ -546,10 +546,19 @@ func NewAppKeeper(
 	queryWhitelist.Custom["chain_id"] = func(ctx context.Context, _ []byte) ([]byte, error) {
 		return []byte(sdk.UnwrapSDKContext(ctx).ChainID()), nil
 	}
+	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetAllCurrencyPairs"] = movetypes.ProtoSet{
+		Request:  &oracletypes.GetAllCurrencyPairsResponse{},
+		Response: &oracletypes.GetAllCurrencyPairsResponse{},
+	}
+	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetPrice"] = movetypes.ProtoSet{
+		Request:  &oracletypes.GetPriceRequest{},
+		Response: &oracletypes.GetPriceResponse{},
+	}
 	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetPrices"] = movetypes.ProtoSet{
 		Request:  &oracletypes.GetPricesRequest{},
 		Response: &oracletypes.GetPricesResponse{},
 	}
+
 	*appKeepers.MoveKeeper = movekeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[movetypes.StoreKey]),
