@@ -33,10 +33,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
+	"github.com/initia-labs/initia/app/params"
 	movecmd "github.com/initia-labs/initia/cmd/move"
+	cryptokeyring "github.com/initia-labs/initia/crypto/keyring"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 
-	"github.com/initia-labs/initia/app/params"
 	minitiaapp "github.com/initia-labs/minimove/app"
 
 	opchildcli "github.com/initia-labs/OPinit/x/opchild/client/cli"
@@ -87,7 +88,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(minitiaapp.DefaultNodeHome).
-		WithViper(minitiaapp.EnvPrefix)
+		WithViper(minitiaapp.EnvPrefix).
+		WithKeyringOptions(cryptokeyring.Option())
 
 	rootCmd := &cobra.Command{
 		Use:   basename,

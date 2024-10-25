@@ -13,6 +13,7 @@ import (
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	accnumante "github.com/initia-labs/initia/app/ante/accnum"
+	"github.com/initia-labs/initia/app/ante/sigverify"
 	moveante "github.com/initia-labs/initia/x/move/ante"
 
 	"github.com/skip-mev/block-sdk/v2/block"
@@ -88,7 +89,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
-		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
 		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
