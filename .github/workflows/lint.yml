@@ -22,14 +22,10 @@ concurrency:
 
 jobs:
   golangci:
-    env:
-      # for private repo access
-      GOPRIVATE: github.com/initia-labs/*
-      GITHUB_ACCESS_TOKEN: ${{ secrets.GH_READ_TOKEN }}
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2.1.4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.22
       - uses: technote-space/get-diff-action@v5
@@ -39,8 +35,6 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      # for private repo access
-      - run: git config --global url.https://${GITHUB_ACCESS_TOKEN}:x-oauth-basic@github.com/.insteadOf https://github.com/
       - name: run go linters
         run: |
           make tools 
@@ -49,20 +43,14 @@ jobs:
   # Use --check or --exit-code when available (Go 1.19?)
   # https://github.com/golang/go/issues/27005
   tidy:
-    env:
-      # for private repo access
-      GOPRIVATE: github.com/initia-labs/*
-      GITHUB_ACCESS_TOKEN: ${{ secrets.GH_READ_TOKEN }}
     runs-on: ubuntu-latest
     name: tidy
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22
-      # for private repo access
-      - run: git config --global url.https://${GITHUB_ACCESS_TOKEN}:x-oauth-basic@github.com/.insteadOf https://github.com/
       - run: |
           go mod tidy
           CHANGES_IN_REPO=$(git status --porcelain)

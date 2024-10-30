@@ -22,26 +22,21 @@ jobs:
   test-coverage-upload:
     name: Run test and upload codecov
     env:
-      # for private repo access
-      GOPRIVATE: github.com/initia-labs/*
-      GITHUB_ACCESS_TOKEN: ${{ secrets.GH_READ_TOKEN }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.22
       - name: Install openssl
         run: sudo apt-get install libssl-dev
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v4
+      - uses: actions/checkout@v4
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      # for private repo access
-      - run: git config --global url.https://${GITHUB_ACCESS_TOKEN}:x-oauth-basic@github.com/.insteadOf https://github.com/
       - name: build
         run: |
           make build
@@ -59,7 +54,7 @@ jobs:
       #       sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
       #     done
       #   if: env.GIT_DIFF
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.txt
