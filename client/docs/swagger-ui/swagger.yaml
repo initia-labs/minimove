@@ -39371,9 +39371,7 @@ paths:
                         a new module has (a) the same public functions (b) for
                         existing resources, no layout change.
                          - IMMUTABLE: IMMUTABLE: Whether the modules in the package are immutable and cannot be upgraded.
-                  title: |-
-                    Module is data for the uploaded contract move code
-                    ex) 0000000000000000000000000000000000000001/0/BasicCoin
+                  title: Module is data for the uploaded contract move code
               pagination:
                 description: pagination defines the pagination in the response.
                 type: object
@@ -39519,9 +39517,7 @@ paths:
                       a new module has (a) the same public functions (b) for
                       existing resources, no layout change.
                        - IMMUTABLE: IMMUTABLE: Whether the modules in the package are immutable and cannot be upgraded.
-                title: |-
-                  Module is data for the uploaded contract move code
-                  ex) 0000000000000000000000000000000000000001/0/BasicCoin
+                title: Module is data for the uploaded contract move code
             title: |-
               QueryModuleResponse is the response type for the Query/Module RPC
               method
@@ -39688,11 +39684,7 @@ paths:
                     raw_bytes:
                       type: string
                       format: byte
-                  title: >-
-                    Resource is data for the stored move resource
-
-                    ex)
-                    0000000000000000000000000000000000000002/2/0x1::BasicCoin::Coin<0x1::BasicCoin::Initia>
+                  title: Resource is data for the stored move resource
               pagination:
                 description: pagination defines the pagination in the response.
                 type: object
@@ -39825,11 +39817,7 @@ paths:
                   raw_bytes:
                     type: string
                     format: byte
-                title: >-
-                  Resource is data for the stored move resource
-
-                  ex)
-                  0000000000000000000000000000000000000002/2/0x1::BasicCoin::Coin<0x1::BasicCoin::Initia>
+                title: Resource is data for the stored move resource
             title: >-
               QueryResourceResponse is the response type for the Query/Resource
               RPC
@@ -69871,9 +69859,7 @@ definitions:
           a new module has (a) the same public functions (b) for existing
           resources, no layout change.
            - IMMUTABLE: IMMUTABLE: Whether the modules in the package are immutable and cannot be upgraded.
-    title: |-
-      Module is data for the uploaded contract move code
-      ex) 0000000000000000000000000000000000000001/0/BasicCoin
+    title: Module is data for the uploaded contract move code
   initia.move.v1.Params:
     type: object
     properties:
@@ -69991,9 +69977,7 @@ definitions:
               a new module has (a) the same public functions (b) for existing
               resources, no layout change.
                - IMMUTABLE: IMMUTABLE: Whether the modules in the package are immutable and cannot be upgraded.
-        title: |-
-          Module is data for the uploaded contract move code
-          ex) 0000000000000000000000000000000000000001/0/BasicCoin
+        title: Module is data for the uploaded contract move code
     title: |-
       QueryModuleResponse is the response type for the Query/Module RPC
       method
@@ -70029,9 +70013,7 @@ definitions:
                 a new module has (a) the same public functions (b) for existing
                 resources, no layout change.
                  - IMMUTABLE: IMMUTABLE: Whether the modules in the package are immutable and cannot be upgraded.
-          title: |-
-            Module is data for the uploaded contract move code
-            ex) 0000000000000000000000000000000000000001/0/BasicCoin
+          title: Module is data for the uploaded contract move code
       pagination:
         description: pagination defines the pagination in the response.
         type: object
@@ -70094,11 +70076,7 @@ definitions:
           raw_bytes:
             type: string
             format: byte
-        title: >-
-          Resource is data for the stored move resource
-
-          ex)
-          0000000000000000000000000000000000000002/2/0x1::BasicCoin::Coin<0x1::BasicCoin::Initia>
+        title: Resource is data for the stored move resource
     title: |-
       QueryResourceResponse is the response type for the Query/Resource RPC
       method
@@ -70119,11 +70097,7 @@ definitions:
             raw_bytes:
               type: string
               format: byte
-          title: >-
-            Resource is data for the stored move resource
-
-            ex)
-            0000000000000000000000000000000000000002/2/0x1::BasicCoin::Coin<0x1::BasicCoin::Initia>
+          title: Resource is data for the stored move resource
       pagination:
         description: pagination defines the pagination in the response.
         type: object
@@ -70496,11 +70470,7 @@ definitions:
       raw_bytes:
         type: string
         format: byte
-    title: >-
-      Resource is data for the stored move resource
-
-      ex)
-      0000000000000000000000000000000000000002/2/0x1::BasicCoin::Coin<0x1::BasicCoin::Initia>
+    title: Resource is data for the stored move resource
   initia.move.v1.TableEntry:
     type: object
     properties:

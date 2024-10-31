@@ -1,43 +1,98 @@
 package app
 
 import (
+	"bytes"
 	"context"
-	"encoding/base64"
+	"errors"
+	"fmt"
 
-	"cosmossdk.io/errors"
+	"cosmossdk.io/collections"
+	sdkerrors "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	movetypes "github.com/initia-labs/initia/x/move/types"
+	vmprecompile "github.com/initia-labs/movevm/precompile"
 	vmtypes "github.com/initia-labs/movevm/types"
 )
 
-const upgradeName = "0.5.4"
+const upgradeName = "0.6.0"
 
 // RegisterUpgradeHandlers returns upgrade handlers
 func (app *MinitiaApp) RegisterUpgradeHandlers(cfg module.Configurator) {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			// diff: https://github.com/initia-labs/movevm/compare/v0.4.12...v0.5.0
-			codes := []string{
-				// cosmos.move
-				"oRzrCwYAAAALAQAQAhAaAyqXAQTBAQIFwwGQBAfTBZ4FCPEKIAaRCxoQqwt0Cp8MGgy5DPUJAAAACAAPABEAEgAZACgAMAABAwAABQMAAQcHAAIOBwEAAQMQCwAGJwgAAA0AAQAEEwIDAAEUBAUAABUGAQAAFgcBAAAXCAEAAAIBCgAAGAwKAAUaDQ0AARsEDgAAHAEKAAAdDAoAAB4QAQAAHxEBAAAgEgEAACEVAQAAIhcBAAAjGQEAACQaAQAAJRwBAAAmHgEAACkfAQAAKiEBAAArIgEAACwkAQAALSUBAAAuJwEAAS8TFAAHMSkTAQIAMisBABwoBAYMCAILAwEIBAMAAQYMAQUBBggCAQYKAgQFCgIGCwMBCAQDCgYMCAILAwEIBAMIAggCAwMDCAIKBQoCBgsDAQgEAwoCCgIDAwMKAgYKAgoCCgIGCwMBCAQKAgUBCAABAgIDCAIBAwEBAwMKAgEDBgwLAwEIBAMDBQYLAwEIBAMGBgwFCAIIAgoIAgoKAgEKAgEIAgcFBQoCCgIKCgIKCgIBDQYKCAIKCgIDAwoCCgIFBwoKAgYIAgoCAwoKAgEGBgwFCAIIAgoIAgoIAg8GCggCCgoCAwMKAgoCBQcKCgIGCAIKAgMKCgIKCgIKCgIBBAYMCgIKCAIKCgIFBQoCCgoCCgoCAQsGCggCCgoCAwMFBwoKAgYIAgoCAwoKAgEEBgwKAgoIAgoIAg0GCggCCgoCAwMFBwoKAgYIAgoCAwoKAgoKAgoKAgEKBgwIAgsDAQgFCggCCAIIAgMDAwgCCgUKAgYLAwEIBQoKAgoCCgIDAwMKAg4GCggCCgoCAwMGCwMBCAUKAgUHCgoCBggCCgIDCgoCCgIKAgkGDAgCCAILAwEIBAMLAwEIBAMLAwEIBAMJBQoCCgIGCwMBCAQDBgsDAQgEAwYLAwEIBAMGBgsDAQgEBgsDAQgEBgsDAQgECgIKAgUCBgwKAgMFCgIIAAIIAAUFBgwDCAIDCAIBCAEBBgkAAggBCgIDBgwKAggABmNvc21vcwdPcHRpb25zDWFsbG93X2ZhaWx1cmULY2FsbGJhY2tfaWQMY2FsbGJhY2tfZmlkC1ZvdGVSZXF1ZXN0Bl90eXBlXwZTdHJpbmcGc3RyaW5nC3Byb3Bvc2FsX2lkBXZvdGVyBm9wdGlvbghtZXRhZGF0YQhkZWxlZ2F0ZQZPYmplY3QGb2JqZWN0CE1ldGFkYXRhDmZ1bmdpYmxlX2Fzc2V0BnNpZ25lcgphZGRyZXNzX29mBWJ5dGVzEWRlbGVnYXRlX2ludGVybmFsCHRyYW5zZmVyEXRyYW5zZmVyX2ludGVybmFsG2FsbG93X2ZhaWx1cmVfd2l0aF9jYWxsYmFjawVlcnJvchBpbnZhbGlkX2FyZ3VtZW50CGlzX2VtcHR5EGRpc2FsbG93X2ZhaWx1cmUeZGlzYWxsb3dfZmFpbHVyZV93aXRoX2NhbGxiYWNrE2Z1bmRfY29tbXVuaXR5X3Bvb2wcZnVuZF9jb21tdW5pdHlfcG9vbF9pbnRlcm5hbAxtb3ZlX2V4ZWN1dGUVbW92ZV9leGVjdXRlX2ludGVybmFsFm1vdmVfZXhlY3V0ZV93aXRoX2pzb24LbW92ZV9zY3JpcHQUbW92ZV9zY3JpcHRfaW50ZXJuYWwVbW92ZV9zY3JpcHRfd2l0aF9qc29uDG5mdF90cmFuc2ZlcgpDb2xsZWN0aW9uCmNvbGxlY3Rpb24VbmZ0X3RyYW5zZmVyX2ludGVybmFsB3BheV9mZWUQcGF5X2ZlZV9pbnRlcm5hbAhzdGFyZ2F0ZRFzdGFyZ2F0ZV9pbnRlcm5hbA1zdGFyZ2F0ZV92b3RlBHV0ZjgEanNvbgdtYXJzaGFsFXN0YXJnYXRlX3dpdGhfb3B0aW9ucwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABCgIXFi9jb3Ntb3MuZ292LnYxLk1zZ1ZvdGUUY29tcGlsYXRpb25fbWV0YWRhdGEJAAMyLjADMi4wE2luaXRpYTo6bWV0YWRhdGFfdjBAAgEAAAAAAAAAFEVJTlZBTElEX0NBTExCQUNLX0lEAAIAAAAAAAAAFUVJTlZBTElEX0NBTExCQUNLX0ZJRAAAAAACAwIBAwMECgIBAgUGCAIJAwoIAgsDDAgCAAEEAAEJCwARAQ4BEQIUDgILAxEDAgQBBAAJGwsAEQEOARECFA4CDgQRAhQOBRECFA4JEQIUDAoMCwwMCwMLDAsLCwYLBwsICwoRBQIGAQAAAQUIBgAAAAAAAAAAQAsAAAAAAAAAABIAAgcBAAAPGAoABgAAAAAAAAAAJAQFBQgGAQAAAAAAAAARCCcOAREJAwwFDwYCAAAAAAAAABEIJwgOARECFAwDCwALAxIAAgMAAgAKAQAAAQUJBgAAAAAAAAAAQAsAAAAAAAAAABIAAgsBAAAPGAoABgAAAAAAAAAAJAQFBQgGAQAAAAAAAAARCCcOAREJAwwFDwYCAAAAAAAAABEIJwkOARECFAwDCwALAxIAAgwBBAABBgsAEQEOAQsCEQ0CDQACAA4BBAAWOQsAEQEOAhECFA4DEQIUDgQMBkATAAAAAAAAAAAMBwYAAAAAAAAAAAoGQRQMCAwJDAoMCwwMCgkKCCMEKAoGCglCFA0HDA0RAhQMDwsNCw9EEwsJBgEAAAAAAAAAFgwJBSsLBgEFLAUUCwcMEQkMEgsMCwELCwsKCxELBQsSEQ8CDwACABABBAAYXAsAEQEOAhECFA4DEQIUDgQMBkATAAAAAAAAAAAMBwYAAAAAAAAAAAoGQRQMCAwJDAoMCwwMCgkKCCMEKAoGCglCFA0HDA0RAhQMDwsNCw9EEwsJBgEAAAAAAAAAFgwJBSsLBgEFLAUUCwcMEQ4FDAZAEwAAAAAAAAAADBIGAAAAAAAAAAAKBkEUDAgMCQoJCggjBEsKBgoJQhQNEgwNEQIUDA8LDQsPRBMLCQYBAAAAAAAAABYMCQVOCwYBBU8FNwsSDBMIDBQLDAsBCwsLCgsRCxMLFBEPAhEBBAAbLwsAEQEOAgwEQBMAAAAAAAAAAAwFBgAAAAAAAAAACgRBFAwGDAcMCAoHCgYjBCAKBAoHQhQNBQwJEQIUDAsLCQsLRBMLBwYBAAAAAAAAABYMBwUjCwQBBSQFDAsFDA0JDA4LCAsBCw0LAwsOERICEgACABMBBAAdUgsAEQEOAgwEQBMAAAAAAAAAAAwFBgAAAAAAAAAACgRBFAwGDAcMCAoHCgYjBCAKBAoHQhQNBQwJEQIUDAsLCQsLRBMLBwYBAAAAAAAAABYMBwUjCwQBBSQFDAsFDA0OAwwEQBMAAAAAAAAAAAwOBgAAAAAAAAAACgRBFAwGDAcKBwoGIwRDCgQKB0IUDQ4MCRECFAwLCwkLC0QTCwcGAQAAAAAAAAAWDAcFRgsEAQVHBS8LDgwPCAwQCwgLAQsNCw8LEBESAhQBBAAgRAsAEQEOARECFA4CDgMMCkATAAAAAAAAAAAMCwYAAAAAAAAAAAoKQRQMDAwNDA4MDwwQCg0KDCMEJgoKCg1CFA0LDBERAhQMEwsRCxNEEwsNBgEAAAAAAAAAFgwNBSkLCgEFKgUSCwsMFQ4EEQIUDgURAhQOCRECFAwWDBcMEwsQCw8LDgsVCxMLFwsGCwcLCAsWERUCFQACABYBBAAjFAsAEQEOARECFA4CEQIUDgMOBQ4HDAkMCgsECwoLBgsJCwgRFwIXAAIAGAEEACYICwARAREKDAILAQsCERkCGQACABoBBAAqDwcAERsLAQsCCwMLBBIBDAUOBTgADAYLAAsGERgCHQEAAAEGCwARAQsBCwIRGQIFAAIAAA==",
+
+			// 1. publish new code module first
+			codeModuleBz, err := vmprecompile.ReadStdlib("code.mv")
+			if err != nil {
+				return nil, err
+			}
+			err = app.MoveKeeper.SetModule(ctx, vmtypes.StdAddress, movetypes.MoveModuleNameCode, codeModuleBz[0])
+			if err != nil {
+				return nil, err
 			}
 
-			modules := make([]vmtypes.Module, len(codes))
-			for i, code := range codes {
-				codeBz, err := base64.StdEncoding.DecodeString(code)
-				if err != nil {
-					return nil, errors.Wrap(err, "failed to decode module code")
+			// 2. update vm data with new seperator and add checksums of each module
+
+			//  Previous:
+			// 	ModuleSeparator     = byte(0)
+			// 	ResourceSeparator   = byte(1)
+			// 	TableEntrySeparator = byte(2)
+			//	TableInfoSeparator  = byte(3)
+
+			//  Current:
+			// 	ModuleSeparator     = byte(0)
+			//	ChecksumSeparator   = byte(1)
+			// 	ResourceSeparator   = byte(2)
+			// 	TableEntrySeparator = byte(3)
+			//	TableInfoSeparator  = byte(4)
+
+			err = app.MoveKeeper.VMStore.Walk(ctx, new(collections.Range[[]byte]).Descending(), func(key, value []byte) (stop bool, err error) {
+				key = bytes.Clone(key)
+
+				cursor := movetypes.AddressBytesLength
+				if len(key) <= cursor {
+					return true, fmt.Errorf("invalid key length: %d", len(key))
 				}
 
+				separator := key[cursor]
+				if separator == movetypes.ModuleSeparator {
+					checksum := movetypes.ModuleBzToChecksum(value)
+					value = checksum[:]
+				} else if separator >= movetypes.TableInfoSeparator {
+					return true, errors.New("unknown prefix")
+				} else if err = app.MoveKeeper.VMStore.Remove(ctx, key); err != nil {
+					return true, err
+				}
+
+				key[cursor] = key[cursor] + 1
+				err = app.MoveKeeper.VMStore.Set(ctx, key, value)
+				if err != nil {
+					return true, err
+				}
+
+				return false, nil
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			// 3. update new modules
+
+			codesBz, err := vmprecompile.ReadMinlib("object_code_deployment.mv", "coin.mv", "cosmos.mv", "dex.mv", "json.mv", "bech32.mv", "hash.mv", "collection.mv")
+			if err != nil {
+				return nil, err
+			}
+			modules := make([]vmtypes.Module, len(codesBz))
+			for i, codeBz := range codesBz {
 				modules[i] = vmtypes.NewModule(codeBz)
 			}
 
-			err := app.MoveKeeper.PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
+			err = app.MoveKeeper.PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
 			if err != nil {
-				return nil, errors.Wrap(err, "failed to publish module bundle")
+				return nil, sdkerrors.Wrap(err, "failed to publish module bundle")
 			}
 
 			return vm, nil

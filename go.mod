@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	cosmossdk.io/api v0.7.5
 	cosmossdk.io/client/v2 v2.0.0-beta.4
+	cosmossdk.io/collections v0.4.0
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.4.1
@@ -26,14 +27,14 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.5.5
-	github.com/initia-labs/initia v0.5.7
+	github.com/initia-labs/initia v0.6.0
 	github.com/initia-labs/kvindexer v0.1.9
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.5
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.1
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#5
-	github.com/initia-labs/movevm v0.5.0
+	github.com/initia-labs/movevm v0.6.0
 	github.com/noble-assets/forwarding/v2 v2.0.0-20240521090705-86712c4c9e43
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
@@ -53,7 +54,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect
 	cloud.google.com/go/storage v1.41.0 // indirect
-	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/depinject v1.0.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
