@@ -11,7 +11,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
-	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	accnumante "github.com/initia-labs/initia/app/ante/accnum"
 	"github.com/initia-labs/initia/app/ante/sigverify"
 	moveante "github.com/initia-labs/initia/x/move/ante"
@@ -27,7 +27,7 @@ type HandlerOptions struct {
 	ante.HandlerOptions
 	Codec         codec.BinaryCodec
 	IBCkeeper     *ibckeeper.Keeper
-	OPChildKeeper opchildtypes.AnteKeeper
+	OPChildKeeper *opchildkeeper.Keeper
 	AuctionKeeper auctionkeeper.Keeper
 	TxEncoder     sdk.TxEncoder
 	MevLane       auctionante.MEVLane
@@ -93,6 +93,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
 		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
+		opchildante.NewRedundantBridgeDecorator(options.OPChildKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
