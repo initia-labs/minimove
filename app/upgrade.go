@@ -9,7 +9,7 @@ import (
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 )
 
-const upgradeName = "0.6.2"
+const upgradeName = "0.6.3"
 
 // RegisterUpgradeHandlers returns upgrade handlers
 func (app *MinitiaApp) RegisterUpgradeHandlers(cfg module.Configurator) {
@@ -22,11 +22,12 @@ func (app *MinitiaApp) RegisterUpgradeHandlers(cfg module.Configurator) {
 			}
 
 			// set non-zero default values for new params
-			params.HookMaxGas = opchildtypes.DefaultHookMaxGas
-
-			err = app.OPChildKeeper.SetParams(ctx, params)
-			if err != nil {
-				return nil, err
+			if params.HookMaxGas == 0 {
+				params.HookMaxGas = opchildtypes.DefaultHookMaxGas
+				err = app.OPChildKeeper.SetParams(ctx, params)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			return vm, nil
