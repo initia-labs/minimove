@@ -6,7 +6,7 @@ MiniMove is an optimistic rollup consumer chain powered by MoveVM. MiniMove is d
 
 ## Prerequisites
 
-- Go v1.22.5+
+- Go v1.22.7+
 
 ## Getting Started
 
