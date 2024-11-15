@@ -28,7 +28,7 @@ type HandlerOptions struct {
 	Codec         codec.BinaryCodec
 	IBCkeeper     *ibckeeper.Keeper
 	OPChildKeeper *opchildkeeper.Keeper
-	AuctionKeeper auctionkeeper.Keeper
+	AuctionKeeper *auctionkeeper.Keeper
 	TxEncoder     sdk.TxEncoder
 	MevLane       auctionante.MEVLane
 	FreeLane      block.Lane
@@ -41,13 +41,20 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.AccountKeeper == nil {
 		return nil, errors.Wrap(sdkerrors.ErrLogic, "account keeper is required for ante builder")
 	}
-
 	if options.BankKeeper == nil {
 		return nil, errors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for ante builder")
 	}
-
 	if options.SignModeHandler == nil {
 		return nil, errors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+	}
+	if options.OPChildKeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "opchild keeper is required for ante builder")
+	}
+	if options.IBCkeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for ante builder")
+	}
+	if options.AuctionKeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "auction keeper is required for ante builder")
 	}
 
 	sigGasConsumer := options.SigGasConsumer
@@ -92,7 +99,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
-		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
+		auctionante.NewAuctionDecorator(*options.AuctionKeeper, options.TxEncoder, options.MevLane),
 		opchildante.NewRedundantBridgeDecorator(options.OPChildKeeper),
 	}
 
