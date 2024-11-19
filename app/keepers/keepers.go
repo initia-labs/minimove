@@ -278,6 +278,7 @@ func NewAppKeeper(
 	appKeepers.FeeGrantKeeper = &feeGrantKeeper
 
 	authzKeeper := authzkeeper.NewKeeper(runtime.NewKVStoreService(appKeepers.keys[authzkeeper.StoreKey]), appCodec, bApp.MsgServiceRouter(), appKeepers.AccountKeeper)
+	authzKeeper = authzKeeper.SetBankKeeper(appKeepers.BankKeeper)
 	appKeepers.AuthzKeeper = &authzKeeper
 
 	groupConfig := group.DefaultConfig()
