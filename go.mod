@@ -16,7 +16,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/tx v0.13.7
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/cometbft/cometbft v0.38.12
+	github.com/cometbft/cometbft v0.38.15
 	github.com/cosmos/cosmos-db v1.1.0
 	github.com/cosmos/cosmos-sdk v0.50.11
 	github.com/cosmos/go-bip39 v1.0.0
@@ -27,7 +27,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.5.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.6.1
+	github.com/initia-labs/OPinit v0.6.2
 	github.com/initia-labs/initia v0.6.4
 	github.com/initia-labs/kvindexer v0.1.9
 	github.com/initia-labs/kvindexer/submodules/block v0.1.0
@@ -168,7 +168,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/OPinit/api v0.6.0 // indirect
+	github.com/initia-labs/OPinit/api v0.6.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/jsternberg/zap-logfmt v1.3.0 // indirect
@@ -279,7 +279,7 @@ replace (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20241209060054-203460274117
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20241217032826-9bad4b012b88
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20240802003717-19c0b4ad450d
 
 	// use custom version until this PR is merged
