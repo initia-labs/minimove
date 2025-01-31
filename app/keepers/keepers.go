@@ -548,7 +548,7 @@ func NewAppKeeper(
 		return []byte(sdk.UnwrapSDKContext(ctx).ChainID()), nil
 	}
 	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetAllCurrencyPairs"] = movetypes.ProtoSet{
-		Request:  &oracletypes.GetAllCurrencyPairsResponse{},
+		Request:  &oracletypes.GetAllCurrencyPairsRequest{},
 		Response: &oracletypes.GetAllCurrencyPairsResponse{},
 	}
 	queryWhitelist.Stargate["/connect.oracle.v2.Query/GetPrice"] = movetypes.ProtoSet{
