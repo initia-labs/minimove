@@ -5,7 +5,7 @@ on:
 
 jobs:
   spellcheck:
-    runs-on: ubuntu-latest
+    runs-on: f2cebe1300eabb503d70ef55c39d31f538deccf6
 
     steps:
       - uses: actions/checkout@v4
