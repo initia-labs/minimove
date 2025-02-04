@@ -67,8 +67,8 @@ import (
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
 
 	// noble forwarding keeper
-	forwarding "github.com/noble-assets/forwarding/v2/x/forwarding"
-	forwardingtypes "github.com/noble-assets/forwarding/v2/x/forwarding/types"
+	forwarding "github.com/noble-assets/forwarding/v2"
+	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
 )
 
 // module account permissions
