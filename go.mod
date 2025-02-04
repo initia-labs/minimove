@@ -1,8 +1,8 @@
 module github.com/initia-labs/minimove
 
-go 1.23.1
+go 1.23.3
 
-toolchain go1.23.2
+toolchain go1.23.5
 
 require (
 	cosmossdk.io/api v0.7.6
@@ -29,11 +29,11 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v0.7.0
 	github.com/initia-labs/initia v0.7.0
-	github.com/initia-labs/kvindexer v0.1.9
-	github.com/initia-labs/kvindexer/submodules/block v0.1.0
-	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.5
-	github.com/initia-labs/kvindexer/submodules/pair v0.1.1
-	github.com/initia-labs/kvindexer/submodules/tx v0.1.0
+	github.com/initia-labs/kvindexer v0.1.10
+	github.com/initia-labs/kvindexer/submodules/block v0.1.2
+	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
+	github.com/initia-labs/kvindexer/submodules/pair v0.1.3
+	github.com/initia-labs/kvindexer/submodules/tx v0.1.3
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#5
 	github.com/initia-labs/movevm v0.6.1
 	github.com/noble-assets/forwarding/v2 v2.0.0
@@ -49,12 +49,12 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.115.0 // indirect
-	cloud.google.com/go/auth v0.7.2 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
+	cloud.google.com/go v0.115.1 // indirect
+	cloud.google.com/go/auth v0.9.3 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
-	cloud.google.com/go/iam v1.1.12 // indirect
-	cloud.google.com/go/storage v1.41.0 // indirect
+	cloud.google.com/go/iam v1.2.0 // indirect
+	cloud.google.com/go/storage v1.43.0 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/depinject v1.1.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -137,9 +137,9 @@ require (
 	github.com/google/go-github/v43 v43.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
-	github.com/google/s2a-go v0.1.7 // indirect
+	github.com/google/s2a-go v0.1.8 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.3.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.13.0 // indirect
 	github.com/gorilla/handlers v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
@@ -223,8 +223,8 @@ require (
 	github.com/zondax/ledger-go v0.14.3 // indirect
 	go.etcd.io/bbolt v1.4.0-alpha.0.0.20240404170359-43604f3112c5 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
 	go.opentelemetry.io/otel v1.32.0 // indirect
 	go.opentelemetry.io/otel/metric v1.32.0 // indirect
 	go.opentelemetry.io/otel/trace v1.32.0 // indirect
@@ -238,8 +238,8 @@ require (
 	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/api v0.189.0 // indirect
-	google.golang.org/genproto v0.0.0-20240722135656-d784300faade // indirect
+	google.golang.org/api v0.196.0 // indirect
+	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/grpc v1.70.0 // indirect
