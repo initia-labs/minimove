@@ -23,7 +23,7 @@ jobs:
     name: Run test and upload codecov
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    runs-on: f2cebe1300eabb503d70ef55c39d31f538deccf6
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-go@v3
         with:
