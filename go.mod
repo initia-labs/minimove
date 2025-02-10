@@ -1,8 +1,6 @@
 module github.com/initia-labs/minimove
 
-go 1.23.3
-
-toolchain go1.23.5
+go 1.23.6
 
 require (
 	cosmossdk.io/api v0.7.6
