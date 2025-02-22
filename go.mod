@@ -287,3 +287,6 @@ replace (
 	// - https://github.com/cosmos/relayer/blob/4e4e9530800d28fb2c984f1cfc7b03f05eec618c/relayer/chains/cosmos/grpc_query.go#L30
 	google.golang.org/grpc => google.golang.org/grpc v1.65.0
 )
+
+// debug
+replace github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20250222104835-60390aa6a2c0
