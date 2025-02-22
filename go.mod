@@ -289,4 +289,4 @@ replace (
 )
 
 // debug
-replace github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20250222104835-60390aa6a2c0
+replace github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20250222111221-5611cc3f25a9
