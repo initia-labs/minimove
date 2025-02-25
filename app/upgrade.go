@@ -30,7 +30,7 @@ func (app *MinitiaApp) RegisterUpgradeHandlers(cfg module.Configurator) {
 				}
 			}
 
-			return vm, nil
+			return app.ModuleManager.RunMigrations(ctx, cfg, vm)
 		},
 	)
 }
