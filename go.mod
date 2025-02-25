@@ -278,8 +278,10 @@ require (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250204072819-a4b3fcdff78f
-	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250204081745-02cc37be3d29
+	// github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250204072819-a4b3fcdff78f
+	github.com/cometbft/cometbft => ../cometbft // TODO: change this after the PR is merged
+	
+    github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250204081745-02cc37be3d29
 
 	// cosmos/relayer seems having problem with the latest version of grpc; return nil in the below line
 	// - https://github.com/cosmos/relayer/blob/4e4e9530800d28fb2c984f1cfc7b03f05eec618c/relayer/chains/cosmos/grpc_query.go#L30
