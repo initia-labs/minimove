@@ -31,7 +31,7 @@ require (
 	github.com/initia-labs/kvindexer/submodules/block v0.1.2
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.3
-	github.com/initia-labs/kvindexer/submodules/tx v0.1.3
+	github.com/initia-labs/kvindexer/submodules/tx v0.1.4
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#5
 	github.com/initia-labs/movevm v0.6.1
 	github.com/noble-assets/forwarding/v2 v2.0.0
