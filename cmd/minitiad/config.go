@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tmcfg "github.com/cometbft/cometbft/config"
+
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
 	moveconfig "github.com/initia-labs/initia/x/move/config"
