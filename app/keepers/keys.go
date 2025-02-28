@@ -7,13 +7,14 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	// cosmos imports
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	// ibc imports
 	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
