@@ -383,7 +383,6 @@ func NewAppKeeper(
 			appKeepers.keys[packetforwardtypes.StoreKey],
 			appKeepers.TransferKeeper,
 			appKeepers.IBCKeeper.ChannelKeeper,
-			newCommunityPoolKeeper(appKeepers.BankKeeper, authtypes.FeeCollectorName),
 			appKeepers.BankKeeper,
 			// ics4wrapper: transfer -> packet forward -> rate limit
 			rateLimitKeeper,
@@ -396,7 +395,6 @@ func NewAppKeeper(
 			appKeepers.PacketForwardKeeper,
 			0,
 			packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
-			packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 		)
 
 		// create the rate limit keeper

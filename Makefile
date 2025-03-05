@@ -121,14 +121,14 @@ endif
 build-linux:
 	mkdir -p $(BUILDDIR)
 	docker build --no-cache --tag initia/minimove ./
-	docker create --name temp initia/minimove:latest
+	docker create --name temp initia/minimove:latest --env VERSION=$(VERSION)
 	docker cp temp:/usr/local/bin/minitiad $(BUILDDIR)/
 	docker rm temp
 
 build-linux-with-shared-library:
 	mkdir -p $(BUILDDIR)
 	docker build --tag initia/minimove-shared ./ -f ./shared.Dockerfile
-	docker create --name temp initia/minimove-shared:latest
+	docker create --name temp initia/minimove-shared:latest --env VERSION=$(VERSION)
 	docker cp temp:/usr/local/bin/minitiad $(BUILDDIR)/
 	docker cp temp:/lib/libmovevm.so $(BUILDDIR)/
 	docker cp temp:/lib/libcompiler.so $(BUILDDIR)/

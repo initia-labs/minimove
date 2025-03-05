@@ -15,31 +15,31 @@ require (
 	cosmossdk.io/x/tx v0.13.7
 	cosmossdk.io/x/upgrade v0.1.4
 	github.com/cometbft/cometbft v0.38.17
-	github.com/cosmos/cosmos-db v1.1.0
-	github.com/cosmos/cosmos-sdk v0.50.11
+	github.com/cosmos/cosmos-db v1.1.1
+	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.2.0
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
-	github.com/cosmos/ibc-go/v8 v8.5.3
+	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.7.0
-	github.com/initia-labs/initia v0.7.0
+	github.com/initia-labs/OPinit v0.7.2
+	github.com/initia-labs/initia v0.7.3
 	github.com/initia-labs/kvindexer v0.1.10
 	github.com/initia-labs/kvindexer/submodules/block v0.1.2
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.3
 	github.com/initia-labs/kvindexer/submodules/tx v0.1.4
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#5
-	github.com/initia-labs/movevm v0.6.1
-	github.com/noble-assets/forwarding/v2 v2.0.0
+	github.com/initia-labs/movevm v0.7.0
+	github.com/noble-assets/forwarding/v2 v2.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/block-sdk/v2 v2.1.5
 	github.com/skip-mev/connect/v2 v2.3.0
-	github.com/spf13/cast v1.7.0
+	github.com/spf13/cast v1.7.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
@@ -94,7 +94,7 @@ require (
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/interchain-security/v6 v6.3.0 // indirect
-	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
+	github.com/cosmos/ledger-cosmos-go v0.14.0 // indirect
 	github.com/cosmos/relayer/v2 v2.5.2 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240223125850-b1e8a79f509c // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
@@ -279,10 +279,13 @@ require (
 // initia custom
 replace (
 	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250228024240-2ac281ba6e0c
-
-	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250204081745-02cc37be3d29
+	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250228050813-bf23e7e632de
 
 	// cosmos/relayer seems having problem with the latest version of grpc; return nil in the below line
 	// - https://github.com/cosmos/relayer/blob/4e4e9530800d28fb2c984f1cfc7b03f05eec618c/relayer/chains/cosmos/grpc_query.go#L30
 	google.golang.org/grpc => google.golang.org/grpc v1.65.0
 )
+
+// temporal replace to fix statesync problem
+// - https://github.com/cosmos/cosmos-sdk/issues/23740
+replace github.com/cosmos/iavl => github.com/initia-labs/iavl v0.0.0-20250223141407-caf697dd4712

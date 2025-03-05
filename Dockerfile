@@ -6,7 +6,7 @@ ARG TARGETARCH
 ARG GOARCH
 
 # See https://github.com/initia-labs/movevm/releases
-ENV LIBMOVEVM_VERSION=v0.6.0
+ENV LIBMOVEVM_VERSION=v0.7.0
 
 # Install necessary packages
 RUN set -eux; apk add --no-cache ca-certificates build-base git cmake
@@ -36,7 +36,7 @@ RUN set -eux; \
 # RUN sha256sum /lib/libcompiler_muslc.${ARCH}.a | grep ...
 
 # Build the project with the specified architecture and linker flags
-RUN LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
+RUN VERSION=${VERSION} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
 
 FROM alpine:3.19
 
