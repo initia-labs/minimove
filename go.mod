@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.0.0-beta.1
 	github.com/initia-labs/initia v1.0.0-beta.0
-	github.com/initia-labs/kvindexer v0.1.10
+	github.com/initia-labs/kvindexer v0.1.11
 	github.com/initia-labs/kvindexer/submodules/block v0.1.2
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.3
