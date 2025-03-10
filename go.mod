@@ -25,8 +25,8 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v0.7.2
-	github.com/initia-labs/initia v0.7.3
+	github.com/initia-labs/OPinit v1.0.0-beta.1
+	github.com/initia-labs/initia v1.0.0-beta.0
 	github.com/initia-labs/kvindexer v0.1.10
 	github.com/initia-labs/kvindexer/submodules/block v0.1.2
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
@@ -164,7 +164,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/OPinit/api v0.6.2 // indirect
+	github.com/initia-labs/OPinit/api v1.0.0-beta.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/jsternberg/zap-logfmt v1.3.0 // indirect
@@ -272,20 +272,17 @@ replace (
 
 // indirect custom dependencies
 require (
-	github.com/cosmos/iavl v1.2.4 // indirect
+	// - https://github.com/cosmos/cosmos-sdk/issues/23740
+	github.com/cosmos/iavl v1.2.5-0.20250306174232-6cfb3dac2c71 // indirect
 	github.com/strangelove-ventures/cometbft-client v0.1.1 // indirect
 )
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250228024240-2ac281ba6e0c
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250310053630-8890d5b61b69
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250228050813-bf23e7e632de
 
 	// cosmos/relayer seems having problem with the latest version of grpc; return nil in the below line
 	// - https://github.com/cosmos/relayer/blob/4e4e9530800d28fb2c984f1cfc7b03f05eec618c/relayer/chains/cosmos/grpc_query.go#L30
 	google.golang.org/grpc => google.golang.org/grpc v1.65.0
 )
-
-// temporal replace to fix statesync problem
-// - https://github.com/cosmos/cosmos-sdk/issues/23740
-replace github.com/cosmos/iavl => github.com/initia-labs/iavl v0.0.0-20250223141407-caf697dd4712
