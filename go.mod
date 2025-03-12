@@ -279,7 +279,7 @@ require (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250310053630-8890d5b61b69
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250312064512-b0ca85dd30b9
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250228050813-bf23e7e632de
 
 	// cosmos/relayer seems having problem with the latest version of grpc; return nil in the below line
