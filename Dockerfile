@@ -5,7 +5,7 @@ FROM golang:1.23-alpine AS go-builder
 ARG TARGETARCH
 ARG GOARCH
 ARG VERSION
-ARG COMMITHASH
+ARG COMMIT
 ARG TM_VERSION
 
 # See https://github.com/initia-labs/movevm/releases
@@ -39,7 +39,7 @@ RUN set -eux; \
 # RUN sha256sum /lib/libcompiler_muslc.${ARCH}.a | grep ...
 
 # Build the project with the specified architecture and linker flags
-RUN VERSION=${VERSION} COMMIT=${COMMITHASH} TM_VERSION=${TM_VERSION} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
+RUN VERSION=${VERSION} COMMIT=${COMMIT} TM_VERSION=${TM_VERSION} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
 
 FROM alpine:3.19
 
