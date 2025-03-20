@@ -36,8 +36,7 @@ jobs:
       - name: Setup environmental variables
         run: |
           echo "COMMITHASH=$(git log -1 --format='%H')" >> $GITHUB_ENV
-          TM_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')
-          echo "TM_VERSON=$TM_VERSION" >> $GITHUB_ENV
+          echo "TM_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
