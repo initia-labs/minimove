@@ -35,7 +35,7 @@ jobs:
 
       - name: Setup environmental variables
         run: |
-          echo "COMMITHASH=$(git log -1 --format='%H')" >> $GITHUB_ENV
+          echo "COMMIT=$(git log -1 --format='%H')" >> $GITHUB_ENV
           echo "TM_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
@@ -61,5 +61,5 @@ jobs:
           no-cache: true
           build-args: |
             VERSION=${{ github.ref_name }}
-            COMMITHASH=${{ env.COMMITHASH }}
+            COMMIT=${{ env.COMMIT }}
             TM_VERSION=${{ env.TM_VERSION }}
