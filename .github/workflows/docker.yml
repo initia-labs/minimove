@@ -60,7 +60,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          build-arg: |
+          build-args: |
             VERSION=${{ github.ref_name }}
             COMMITHASH=${{ env.COMMITHASH }}
             TM_VERSION=${{ env.TM_VERSION }}
