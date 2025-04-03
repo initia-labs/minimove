@@ -27,11 +27,11 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.0.0-rc.0
 	github.com/initia-labs/initia v1.0.0-rc.1
-	github.com/initia-labs/kvindexer v0.1.11
+	github.com/initia-labs/kvindexer v0.1.12
 	github.com/initia-labs/kvindexer/submodules/block v0.1.2
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.7
 	github.com/initia-labs/kvindexer/submodules/pair v0.1.3
-	github.com/initia-labs/kvindexer/submodules/tx v0.1.4
+	github.com/initia-labs/kvindexer/submodules/tx v0.1.5
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.0.0-rc.1
 	github.com/noble-assets/forwarding/v2 v2.0.1
