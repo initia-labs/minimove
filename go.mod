@@ -272,8 +272,7 @@ replace (
 
 // indirect custom dependencies
 require (
-	// - https://github.com/cosmos/cosmos-sdk/issues/23740
-	github.com/cosmos/iavl v1.2.5-0.20250306174232-6cfb3dac2c71 // indirect
+	github.com/cosmos/iavl v1.2.6 // indirect
 	github.com/strangelove-ventures/cometbft-client v0.1.1 // indirect
 )
 
