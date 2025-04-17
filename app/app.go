@@ -264,7 +264,7 @@ func NewMinitiaApp(
 	// Only register upgrade handlers when loading the latest version of the app.
 	// This optimization skips unnecessary handler registration during app initialization.
 	//
-	// The cosmos upgrade handler attempts to create ${HOME}/.initia/data to check for upgrade info,
+	// The cosmos upgrade handler attempts to create ${HOME}/.minitia/data to check for upgrade info,
 	// but this isn't required during initial encoding config setup.
 	if loadLatest {
 		app.RegisterUpgradeHandlers(app.configurator)
