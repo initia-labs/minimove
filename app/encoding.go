@@ -16,8 +16,20 @@ import (
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 )
 
+func newTempApp() *MinitiaApp {
+	return NewMinitiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		dbm.NewMemDB(),
+		nil,
+		false,
+		moveconfig.DefaultMoveConfig(),
+		EmptyAppOptions{},
+	)
+}
+
 func MakeEncodingConfig() params.EncodingConfig {
-	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+	tempApp := newTempApp()
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: tempApp.InterfaceRegistry(),
 		Codec:             tempApp.AppCodec(),
@@ -29,7 +41,7 @@ func MakeEncodingConfig() params.EncodingConfig {
 }
 
 func AutoCliOpts() autocli.AppOptions {
-	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+	tempApp := newTempApp()
 	modules := make(map[string]appmodule.AppModule, 0)
 	for _, m := range tempApp.ModuleManager.Modules {
 		if moduleWithName, ok := m.(module.HasName); ok {
@@ -50,7 +62,7 @@ func AutoCliOpts() autocli.AppOptions {
 }
 
 func BasicManager() module.BasicManager {
-	tempApp := NewMinitiaApp(log.NewNopLogger(), dbm.NewMemDB(), dbm.NewMemDB(), nil, true, moveconfig.DefaultMoveConfig(), EmptyAppOptions{})
+	tempApp := newTempApp()
 	return tempApp.BasicModuleManager
 }
 
