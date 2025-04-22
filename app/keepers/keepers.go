@@ -89,7 +89,6 @@ import (
 	forwarding "github.com/noble-assets/forwarding/v2"
 	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 	forwardingtypes "github.com/noble-assets/forwarding/v2/types"
-	// kvindexer
 )
 
 type AppKeepers struct {

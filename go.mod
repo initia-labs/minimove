@@ -25,7 +25,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.0.0
+	github.com/initia-labs/OPinit v1.0.1
 	github.com/initia-labs/initia v1.0.0
 	github.com/initia-labs/kvindexer v0.1.13
 	github.com/initia-labs/kvindexer/submodules/block v0.1.3
