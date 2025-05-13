@@ -277,10 +277,15 @@ func (a *appCreator) AppCreator() servertypes.AppCreator {
 	return func(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 		baseappOptions := server.DefaultBaseappOptions(appOpts)
 
-		dbDir, kvdbConfig := getDBConfig(appOpts)
-		kvindexerDB, err := kvindexerstore.OpenDB(dbDir, kvindexerkeeper.StoreName, kvdbConfig.BackendConfig)
-		if err != nil {
-			panic(err)
+		dbDir, kvindexerConfig := getDBConfig(appOpts)
+
+		var kvindexerDB dbm.DB
+		if kvindexerConfig.IsEnabled() {
+			db, err := kvindexerstore.OpenDB(dbDir, kvindexerkeeper.StoreName, kvindexerConfig.BackendConfig)
+			if err != nil {
+				panic(err)
+			}
+			kvindexerDB = db
 		}
 
 		app := minitiaapp.NewMinitiaApp(
