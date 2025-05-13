@@ -27,11 +27,11 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.0.1
 	github.com/initia-labs/initia v1.0.0
-	github.com/initia-labs/kvindexer v0.1.13
-	github.com/initia-labs/kvindexer/submodules/block v0.1.3
-	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.8
-	github.com/initia-labs/kvindexer/submodules/pair v0.1.4
-	github.com/initia-labs/kvindexer/submodules/tx v0.1.7
+	github.com/initia-labs/kvindexer v0.1.14
+	github.com/initia-labs/kvindexer/submodules/block v0.1.4
+	github.com/initia-labs/kvindexer/submodules/move-nft v0.1.9
+	github.com/initia-labs/kvindexer/submodules/pair v0.1.5
+	github.com/initia-labs/kvindexer/submodules/tx v0.2.2
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.0.0
 	github.com/noble-assets/forwarding/v2 v2.0.1
@@ -229,6 +229,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
+	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
