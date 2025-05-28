@@ -58,11 +58,11 @@ jobs:
           && mv ./minimove_"$VERSION"_Darwin_"$ARCH_NAME".tar.gz $GITHUB_WORKSPACE/ \
           && rm -rf ./libmovevm.dylib ./libcompiler.dylib ./minitiad
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            minimove_${{ env.VERSION }}_Darwin_${{ env.ARCH_NAME }}.tar.gz
+          name: minimove_darwin_amd64.tar.gz
+          path: minimove_${{ env.VERSION }}_Darwin_${{ env.ARCH_NAME }}.tar.gz
         env:
-          Version: ${{ env.VERSION }}
+          VERSION: ${{ env.VERSION }}
           ARCH_NAME: ${{ env.ARCH_NAME }}
