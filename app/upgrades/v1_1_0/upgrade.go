@@ -25,7 +25,7 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 				return nil, err
 			}
 
-			return vm, nil
+			return app.GetModuleManager().RunMigrations(ctx, app.GetConfigurator(), vm)
 		},
 	)
 }
