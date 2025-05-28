@@ -16,7 +16,7 @@ import (
 const upgradeName = "v1.1.0"
 
 // RegisterUpgradeHandlers returns upgrade handlers
-func RegisterUpgradeHandlers(app upgrades.InitiaApp) {
+func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 	app.GetUpgradeKeeper().SetUpgradeHandler(
 		upgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
@@ -31,7 +31,7 @@ func RegisterUpgradeHandlers(app upgrades.InitiaApp) {
 }
 
 // PublishModuleBundle publishes the module bundle to the movevm expose for testing
-func PublishModuleBundle(ctx context.Context, app upgrades.InitiaApp) error {
+func PublishModuleBundle(ctx context.Context, app upgrades.MinitiaApp) error {
 	moduleBytesArray, err := GetModuleBytes()
 	if err != nil {
 		return err

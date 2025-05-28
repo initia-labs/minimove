@@ -8,7 +8,7 @@ import (
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
 )
 
-type InitiaApp interface {
+type MinitiaApp interface {
 	GetAccountKeeper() *authkeeper.AccountKeeper
 	GetMoveKeeper() *movekeeper.Keeper
 	GetUpgradeKeeper() *upgradekeeper.Keeper
