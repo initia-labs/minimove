@@ -47,8 +47,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: minimove_linux_amd64.tar.gz
+          name: minimove-linux-amd64
           path: minimove_${{ env.VERSION }}_Linux_${{ env.ARCH_NAME }}.tar.gz
+          retention-days: 1
         env:
           VERSION: ${{ env.VERSION }}
           ARCH_NAME: ${{ env.ARCH_NAME }}
