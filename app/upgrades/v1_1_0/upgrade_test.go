@@ -26,4 +26,12 @@ func TestPublishModuleBundle(t *testing.T) {
 	module, err := app.MoveKeeper.GetModule(ctx, vmtypes.StdAddress, "account")
 	require.NoError(t, err)
 	require.Equal(t, moduleBytes, module.RawBytes)
+
+	// check supply_without_sanity_check exists
+	_, _, err = app.MoveKeeper.ExecuteViewFunctionJSON(ctx, vmtypes.StdAddress, "fungible_asset", "supply_without_sanity_check", []vmtypes.TypeTag{}, []string{})
+	require.Error(t, err, "NUMBER_OF_TYPE_ARGUMENTS_MISMATCH")
+
+	// check balance_without_sanity_check exists
+	_, _, err = app.MoveKeeper.ExecuteViewFunctionJSON(ctx, vmtypes.StdAddress, "fungible_asset", "balance_without_sanity_check", []vmtypes.TypeTag{}, []string{})
+	require.ErrorContains(t, err, "NUMBER_OF_TYPE_ARGUMENTS_MISMATCH")
 }
