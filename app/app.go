@@ -47,21 +47,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/cosmos/cosmos-sdk/version"
 	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 
 	// ibc modules
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
 	// initia ibc modules
 	"github.com/initia-labs/initia/app/params"
-	ibctestingtypes "github.com/initia-labs/initia/x/ibc/testing/types"
-	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 
 	// initia modules
 	cryptocodec "github.com/initia-labs/initia/crypto/codec"
@@ -75,6 +69,7 @@ import (
 
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
+	"github.com/initia-labs/minimove/app/upgrades/v1_1_0"
 
 	// kvindexer modules
 	kvindexermodule "github.com/initia-labs/kvindexer/x/kvindexer"
@@ -267,7 +262,7 @@ func NewMinitiaApp(
 	// The cosmos upgrade handler attempts to create ${HOME}/.minitia/data to check for upgrade info,
 	// but this isn't required during initial encoding config setup.
 	if loadLatest {
-		app.RegisterUpgradeHandlers(app.configurator)
+		v1_1_0.RegisterUpgradeHandlers(app)
 	}
 
 	// register executor change plans for later use
@@ -560,50 +555,6 @@ func VerifyAddressLen() func(addr []byte) error {
 		}
 		return nil
 	}
-}
-
-//////////////////////////////////////
-// TestingApp functions
-
-// GetBaseApp implements the TestingApp interface.
-func (app *MinitiaApp) GetBaseApp() *baseapp.BaseApp {
-	return app.BaseApp
-}
-
-// GetAccountKeeper implements the TestingApp interface.
-func (app *MinitiaApp) GetAccountKeeper() *authkeeper.AccountKeeper {
-	return app.AccountKeeper
-}
-
-// GetStakingKeeper implements the TestingApp interface.
-// It returns opchild instead of original staking keeper.
-func (app *MinitiaApp) GetStakingKeeper() ibctestingtypes.StakingKeeper {
-	return app.OPChildKeeper
-}
-
-// GetIBCKeeper implements the TestingApp interface.
-func (app *MinitiaApp) GetIBCKeeper() *ibckeeper.Keeper {
-	return app.IBCKeeper
-}
-
-// GetICAControllerKeeper implements the TestingApp interface.
-func (app *MinitiaApp) GetICAControllerKeeper() *icacontrollerkeeper.Keeper {
-	return app.ICAControllerKeeper
-}
-
-// GetICAAuthKeeper implements the TestingApp interface.
-func (app *MinitiaApp) GetICAAuthKeeper() *icaauthkeeper.Keeper {
-	return app.ICAAuthKeeper
-}
-
-// GetScopedIBCKeeper implements the TestingApp interface.
-func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
-	return app.ScopedIBCKeeper
-}
-
-// TxConfig implements the TestingApp interface.
-func (app *MinitiaApp) TxConfig() client.TxConfig {
-	return app.txConfig
 }
 
 // Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
