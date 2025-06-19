@@ -52,13 +52,12 @@ jobs:
           docker rm temp
 
           # Packaging of results
-          cd ./build
-          mkdir -p minimove_${VERSION}
-          mv minitiad minimove_${VERSION}/
-          mv libmovevm.so minimove_${VERSION}/libmovevm.${ARCH_NAME}.so
-          mv libcompiler.so minimove_${VERSION}/libcompiler.${ARCH_NAME}.so
-          tar -czvf minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz minimove_${VERSION}
-          mv minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz ../
+          cd ./build \
+          && mv libmovevm.so libmovevm.${ARCH_NAME}.so \
+          && mv libcompiler.so libcompiler.${ARCH_NAME}.so \
+          && tar -czvf minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz minitiad libmovevm.${ARCH_NAME}.so libcompiler.${ARCH_NAME}.so \
+          && mv minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz $GITHUB_WORKSPACE/ \
+          && rm -rf libmovevm.${ARCH_NAME}.so libcompiler.${ARCH_NAME}.so ./minitiad
 
           # Check build results
           cd ..
@@ -71,11 +70,12 @@ jobs:
       - name: List files
         run: ls -l
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            ./minimove_${{ env.VERSION }}_Linux_${{ env.ARCH_NAME }}.tar.gz
+          name: minimove-linux-arm64
+          path: minimove_${{ env.VERSION }}_Linux_${{ env.ARCH_NAME }}.tar.gz
+          retention-days: 1
         env:
-          Version: ${{ env.VERSION }}
+          VERSION: ${{ env.VERSION }}
           ARCH_NAME: ${{ env.ARCH_NAME }}
