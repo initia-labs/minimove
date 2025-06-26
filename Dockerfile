@@ -12,7 +12,7 @@ ENV LIBMOVEVM_VERSION=v1.0.0
 ENV MIMALLOC_VERSION=v2.2.2
 
 # Install necessary packages
-RUN set -eux; apk add --no-cache ca-certificates build-base git cmake curl
+RUN set -eux; apk add --no-cache ca-certificates build-base git cmake
 
 WORKDIR /code
 COPY . /code/
@@ -42,6 +42,9 @@ RUN set -eux; \
 RUN VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
 
 FROM alpine:3.19
+
+# install curl for the health check
+RUN apk add --no-cache ca-certificates curl
 
 RUN addgroup minitia \
     && adduser -G minitia -D -h /minitia minitia
