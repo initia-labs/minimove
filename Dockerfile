@@ -44,7 +44,7 @@ RUN VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GO
 FROM alpine:3.19
 
 # install curl for the health check
-RUN apk add --no-cache ca-certificates curl
+RUN apk add curl
 
 RUN addgroup minitia \
     && adduser -G minitia -D -h /minitia minitia
