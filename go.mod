@@ -26,7 +26,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.1.1
-	github.com/initia-labs/initia v1.1.2
+	github.com/initia-labs/initia v1.1.3
 	github.com/initia-labs/kvindexer v0.2.0
 	github.com/initia-labs/kvindexer/submodules/block v0.2.0
 	github.com/initia-labs/kvindexer/submodules/move-nft v0.2.0

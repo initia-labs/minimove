@@ -10,6 +10,7 @@ import (
 
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
+	vmprecom "github.com/initia-labs/movevm/precompile"
 	vmtypes "github.com/initia-labs/movevm/types"
 )
 
@@ -20,32 +21,22 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 	app.GetUpgradeKeeper().SetUpgradeHandler(
 		upgradeName,
 		func(ctx context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			err := PublishModuleBundle(ctx, app)
+			moduleBytesArray, err := vmprecom.ReadMinlib()
 			if err != nil {
 				return nil, err
 			}
 
-			return app.GetModuleManager().RunMigrations(ctx, app.GetConfigurator(), vm)
+			var modules []vmtypes.Module
+			for _, module := range moduleBytesArray {
+				modules = append(modules, vmtypes.NewModule(module))
+			}
+
+			err = app.GetMoveKeeper().PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
+			if err != nil {
+				return nil, err
+			}
+
+			return vm, nil
 		},
 	)
-}
-
-// PublishModuleBundle publishes the module bundle to the movevm expose for testing
-func PublishModuleBundle(ctx context.Context, app upgrades.MinitiaApp) error {
-	moduleBytesArray, err := GetModuleBytes()
-	if err != nil {
-		return err
-	}
-
-	var modules []vmtypes.Module
-	for _, module := range moduleBytesArray {
-		modules = append(modules, vmtypes.NewModule(module))
-	}
-
-	err = app.GetMoveKeeper().PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
