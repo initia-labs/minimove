@@ -76,10 +76,6 @@ import (
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
 
-	// kvindexer modules
-	kvindexermodule "github.com/initia-labs/kvindexer/x/kvindexer"
-	kvindexerkeeper "github.com/initia-labs/kvindexer/x/kvindexer/keeper"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
 )
@@ -126,18 +122,12 @@ type MinitiaApp struct {
 
 	// Override of BaseApp's CheckTx
 	checkTxHandler blockchecktx.CheckTx
-
-	// indexer keeper for graceful shutdown
-	kvIndexerKeeper *kvindexerkeeper.Keeper
-	// indexer module for grpc-gateway registration
-	kvIndexerModule *kvindexermodule.AppModuleBasic
 }
 
 // NewMinitiaApp returns a reference to an initialized Initia.
 func NewMinitiaApp(
 	logger log.Logger,
 	db dbm.DB,
-	kvindexerDB dbm.DB,
 	traceStore io.Writer,
 	loadLatest bool,
 	moveConfig moveconfig.MoveConfig,
@@ -248,17 +238,6 @@ func NewMinitiaApp(
 	err := app.ModuleManager.RegisterServices(app.configurator)
 	if err != nil {
 		tmos.Exit(err.Error())
-	}
-
-	// setup indexer
-	if kvIndexerKeeper, kvIndexerModule, streamingManager, err := setupIndexer(app, appOpts, encodingConfig, kvindexerDB); err != nil {
-		tmos.Exit(err.Error())
-	} else if kvIndexerKeeper != nil && kvIndexerModule != nil && streamingManager != nil {
-		// register kvindexer keeper and module, and register services.
-		app.SetKVIndexer(kvIndexerKeeper, kvIndexerModule)
-
-		// override base-app's streaming manager
-		app.SetStreamingManager(*streamingManager)
 	}
 
 	// Only register upgrade handlers when loading the latest version of the app.
@@ -376,13 +355,6 @@ func (app *MinitiaApp) setPostHandler() {
 	app.SetPostHandler(postHandler)
 }
 
-// SetKVIndexer sets the kvindexer keeper and module for the app and registers the services.
-func (app *MinitiaApp) SetKVIndexer(kvIndexerKeeper *kvindexerkeeper.Keeper, kvIndexerModule *kvindexermodule.AppModuleBasic) {
-	app.kvIndexerKeeper = kvIndexerKeeper
-	app.kvIndexerModule = kvIndexerModule
-	app.kvIndexerModule.RegisterServices(app.configurator)
-}
-
 // Name returns the name of the App
 func (app *MinitiaApp) Name() string { return app.BaseApp.Name() }
 
@@ -483,11 +455,6 @@ func (app *MinitiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 
 	// Register grpc-gateway routes for all modules.
 	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
-
-	// Register grpc-gateway routes for indexer module.
-	if app.kvIndexerModule != nil {
-		app.kvIndexerModule.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
-	}
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
@@ -609,12 +576,6 @@ func (app *MinitiaApp) TxConfig() client.TxConfig {
 // Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
 // This method blocks on the closure of both the prometheus server, and the oracle-service
 func (app *MinitiaApp) Close() error {
-	if app.kvIndexerKeeper != nil {
-		if err := app.kvIndexerKeeper.Close(); err != nil {
-			return err
-		}
-	}
-
 	if err := app.BaseApp.Close(); err != nil {
 		return err
 	}
