@@ -9,15 +9,13 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
 	moveconfig "github.com/initia-labs/initia/x/move/config"
-	indexerconfig "github.com/initia-labs/kvindexer/config"
 	"github.com/initia-labs/minimove/types"
 )
 
 // initiaappConfig initia specify app config
 type initiaappConfig struct {
 	serverconfig.Config
-	MoveConfig    moveconfig.MoveConfig       `mapstructure:"move"`
-	IndexerConfig indexerconfig.IndexerConfig `mapstructure:"indexer"`
+	MoveConfig moveconfig.MoveConfig `mapstructure:"move"`
 }
 
 // initAppConfig helps to override default appConfig template and configs.
@@ -57,12 +55,11 @@ func initAppConfig() (string, interface{}) {
 	moveCfg.ContractSimulationGasLimit = 10_000_000
 
 	initiaappConfig := initiaappConfig{
-		Config:        *srvCfg,
-		MoveConfig:    moveCfg,
-		IndexerConfig: indexerconfig.DefaultConfig(),
+		Config:     *srvCfg,
+		MoveConfig: moveCfg,
 	}
 
-	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate + indexerconfig.DefaultConfigTemplate
+	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate
 
 	return initiaappTemplate, initiaappConfig
 }
