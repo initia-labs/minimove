@@ -27,11 +27,6 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.1.1
 	github.com/initia-labs/initia v1.1.3
-	github.com/initia-labs/kvindexer v0.2.0
-	github.com/initia-labs/kvindexer/submodules/block v0.2.0
-	github.com/initia-labs/kvindexer/submodules/move-nft v0.2.0
-	github.com/initia-labs/kvindexer/submodules/pair v0.2.0
-	github.com/initia-labs/kvindexer/submodules/tx v0.3.0
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.0.0
 	github.com/noble-assets/forwarding/v2 v2.0.1
@@ -63,7 +58,6 @@ require (
 	github.com/IGLOU-EU/go-wildcard v1.0.3 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/VictoriaMetrics/fastcache v1.12.2 // indirect
-	github.com/allegro/bigcache/v3 v3.1.0 // indirect
 	github.com/aptos-labs/serde-reflection/serde-generate/runtime/golang v0.0.0-20231213012317-73b6bbf74833 // indirect
 	github.com/avast/retry-go/v4 v4.5.1 // indirect
 	github.com/aws/aws-sdk-go v1.44.312 // indirect
@@ -80,6 +74,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
+	github.com/cockroachdb/datadriven v1.0.3-0.20230801171734-e384cf455877 // indirect
 	github.com/cockroachdb/errors v1.11.3 // indirect
 	github.com/cockroachdb/fifo v0.0.0-20240606204812-0bbfbd93a7ce // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
@@ -122,6 +117,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
+	github.com/gobwas/ws v1.2.1 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
@@ -169,6 +165,7 @@ require (
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/jsternberg/zap-logfmt v1.3.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -188,6 +185,7 @@ require (
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20230904125328-1f23a7beb09a // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/onsi/gomega v1.34.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/petermattis/goid v0.0.0-20240813172612-4fcff4a6cae7 // indirect
@@ -229,7 +227,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
@@ -290,7 +287,7 @@ require (
 // connect
 // - https://github.com/initia-labs/connect/pull/1
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250619032334-56903a4d3e03
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20250724054804-4480c844bbb4
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20250415174140-9fd233bcf847
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250313020428-36b81501adfc
 	github.com/skip-mev/connect/v2 => github.com/initia-labs/connect/v2 v2.3.1
