@@ -287,7 +287,7 @@ require (
 // connect
 // - https://github.com/initia-labs/connect/pull/1
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20251013074034-4378a792ed67
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.0.0-20251015100249-dd0af6049873
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.0.0-20250415174140-9fd233bcf847
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.0.0-20250313020428-36b81501adfc
 	github.com/initia-labs/OPinit => github.com/initia-labs/OPinit v1.1.4-0.20251013080703-6bbe27adb992
