@@ -467,7 +467,7 @@ func (app *MinitiaApp) Simulate(txBytes []byte) (sdk.GasInfo, *sdk.Result, error
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *MinitiaApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(
-		app.BaseApp.GRPCQueryRouter(), clientCtx,
+		app.GRPCQueryRouter(), clientCtx,
 		app.Simulate, app.interfaceRegistry,
 	)
 
@@ -484,7 +484,7 @@ func (app *MinitiaApp) RegisterTxService(clientCtx client.Context) {
 func (app *MinitiaApp) RegisterTendermintService(clientCtx client.Context) {
 	cmtservice.RegisterTendermintService(
 		clientCtx,
-		app.BaseApp.GRPCQueryRouter(),
+		app.GRPCQueryRouter(),
 		app.interfaceRegistry, app.Query,
 	)
 }
