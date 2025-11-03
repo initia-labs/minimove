@@ -239,10 +239,10 @@ benchmark:
 ###############################################################################
 
 lint:
-	golangci-lint run --out-format=tab --timeout=15m
+	golangci-lint run --timeout=15m
 
 lint-fix:
-	golangci-lint run --fix --out-format=tab --timeout=15m
+	golangci-lint run --fix --timeout=15m
 .PHONY: lint lint-fix
 
 format:

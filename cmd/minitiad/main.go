@@ -13,7 +13,7 @@ func main() {
 	rootCmd, _ := NewRootCmd()
 
 	if err := svrcmd.Execute(rootCmd, minitiaapp.EnvPrefix, minitiaapp.DefaultNodeHome); err != nil {
-		fmt.Fprintln(rootCmd.OutOrStderr(), err)
+		fmt.Fprintln(rootCmd.OutOrStderr(), err) //nolint:errcheck
 		os.Exit(1)
 	}
 }
