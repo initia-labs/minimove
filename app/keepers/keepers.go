@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -67,6 +68,7 @@ import (
 	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 	icaauthtypes "github.com/initia-labs/initia/x/intertx/types"
 
+	initiaapp "github.com/initia-labs/initia/app"
 	bankkeeper "github.com/initia-labs/initia/x/bank/keeper"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
@@ -232,19 +234,23 @@ func NewAppKeeper(
 	// and propagated to the oracle keeper.
 	appKeepers.MarketMapKeeper.SetHooks(appKeepers.OracleKeeper.Hooks())
 
+	// Create L1 address codec for Initia L1
+	l1AddressCodec := authcodec.NewBech32Codec(initiaapp.AccountAddressPrefix)
+
 	appKeepers.OPChildKeeper = opchildkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[opchildtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.OracleKeeper,
-		ante.CreateAnteHandlerForOPinit(appKeepers.AccountKeeper, txConfig.SignModeHandler()),
+		ante.CreateAnteHandlerForOPinit(appKeepers.AccountKeeper, txConfig.SignModeHandler(), appKeepers.MoveKeeper),
 		txConfig.TxDecoder(),
 		bApp.MsgServiceRouter(),
 		authorityAddr,
 		ac,
 		vc,
 		cc,
+		l1AddressCodec,
 		logger,
 	)
 
@@ -321,6 +327,7 @@ func NewAppKeeper(
 	appKeepers.IBCHooksKeeper = ibchookskeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibchookstypes.StoreKey]),
+		runtime.NewTransientStoreService(appKeepers.tkeys[ibchookstypes.TStoreKey]),
 		authorityAddr,
 		ac,
 	)

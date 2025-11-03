@@ -5,6 +5,7 @@ import (
 	txsigning "cosmossdk.io/x/tx/signing"
 	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	movekeeper "github.com/initia-labs/initia/x/move/keeper"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,6 +31,7 @@ type HandlerOptions struct {
 	IBCkeeper     *ibckeeper.Keeper
 	OPChildKeeper *opchildkeeper.Keeper
 	AuctionKeeper *auctionkeeper.Keeper
+	MoveKeeper    *movekeeper.Keeper
 	TxEncoder     sdk.TxEncoder
 	MevLane       auctionante.MEVLane
 	FreeLane      block.Lane
@@ -97,7 +99,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
-		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler, options.MoveKeeper),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
 		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
@@ -107,13 +109,13 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
 }
 
-func CreateAnteHandlerForOPinit(ak ante.AccountKeeper, signModeHandler *txsigning.HandlerMap) sdk.AnteHandler {
+func CreateAnteHandlerForOPinit(ak ante.AccountKeeper, signModeHandler *txsigning.HandlerMap, moveKeeper *movekeeper.Keeper) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		ante.NewValidateBasicDecorator(),
 		ante.NewSetPubKeyDecorator(ak),
 		ante.NewValidateSigCountDecorator(ak),
 		ante.NewSigGasConsumeDecorator(ak, sigverify.DefaultSigVerificationGasConsumer),
-		sigverify.NewSigVerificationDecorator(ak, signModeHandler),
+		sigverify.NewSigVerificationDecorator(ak, signModeHandler, moveKeeper),
 		ante.NewIncrementSequenceDecorator(ak),
 	)
 }
