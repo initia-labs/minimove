@@ -76,6 +76,7 @@ import (
 
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	opchildlanes "github.com/initia-labs/OPinit/x/opchild/lanes"
+	opchildmigration "github.com/initia-labs/OPinit/x/opchild/middleware/migration"
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 
 	auctionkeeper "github.com/skip-mev/block-sdk/v2/x/auction/keeper"
@@ -351,7 +352,7 @@ func NewAppKeeper(
 	// Transfer configuration //
 	////////////////////////////
 	// Send   : transfer -> packet forward -> rate limit -> fee        -> channel
-	// Receive: channel  -> fee            -> move       -> rate limit -> packet forward -> forwarding -> transfer
+	// Receive: channel  -> fee            -> migration  -> move       -> rate limit -> packet forward -> forwarding -> transfer
 
 	var transferStack porttypes.IBCModule
 	{
@@ -434,9 +435,20 @@ func NewAppKeeper(
 			appKeepers.IBCHooksKeeper,
 		)
 
+		// create opchild migration middleware for transfer
+		transferStack = opchildmigration.NewIBCMiddleware(
+			ac,
+			appCodec,
+			// receive: migration -> move -> rate limit -> packet forward -> forwarding -> transfer
+			transferStack,
+			nil, /* ics4wrapper: not used */
+			appKeepers.BankKeeper,
+			appKeepers.OPChildKeeper,
+		)
+
 		// create ibcfee middleware for transfer
 		transferStack = ibcfee.NewIBCMiddleware(
-			// receive: fee -> move -> rate limit -> packet forward -> forwarding -> transfer
+			// receive: fee -> migration -> move -> rate limit -> packet forward -> forwarding -> transfer
 			transferStack,
 			// ics4wrapper: transfer -> packet forward -> rate limit -> fee -> channel
 			*appKeepers.IBCFeeKeeper,
