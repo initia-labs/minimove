@@ -551,6 +551,9 @@ func NewAppKeeper(
 		AddRoute(ibcnfttransfertypes.ModuleName, nftTransferStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
+	appKeepers.OPChildKeeper.
+		WithTransferKeeper(appKeepers.TransferKeeper).
+		WithChannelKeeper(appKeepers.IBCKeeper.ChannelKeeper)
 
 	//////////////////////////////
 	// MoveKeeper Configuration //
