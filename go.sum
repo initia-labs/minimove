@@ -1413,35 +1413,12 @@ github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANyt
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
-<<<<<<< HEAD
-<<<<<<< HEAD
-github.com/initia-labs/OPinit v1.1.3 h1:Eh8wh5slLri2jA6HTcuf8gCEmDLKQyho1jB5wGkNW1I=
-github.com/initia-labs/OPinit v1.1.3/go.mod h1:Z7oAueQBVIBeV8+pJgZHFte9l5gh08DwifSUirihZwk=
-github.com/initia-labs/OPinit/api v1.1.0 h1:9ymAHFELWeqsKwT+RJYbG6GX4fQgL2kjdoR3DZL7LuQ=
-github.com/initia-labs/OPinit/api v1.1.0/go.mod h1:Qz11o6zlTtJe495JO7FhEyLhJLPit0rEuLN4pweKL24=
-github.com/initia-labs/cometbft v0.0.0-20250724054804-4480c844bbb4 h1:2jorpnQ/m4o4oThb6Wt9mNQIT2HRqGh62jOflIi5zsI=
-github.com/initia-labs/cometbft v0.0.0-20250724054804-4480c844bbb4/go.mod h1:pX0eththSiU5rMgVpLPn2kK295Pz2/UQB427WWLequI=
-=======
-github.com/initia-labs/OPinit v1.1.4-0.20251013080703-6bbe27adb992 h1:k6pRk56aGRNpRY+/X19mbooMlceOvgv571iwkhBMPXs=
-github.com/initia-labs/OPinit v1.1.4-0.20251013080703-6bbe27adb992/go.mod h1:opP/afhOy85LlMHwwa4Yuja11vAPV4UqCoaWPCxocpw=
-github.com/initia-labs/OPinit/api v1.1.0 h1:9ymAHFELWeqsKwT+RJYbG6GX4fQgL2kjdoR3DZL7LuQ=
-github.com/initia-labs/OPinit/api v1.1.0/go.mod h1:Qz11o6zlTtJe495JO7FhEyLhJLPit0rEuLN4pweKL24=
-<<<<<<< HEAD
-github.com/initia-labs/cometbft v0.0.0-20251013074034-4378a792ed67 h1:zbpsfUPZvD29X66P2p6ypb11IbpzXlnB8FFIa44y2QA=
-github.com/initia-labs/cometbft v0.0.0-20251013074034-4378a792ed67/go.mod h1:p2P/ZXG5AqkfDdavLDpB7S0TJQZI35+d8/SfwstWQOE=
->>>>>>> d483724 (attestor alpha impl)
-=======
-github.com/initia-labs/cometbft v0.0.0-20251015100249-dd0af6049873 h1:AZu+mO+Gj5q9kAu0O/JGYtwi7R/+knoXk2K33IbEeDA=
-github.com/initia-labs/cometbft v0.0.0-20251015100249-dd0af6049873/go.mod h1:vNkfaIXhkqQ5A+9Ty6pbVTvLNYaqQLQ6AYYB73GwoDg=
->>>>>>> 7537902 (bump cometbft to latest)
-=======
 github.com/initia-labs/OPinit v1.2.0 h1:EHZ9HrCDtN5R0mbJhMqP1Cc7+JYLZw7ugfNu9qVfWIQ=
 github.com/initia-labs/OPinit v1.2.0/go.mod h1:2GSc7OEIJg5uXUiLiirez6LiZJtB6/8eNdLiIFeeQ0I=
 github.com/initia-labs/OPinit/api v1.2.0 h1:puw1ppyQgg9oFYv2KrKva/eMwNUKfyLK077/erdKZ28=
 github.com/initia-labs/OPinit/api v1.2.0/go.mod h1:Qz11o6zlTtJe495JO7FhEyLhJLPit0rEuLN4pweKL24=
 github.com/initia-labs/cometbft v0.38.19-minitia.2 h1:yTx27hMbtQFxU8fHc6a4BoKKUY/GYwuFI30HUr94GvA=
 github.com/initia-labs/cometbft v0.38.19-minitia.2/go.mod h1:vNkfaIXhkqQ5A+9Ty6pbVTvLNYaqQLQ6AYYB73GwoDg=
->>>>>>> e8f3370 (bump deps to latests)
 github.com/initia-labs/connect/v2 v2.3.1 h1:Y32LCwUHDBgUzzQHqPBJeWeItYoNu2oYD57JKbZCtjw=
 github.com/initia-labs/connect/v2 v2.3.1/go.mod h1:35hM7xSgI0h3GMUTgspzKY8Ff2yCXNGNwmAdjqo3z8s=
 github.com/initia-labs/cosmos-sdk v0.50.14-initia.2 h1:slqvt5Li5oxkvWejweN3JDvm6C6/7s0vdE8zCM7ivNY=
