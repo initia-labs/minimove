@@ -9,17 +9,24 @@ ARG COMMIT
 
 # See https://github.com/initia-labs/movevm/releases
 ENV LIBMOVEVM_VERSION=v1.1.1
-ENV MIMALLOC_VERSION=v2.2.2
+ENV ROCKS_DB_VERSION=v10.5.1
 
 # Install necessary packages
-RUN set -eux; apk add --no-cache ca-certificates build-base git cmake curl
+RUN set -eux; apk add --no-cache ca-certificates build-base git cmake curl 
+
+# Install dependencies for RocksDB
+RUN apk add --update --no-cache snappy-dev zlib-dev bzip2-dev lz4-dev zstd-dev jemalloc-dev linux-headers
 
 WORKDIR /code
 COPY . /code/
 
-# Install mimalloc
-RUN git clone -b ${MIMALLOC_VERSION} --depth 1 https://github.com/microsoft/mimalloc; cd mimalloc; mkdir build; cd build; cmake ..; make -j$(nproc); make install
-ENV MIMALLOC_RESERVE_HUGE_OS_PAGES=4
+# Install rocksdb
+RUN git clone --branch ${ROCKS_DB_VERSION} --depth 1 https://github.com/facebook/rocksdb; cd rocksdb; make -j$(nproc) static_lib; make install-static
+
+# Point CGO at the static RocksDB artifacts so the final binary does not miss runtime libs
+ENV ROCKSDB_STATIC_LDFLAGS="-L/usr/local/lib -L/usr/lib -lrocksdb -lsnappy -lbz2 -lz -llz4 -lzstd -ljemalloc -lstdc++ -ldl -lpthread" \
+    CGO_LDFLAGS="${ROCKSDB_STATIC_LDFLAGS}" \
+    CGO_CFLAGS="-I/usr/local/include"
 
 # Determine GOARCH and download the appropriate libraries
 RUN set -eux; \
@@ -39,7 +46,7 @@ RUN set -eux; \
 # RUN sha256sum /lib/libcompiler_muslc.${ARCH}.a | grep ...
 
 # Build the project with the specified architecture and linker flags
-RUN VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
+RUN COSMOS_BUILD_OPTIONS=rocksdb VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"${ROCKSDB_STATIC_LDFLAGS} -Wl,-z,muldefs -static\"" make build
 
 FROM alpine:3.19
 
