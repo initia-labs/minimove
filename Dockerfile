@@ -1,41 +1,14 @@
 # Stage 1: Build the Go project
-FROM golang:1.23-alpine AS go-builder
+FROM initia/go-rocksdb-builder:0001-alpine AS go-builder
 
 ARG TARGETARCH
 ARG VERSION
 ARG COMMIT
 
 ENV LIBMOVEVM_VERSION=v1.1.1
-ENV ROCKS_DB_VERSION=v10.5.1
-
-RUN set -eux; \
-    apk add --no-cache \
-        ca-certificates build-base git cmake curl bash perl coreutils \
-        linux-headers \
-        snappy-dev snappy-static \
-        zlib-dev zlib-static \
-        bzip2-dev bzip2-static \
-        lz4-dev lz4-static \
-        zstd-dev zstd-static \
-        jemalloc-dev jemalloc-static
-
-ENV CC=gcc CXX=g++
 
 WORKDIR /code
 COPY . .
-
-# Build static RocksDB (official INSTALL.md)
-RUN git clone --branch ${ROCKS_DB_VERSION} --depth 1 https://github.com/facebook/rocksdb /tmp/rocksdb && \
-    cd /tmp/rocksdb && \
-    PORTABLE=1 \
-    USE_RTTI=1 \
-    LITE=0 \
-    DISABLE_GFLAGS=1 \
-    USE_JEMALLOC=1 \
-    make -j$(nproc) static_lib && \
-    make install-static && \
-    strip /usr/local/lib/librocksdb.a || true && \
-    rm -rf /tmp/rocksdb
 
 # Static link flags for RocksDB + compression libs
 ENV ROCKSDB_STATIC_LDFLAGS="-L/usr/local/lib \
