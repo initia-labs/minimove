@@ -16,12 +16,35 @@ RUN set -eux; apk add --no-cache ca-certificates build-base git cmake curl
 
 # Install dependencies for RocksDB
 RUN apk add --update --no-cache snappy-dev zlib-dev bzip2-dev lz4-dev zstd-dev jemalloc-dev linux-headers
+# Ensure toolchain variables are set explicitly for RocksDB build
+ENV CC=gcc CXX=g++
 
 WORKDIR /code
 COPY . /code/
 
-# Install rocksdb
-RUN git clone --branch ${ROCKS_DB_VERSION} --depth 1 https://github.com/facebook/rocksdb; cd rocksdb; make -j$(nproc) static_lib; make install-static
+# Install rocksdb (static, jemalloc-enabled)
+RUN git clone --branch ${ROCKS_DB_VERSION} --depth 1 https://github.com/facebook/rocksdb /tmp/rocksdb; \
+    cd /tmp/rocksdb; \
+    mkdir -p build && cd build; \
+    cmake -G "Unix Makefiles" .. \
+      -DROCKSDB_BUILD_SHARED=OFF \
+      -DROCKSDB_BUILD_STATIC=ON \
+      -DWITH_TESTS=OFF \
+      -DWITH_TOOLS=OFF \
+      -DWITH_GFLAGS=OFF \
+      -DWITH_BZ2=ON \
+      -DWITH_LZ4=ON \
+      -DWITH_SNAPPY=ON \
+      -DWITH_ZLIB=ON \
+      -DWITH_ZSTD=ON \
+      -DUSE_RTTI=1 \
+      -DWITH_JEMALLOC=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON; \
+    cmake --build . -j$(nproc); \
+    cmake --install . --config Release; \
+    strip /usr/local/lib/librocksdb.a || true; \
+    rm -rf /tmp/rocksdb
 
 # Point CGO at the static RocksDB artifacts so the final binary does not miss runtime libs
 ENV ROCKSDB_STATIC_LDFLAGS="-L/usr/local/lib -L/usr/lib -lrocksdb -lsnappy -lbz2 -lz -llz4 -lzstd -ljemalloc -lstdc++ -ldl -lpthread" \
