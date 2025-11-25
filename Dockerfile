@@ -10,7 +10,7 @@ ENV ROCKS_DB_VERSION=v10.5.1
 
 RUN set -eux; \
     apk add --no-cache \
-        ca-certificates build-base git cmake curl bash \
+        ca-certificates build-base git cmake curl bash perl \
         linux-headers \
         snappy-dev snappy-static \
         zlib-dev zlib-static \
