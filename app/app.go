@@ -69,7 +69,7 @@ import (
 
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
-	"github.com/initia-labs/minimove/app/upgrades/v1_1_0"
+	"github.com/initia-labs/minimove/app/upgrades/v1_1_1"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -241,7 +241,7 @@ func NewMinitiaApp(
 	// The cosmos upgrade handler attempts to create ${HOME}/.minitia/data to check for upgrade info,
 	// but this isn't required during initial encoding config setup.
 	if loadLatest {
-		v1_1_0.RegisterUpgradeHandlers(app)
+		v1_1_1.RegisterUpgradeHandlers(app)
 	}
 
 	// register executor change plans for later use

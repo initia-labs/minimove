@@ -1,4 +1,4 @@
-package v1_1_0
+package v1_1_1
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	vmtypes "github.com/initia-labs/movevm/types"
 )
 
-const upgradeName = "v1.1.0"
+const upgradeName = "v1.1.1"
 
 // RegisterUpgradeHandlers returns upgrade handlers
 func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
