@@ -26,9 +26,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/initia-labs/OPinit v1.2.2
-	github.com/initia-labs/initia v1.2.0
+	github.com/initia-labs/initia v1.2.2
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
-	github.com/initia-labs/movevm v1.1.0
+	github.com/initia-labs/movevm v1.1.1
 	github.com/noble-assets/forwarding/v2 v2.0.3
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
