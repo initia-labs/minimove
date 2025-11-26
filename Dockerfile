@@ -37,7 +37,7 @@ RUN COSMOS_BUILD_OPTIONS=rocksdb \
     BUILD_TAGS=muslc \
     LEDGER_ENABLED=false \
     GOARCH=${GOARCH} \
-    LDFLAGS="-linkmode=external -extldflags \"-static\"" \
+    LDFLAGS="-linkmode=external -extldflags \"-static -Wl,-z,muldefs\"" \
     make build
 
 # ────────────────────────────────
