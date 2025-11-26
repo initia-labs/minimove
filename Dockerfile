@@ -12,7 +12,7 @@ COPY . .
 
 # Static link flags for RocksDB + compression libs
 ENV ROCKSDB_STATIC_LDFLAGS="-L/usr/local/lib \
-    -lrocksdb -lsnappy -lbz2 -lz -llz4 -lzstd -ljemalloc \
+    -lrocksdb -lsnappy -lbz2 -lz -llz4 -lzstd \
     -lstdc++fs -lstdc++ -ldl -lpthread"
 
 ENV CGO_LDFLAGS="${ROCKSDB_STATIC_LDFLAGS}"
