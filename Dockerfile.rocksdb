@@ -24,7 +24,7 @@ FROM debian:bullseye-slim
 
 # Install runtime shared libs
 RUN apt-get update && \
-    apt-get install -y ca-certificates libsnappy1v5 libzstd1 liblz4-1 libbz2-1.0 libgoogle-perftools-dev && \
+    apt-get install -y ca-certificates vim curl libsnappy1v5 libzstd1 liblz4-1 libbz2-1.0 libgoogle-perftools-dev && \
     update-ca-certificates
 
 WORKDIR /root
