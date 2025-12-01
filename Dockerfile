@@ -1,60 +1,67 @@
 # Stage 1: Build the Go project
-FROM initia/go-rocksdb-builder:0001-alpine AS go-builder
+FROM golang:1.23-alpine AS go-builder
 
+# Use build arguments for the target architecture
 ARG TARGETARCH
+ARG GOARCH
 ARG VERSION
 ARG COMMIT
 
-ENV LIBMOVEVM_VERSION=v1.1.1
+# See https://github.com/initia-labs/movevm/releases
+ENV LIBMOVEVM_VERSION=v1.1.2
+ENV MIMALLOC_VERSION=v2.2.2
+
+# Install necessary packages
+RUN set -eux; apk add --no-cache ca-certificates build-base git cmake curl
 
 WORKDIR /code
-COPY . .
+COPY . /code/
 
-# Static link flags for RocksDB + compression libs
-ENV ROCKSDB_STATIC_LDFLAGS="-L/usr/local/lib \
-    -lrocksdb -lsnappy -lbz2 -lz -llz4 -lzstd \
-    -lstdc++fs -lstdc++ -ldl -lpthread"
+# Install mimalloc
+RUN git clone -b ${MIMALLOC_VERSION} --depth 1 https://github.com/microsoft/mimalloc; cd mimalloc; mkdir build; cd build; cmake ..; make -j$(nproc); make install
+ENV MIMALLOC_RESERVE_HUGE_OS_PAGES=4
 
-ENV CGO_LDFLAGS="${ROCKSDB_STATIC_LDFLAGS}"
-ENV CGO_CFLAGS="-I/usr/local/include"
-
-# Download MoveVM static libraries depending on platform
+# Determine GOARCH and download the appropriate libraries
 RUN set -eux; \
     case "${TARGETARCH}" in \
-        "amd64") ARCH="x86_64"; export GOARCH="amd64";; \
-        "arm64") ARCH="aarch64"; export GOARCH="arm64";; \
-        *) echo "Unsupported arch: ${TARGETARCH}"; exit 1;; \
+    "amd64") export GOARCH="amd64"; ARCH="x86_64";; \
+    "arm64") export GOARCH="arm64"; ARCH="aarch64";; \
+    *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1;; \
     esac; \
+    echo "Using GOARCH=${GOARCH} and ARCH=${ARCH}"; \
     wget -O /lib/libmovevm_muslc.${ARCH}.a https://github.com/initia-labs/movevm/releases/download/${LIBMOVEVM_VERSION}/libmovevm_muslc.${ARCH}.a; \
     wget -O /lib/libcompiler_muslc.${ARCH}.a https://github.com/initia-labs/movevm/releases/download/${LIBMOVEVM_VERSION}/libcompiler_muslc.${ARCH}.a; \
     cp /lib/libmovevm_muslc.${ARCH}.a /lib/libmovevm_muslc.a; \
     cp /lib/libcompiler_muslc.${ARCH}.a /lib/libcompiler_muslc.a
 
-# Build static binary
-RUN COSMOS_BUILD_OPTIONS=rocksdb \
-    VERSION=${VERSION} \
-    COMMIT=${COMMIT} \
-    BUILD_TAGS=muslc \
-    LEDGER_ENABLED=false \
-    GOARCH=${GOARCH} \
-    LDFLAGS="-linkmode=external -extldflags \"-static -Wl,-z,muldefs\"" \
-    make build
+# Verify the library hashes (optional, uncomment if needed)
+# RUN sha256sum /lib/libmovevm_muslc.${ARCH}.a | grep ...
+# RUN sha256sum /lib/libcompiler_muslc.${ARCH}.a | grep ...
 
-# ────────────────────────────────
-# Final minimal runtime image
-# ────────────────────────────────
+# Build the project with the specified architecture and linker flags
+RUN VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
+
 FROM alpine:3.19
 
-RUN addgroup minitia && adduser -G minitia -D -h /minitia minitia
-WORKDIR /minitia
+# install curl for the health check
+RUN apk add curl
 
-# Optional: curl for health check
-RUN apk add --no-cache curl
+RUN addgroup minitia \
+    && adduser -G minitia -D -h /minitia minitia
+
+WORKDIR /minitia
 
 COPY --from=go-builder /code/build/minitiad /usr/local/bin/minitiad
 
 USER minitia
 
-EXPOSE 1317 9090 26656 26657
+# rest server
+EXPOSE 1317
+# grpc
+EXPOSE 9090
+# tendermint p2p
+EXPOSE 26656
+# tendermint rpc
+EXPOSE 26657
 
 CMD ["/usr/local/bin/minitiad", "version"]

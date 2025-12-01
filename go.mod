@@ -28,7 +28,7 @@ require (
 	github.com/initia-labs/OPinit v1.2.2
 	github.com/initia-labs/initia v1.2.2
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
-	github.com/initia-labs/movevm v1.1.1
+	github.com/initia-labs/movevm v1.1.2
 	github.com/initia-labs/store v0.0.4
 	github.com/noble-assets/forwarding/v2 v2.0.3
 	github.com/pkg/errors v0.9.1
@@ -297,7 +297,7 @@ require (
 // connect
 // - https://github.com/initia-labs/connect/pull/1
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.19-minitia.5
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.19-minitia.6
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.50.14-initia.2
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.7.0-initia.0
 	github.com/noble-assets/forwarding/simapp => github.com/initia-labs/forwarding/simapp v1.0.0
