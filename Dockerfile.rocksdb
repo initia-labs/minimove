@@ -38,7 +38,7 @@ RUN ldconfig
 # Setup minitia user
 WORKDIR /minitia
 RUN addgroup minitia \
-    && adduser -G minitia -D -h /minitia minitia
+    && adduser --ingroup minitia --disabled-password --home /minitia minitia
 USER minitia
 
 EXPOSE 1317 9090 26656 26657
