@@ -32,13 +32,14 @@ COPY --from=go-builder /usr/local/lib/librocksdb.so /usr/local/lib/
 COPY --from=go-builder /usr/local/lib/libmovevm.x86_64.so /usr/local/lib/
 COPY --from=go-builder /usr/local/lib/libcompiler.x86_64.so /usr/local/lib/
 
-WORKDIR /minitia
+# Update shared lib cache
+RUN ldconfig
 
+# Setup minitia user
+WORKDIR /minitia
 RUN addgroup minitia \
     && adduser -G minitia -D -h /minitia minitia
 USER minitia
-
-RUN ldconfig
 
 EXPOSE 1317 9090 26656 26657
 
