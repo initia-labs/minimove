@@ -1,8 +1,8 @@
 package app
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -83,4 +83,9 @@ func (app *MinitiaApp) CheckStateContextGetter() func() sdk.Context {
 	return func() sdk.Context {
 		return app.GetContextForCheckTx(nil)
 	}
+}
+
+// GetQueryMultiStore returns the query multi store for the app.
+func (app *MinitiaApp) GetQueryMultiStore() storetypes.MultiStore {
+	return app.qms
 }

@@ -9,18 +9,23 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
 	moveconfig "github.com/initia-labs/initia/x/move/config"
+
 	"github.com/initia-labs/minimove/types"
+
+	initiastorecfg "github.com/initia-labs/store/config"
 )
 
-// initiaappConfig initia specify app config
-type initiaappConfig struct {
+// minitiaAppConfig minitia specify app config
+type minitiaAppConfig struct {
 	serverconfig.Config
-	MoveConfig moveconfig.MoveConfig `mapstructure:"move"`
+	MemIAVL    initiastorecfg.MemIAVLConfig   `mapstructure:"memiavl"`
+	VersionDB  initiastorecfg.VersionDBConfig `mapstructure:"versiondb"`
+	MoveConfig moveconfig.MoveConfig          `mapstructure:"move"`
 }
 
 // initAppConfig helps to override default appConfig template and configs.
 // return "", nil if no custom configuration is required for the application.
-func initAppConfig() (string, interface{}) {
+func initAppConfig() (string, any) {
 	// Optionally allow the chain developer to overwrite the SDK's default
 	// server config.
 	srvCfg := serverconfig.DefaultConfig()
@@ -54,14 +59,22 @@ func initAppConfig() (string, interface{}) {
 	moveCfg := moveconfig.DefaultMoveConfig()
 	moveCfg.ContractSimulationGasLimit = 10_000_000
 
-	initiaappConfig := initiaappConfig{
+	memIAVLCfg := initiastorecfg.DefaultMemIAVLConfig()
+	versionDBCfg := initiastorecfg.DefaultVersionDBConfig()
+
+	minitiaAppConfig := minitiaAppConfig{
 		Config:     *srvCfg,
 		MoveConfig: moveCfg,
+		MemIAVL:    memIAVLCfg,
+		VersionDB:  versionDBCfg,
 	}
 
-	initiaappTemplate := serverconfig.DefaultConfigTemplate + moveconfig.DefaultConfigTemplate
+	minitiaAppTemplate := serverconfig.DefaultConfigTemplate +
+		moveconfig.DefaultConfigTemplate +
+		initiastorecfg.DefaultMemIAVLConfigTemplate +
+		initiastorecfg.DefaultVersionDBConfigTemplate
 
-	return initiaappTemplate, initiaappConfig
+	return minitiaAppTemplate, minitiaAppConfig
 }
 
 // initTendermintConfig helps to override default Tendermint Config values.

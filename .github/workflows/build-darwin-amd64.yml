@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-15
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -19,8 +19,6 @@ jobs:
 
       - name: Set environment variables
         run: |
-          MINIMOVE_NETWORK_NAME="minimove-1"
-          echo "MINIMOVE_NETWORK_NAME=${MINIMOVE_NETWORK_NAME}" >> $GITHUB_ENV        
           echo "GOARCH=amd64" >> $GITHUB_ENV
           echo "GOOS=darwin" >> $GITHUB_ENV
           if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
@@ -45,7 +43,6 @@ jobs:
           echo "VERSION=${VERSION}"
           echo "ARCH_NAME=${ARCH_NAME}"
           echo "MOVEVM_VERSION=${MOVEVM_VERSION}"
-          echo "MINIMOVE_NETWORK_NAME=${MINIMOVE_NETWORK_NAME}"
 
       - name: Build and Package for Darwin ADM64
         run: |

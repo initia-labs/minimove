@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -25,23 +27,30 @@ jobs:
           fi
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "ARCH_NAME=x86_64" >> $GITHUB_ENV
+          MOVEVM_VERSION=$(go list -m github.com/initia-labs/movevm | awk '{print $2}')    
+          echo "MOVEVM_VERSION=${MOVEVM_VERSION}" >> $GITHUB_ENV
+
+      - name: Ensure dependencies
+        run: |
+          go mod tidy
+          go get github.com/initia-labs/movevm@${MOVEVM_VERSION}
 
       - name: Print environment variables
         run: |
           echo "GOARCH=${GOARCH}"
           echo "GOOS=${GOOS}"
           echo "VERSION=${VERSION}"
+          echo "ARCH_NAME=${ARCH_NAME}"
+          echo "MOVEVM_VERSION=${MOVEVM_VERSION}"
 
       - name: Build for Linux AMD64
         run: |
-          export GOARCH=${GOARCH}
-          export GOOS=${GOOS}
-          make build-linux-with-shared-library \
+          make build \
           && cd ./build \
-          && mv libmovevm.so libmovevm.${ARCH_NAME}.so \
-          && mv libcompiler.so libcompiler.${ARCH_NAME}.so \
+          && cp ~/go/pkg/mod/github.com/initia-labs/movevm@${MOVEVM_VERSION}/api/libmovevm.${ARCH_NAME}.so ./ \
+          && cp ~/go/pkg/mod/github.com/initia-labs/movevm@${MOVEVM_VERSION}/api/libcompiler.${ARCH_NAME}.so ./ \
           && tar -czvf minimove_${VERSION}_Linux_${ARCH_NAME}.tar.gz minitiad libmovevm.${ARCH_NAME}.so libcompiler.${ARCH_NAME}.so \
-          && mv ./minimove_"$VERSION"_Linux_"$ARCH_NAME".tar.gz $GITHUB_WORKSPACE/ \
+          && mv ./minimove_"${VERSION}"_Linux_"${ARCH_NAME}".tar.gz ${GITHUB_WORKSPACE}/ \
           && rm -rf libmovevm.${ARCH_NAME}.so libcompiler.${ARCH_NAME}.so ./minitiad
 
       - name: Upload artifact
