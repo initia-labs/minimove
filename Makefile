@@ -6,6 +6,8 @@ BINDIR ?= $(GOPATH)/bin
 BUILDDIR ?= $(CURDIR)/build
 DOCKER := $(shell which docker)
 
+# default to CGO_ENABLED=1 for builds requiring CGO (e.g., movevm)
+CGO_ENABLED := 1
 
 # don't override user values of COMMIT and VERSION
 ifeq (,$(COMMIT))
@@ -72,7 +74,6 @@ endef
 
 ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
   $(info $(ROCKSDB_INSTRUCTIONS))
-  CGO_ENABLED ?= 1
   build_tags += rocksdb grocksdb_clean_link
 
   ifeq ($(shell uname -s),Darwin)
