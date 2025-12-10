@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -27,6 +28,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -69,6 +71,9 @@ import (
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
 	"github.com/initia-labs/minimove/app/upgrades/v1_1_2"
+
+	// memiavl store
+	initiastore "github.com/initia-labs/store"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/initia-labs/minimove/client/docs/statik"
@@ -116,6 +121,9 @@ type MinitiaApp struct {
 
 	// Override of BaseApp's CheckTx
 	checkTxHandler blockchecktx.CheckTx
+
+	// QueryMultiStore
+	qms storetypes.MultiStore
 }
 
 // NewMinitiaApp returns a reference to an initialized Initia.
@@ -146,6 +154,7 @@ func NewMinitiaApp(
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 	txConfig := encodingConfig.TxConfig
 
+	baseAppOptions = initiastore.SetupMemIAVL(logger, appOpts, false, baseAppOptions)
 	bApp := baseapp.NewBaseApp(AppName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
@@ -308,6 +317,20 @@ func NewMinitiaApp(
 			tmos.Exit(err.Error())
 		}
 	}
+
+	// create streaming manager
+	streamingManager := &storetypes.StreamingManager{
+		ABCIListeners: []storetypes.ABCIListener{},
+		StopNodeOnErr: true,
+	}
+
+	// setup versiondb; this should be called after LoadLatestVersion
+	if err := initiastore.SetupVersionDB(app, streamingManager, appOpts); err != nil {
+		tmos.Exit(err.Error())
+	}
+
+	// override base-app's streaming manager
+	app.SetStreamingManager(*streamingManager)
 
 	return app
 }
@@ -475,8 +498,15 @@ func (app *MinitiaApp) RegisterTendermintService(clientCtx client.Context) {
 	)
 }
 
+// RegisterNodeService implements the Application.RegisterNodeService method.
 func (app *MinitiaApp) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
+}
+
+// SetQueryMultiStore sets the query multi store for the app.
+func (app *MinitiaApp) SetQueryMultiStore(store storetypes.MultiStore) {
+	app.qms = store
+	app.BaseApp.SetQueryMultiStore(store)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
@@ -513,9 +543,22 @@ func VerifyAddressLen() func(addr []byte) error {
 // Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
 // This method blocks on the closure of both the prometheus server, and the oracle-service
 func (app *MinitiaApp) Close() error {
+	var errs []error
+
 	if err := app.BaseApp.Close(); err != nil {
-		return err
+		errs = append(errs, err)
 	}
 
-	return nil
+	for _, store := range []storetypes.MultiStore{app.CommitMultiStore(), app.qms} {
+		if store == nil {
+			continue
+		}
+		if closer, ok := store.(io.Closer); ok {
+			if err := closer.Close(); err != nil {
+				errs = append(errs, err)
+			}
+		}
+	}
+
+	return errors.Join(errs...)
 }

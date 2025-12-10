@@ -8,7 +8,7 @@ ARG VERSION
 ARG COMMIT
 
 # See https://github.com/initia-labs/movevm/releases
-ENV LIBMOVEVM_VERSION=v1.1.1
+ENV LIBMOVEVM_VERSION=v1.1.2
 ENV MIMALLOC_VERSION=v2.2.2
 
 # Install necessary packages
@@ -24,9 +24,9 @@ ENV MIMALLOC_RESERVE_HUGE_OS_PAGES=4
 # Determine GOARCH and download the appropriate libraries
 RUN set -eux; \
     case "${TARGETARCH}" in \
-        "amd64") export GOARCH="amd64"; ARCH="x86_64";; \
-        "arm64") export GOARCH="arm64"; ARCH="aarch64";; \
-        *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1;; \
+    "amd64") export GOARCH="amd64"; ARCH="x86_64";; \
+    "arm64") export GOARCH="arm64"; ARCH="aarch64";; \
+    *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1;; \
     esac; \
     echo "Using GOARCH=${GOARCH} and ARCH=${ARCH}"; \
     wget -O /lib/libmovevm_muslc.${ARCH}.a https://github.com/initia-labs/movevm/releases/download/${LIBMOVEVM_VERSION}/libmovevm_muslc.${ARCH}.a; \

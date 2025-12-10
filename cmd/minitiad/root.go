@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -38,10 +39,15 @@ import (
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 
 	minitiaapp "github.com/initia-labs/minimove/app"
+	"github.com/initia-labs/minimove/app/keepers"
 
 	opchildcli "github.com/initia-labs/OPinit/x/opchild/client/cli"
 
 	cmtcmd "github.com/cometbft/cometbft/cmd/cometbft/commands"
+
+	initiastoreclient "github.com/initia-labs/store/client"
+	initiastoreconfig "github.com/initia-labs/store/config"
+	initiastoreopendb "github.com/initia-labs/store/opendb"
 )
 
 // NewRootCmd creates a new root command for initiad. It is called once in the
@@ -152,10 +158,20 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			minitiaappTemplate, minitiaappConfig := initAppConfig()
+			minitiaAppTemplate, minitiaAppConfig := initAppConfig()
 			customTMConfig := initTendermintConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, minitiaappTemplate, minitiaappConfig, customTMConfig)
+			err = server.InterceptConfigsPreRunHandler(cmd, minitiaAppTemplate, minitiaAppConfig, customTMConfig)
+			if err != nil {
+				return err
+			}
+
+			// set the db dir for opendb
+			if serverCtx := cmd.Context().Value(server.ServerContextKey); serverCtx != nil {
+				initiastoreopendb.DBDir = cast.ToString(serverCtx.(*server.Context).Viper.Get("db_dir"))
+			}
+
+			return nil
 		},
 	}
 
@@ -184,7 +200,10 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 		pruning.Cmd(a.AppCreator(), minitiaapp.DefaultNodeHome),
 		snapshot.Cmd(a.AppCreator()),
 	)
-	server.AddCommands(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, addModuleInitFlags)
+	server.AddCommandsWithStartCmdOptions(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, server.StartCmdOptions{
+		AddFlags: addModuleInitFlags,
+		DBOpener: initiastoreopendb.OpenDB,
+	})
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -204,10 +223,17 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 	rootCmd.AddCommand(LaunchCommand(a, encodingConfig, basicManager))
 	rootCmd.AddCommand(NewMultipleRollbackCmd(a.AppCreator()))
 	rootCmd.AddCommand(cmtcmd.FetchGenesisCmd)
+
+	// add store commands
+	if storeCmd := initiastoreclient.ChangeSetGroupCmd(keepers.KVStoreKeys()); storeCmd != nil {
+		rootCmd.AddCommand(storeCmd)
+	}
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
+	initiastoreconfig.AddMemIAVLConfigFlags(startCmd)
+	initiastoreconfig.AddVersionDBConfigFlags(startCmd)
 }
 
 func genesisCommand(encodingConfig params.EncodingConfig, basicManager module.BasicManager) *cobra.Command {
