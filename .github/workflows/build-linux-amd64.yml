@@ -18,6 +18,7 @@ jobs:
 
       - name: Set environment variables
         run: |
+          echo "CGO_ENABLED=1" >> $GITHUB_ENV
           echo "GOARCH=amd64" >> $GITHUB_ENV
           echo "GOOS=linux" >> $GITHUB_ENV
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
