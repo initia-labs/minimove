@@ -1,7 +1,8 @@
 name: Build Darwin AMD64
 
-on:
+on: 
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   build:
