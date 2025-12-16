@@ -25,7 +25,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.2.3
+	github.com/initia-labs/OPinit v1.2.4
 	github.com/initia-labs/initia v1.2.2
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.1.2
