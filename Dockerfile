@@ -46,7 +46,7 @@ FROM debian:bullseye-slim
 
 # install curl for health check
 RUN apt-get update && \
-    apt-get install -y ca-certificates curl && \
+    apt-get install -y ca-certificates vim curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=go-builder /code/build/minitiad /usr/local/bin/minitiad
