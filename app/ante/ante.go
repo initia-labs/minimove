@@ -13,13 +13,9 @@ import (
 
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
-	accnumante "github.com/initia-labs/initia/app/ante/accnum"
+	initiaante "github.com/initia-labs/initia/app/ante"
 	"github.com/initia-labs/initia/app/ante/sigverify"
 	moveante "github.com/initia-labs/initia/x/move/ante"
-
-	"github.com/skip-mev/block-sdk/v2/block"
-	auctionante "github.com/skip-mev/block-sdk/v2/x/auction/ante"
-	auctionkeeper "github.com/skip-mev/block-sdk/v2/x/auction/keeper"
 )
 
 // HandlerOptions extends the SDK's AnteHandler options by requiring the IBC
@@ -29,10 +25,6 @@ type HandlerOptions struct {
 	Codec         codec.BinaryCodec
 	IBCkeeper     *ibckeeper.Keeper
 	OPChildKeeper *opchildkeeper.Keeper
-	AuctionKeeper *auctionkeeper.Keeper
-	TxEncoder     sdk.TxEncoder
-	MevLane       auctionante.MEVLane
-	FreeLane      block.Lane
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -54,8 +46,55 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.IBCkeeper == nil {
 		return nil, errors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for ante builder")
 	}
-	if options.AuctionKeeper == nil {
-		return nil, errors.Wrap(sdkerrors.ErrLogic, "auction keeper is required for ante builder")
+
+	sigGasConsumer := options.SigGasConsumer
+	if sigGasConsumer == nil {
+		sigGasConsumer = sigverify.DefaultSigVerificationGasConsumer
+	}
+
+	txFeeChecker := options.TxFeeChecker
+	if txFeeChecker == nil {
+		txFeeChecker = opchildante.NewMempoolFeeChecker(options.OPChildKeeper).CheckTxFeeWithMinGasPrices
+	}
+
+	anteDecorators := []sdk.AnteDecorator{
+		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
+		moveante.NewGasPricesDecorator(),
+		ante.NewValidateBasicDecorator(),
+		ante.NewTxTimeoutHeightDecorator(),
+		ante.NewValidateMemoDecorator(options.AccountKeeper),
+		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, txFeeChecker),
+		// SetPubKeyDecorator must be called before all signature verification decorators
+		ante.NewSetPubKeyDecorator(options.AccountKeeper),
+		ante.NewValidateSigCountDecorator(options.AccountKeeper),
+		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
+		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
+		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
+		opchildante.NewRedundantBridgeDecorator(options.OPChildKeeper),
+	}
+
+	return sdk.ChainAnteDecorators(anteDecorators...), nil
+}
+
+// NewMinimalAnteHandler returns a reduced AnteHandler chain for CheckTx mode.
+// It validates signatures, format, gas limits, and fees (for priority) but
+// does not deduct fees or increment sequences; those are handled by the
+// full handler during PrepareProposal/FinalizeBlock.
+func NewMinimalAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
+	if options.AccountKeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "account keeper is required for minimal ante handler")
+	}
+	if options.SignModeHandler == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for minimal ante handler")
+	}
+	if options.OPChildKeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "opchild keeper is required for minimal ante handler")
+	}
+	if options.IBCkeeper == nil {
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for minimal ante handler")
 	}
 
 	sigGasConsumer := options.SigGasConsumer
@@ -68,39 +107,21 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		txFeeChecker = opchildante.NewMempoolFeeChecker(options.OPChildKeeper).CheckTxFeeWithMinGasPrices
 	}
 
-	freeLaneFeeChecker := func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
-		// skip fee checker if the tx is free lane tx.
-		if !options.FreeLane.Match(ctx, tx) {
-			return txFeeChecker(ctx, tx)
-		}
-
-		// return fee without fee check
-		feeTx, ok := tx.(sdk.FeeTx)
-		if !ok {
-			return nil, 0, errors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
-		}
-
-		return feeTx.GetFee(), 1 /* FIFO */, nil
-	}
-
 	anteDecorators := []sdk.AnteDecorator{
-		accnumante.NewAccountNumberDecorator(options.AccountKeeper),
-		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		ante.NewSetUpContextDecorator(),
 		ante.NewExtensionOptionsDecorator(options.ExtensionOptionChecker),
 		moveante.NewGasPricesDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, freeLaneFeeChecker),
-		// SetPubKeyDecorator must be called before all signature verification decorators
+		initiaante.NewCheckFeeDecorator(txFeeChecker), // validate fee + set priority, no deduction
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
 		sigverify.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
-		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
+		// no IncrementSequenceDecorator here since mempool tracks nonces
 		ibcante.NewRedundantRelayDecorator(options.IBCkeeper),
-		auctionante.NewAuctionDecorator(options.AuctionKeeper, options.TxEncoder, options.MevLane),
 		opchildante.NewRedundantBridgeDecorator(options.OPChildKeeper),
 	}
 

@@ -59,8 +59,6 @@ import (
 	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 
 	// skip-mev modules
-	"github.com/skip-mev/block-sdk/v2/x/auction"
-	auctiontypes "github.com/skip-mev/block-sdk/v2/x/auction/types"
 	marketmap "github.com/skip-mev/connect/v2/x/marketmap"
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	"github.com/skip-mev/connect/v2/x/oracle"
@@ -78,9 +76,6 @@ var maccPerms = map[string][]string{
 	ibcfeetypes.ModuleName:          nil,
 	ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	movetypes.MoveStakingModuleName: nil,
-	// x/auction's module account must be instantiated upon genesis to accrue auction rewards not
-	// distributed to proposers
-	auctiontypes.ModuleName: nil,
 	opchildtypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 
 	// connect oracle permissions
@@ -106,7 +101,6 @@ func appModules(
 		groupmodule.NewAppModule(app.appCodec, *app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		consensus.NewAppModule(app.appCodec, *app.ConsensusParamsKeeper),
 		move.NewAppModule(app.appCodec, *app.MoveKeeper, app.vc, maps.Keys(maccPerms)),
-		auction.NewAppModule(app.appCodec, *app.AuctionKeeper),
 		// ibc modules
 		ibc.NewAppModule(app.IBCKeeper),
 		ibctransfer.NewAppModule(*app.TransferKeeper),
@@ -197,7 +191,7 @@ func orderInitBlockers() []string {
 		opchildtypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, group.ModuleName, crisistypes.ModuleName,
 		upgradetypes.ModuleName, feegrant.ModuleName, consensusparamtypes.ModuleName, ibcexported.ModuleName,
 		ibctransfertypes.ModuleName, ibcnfttransfertypes.ModuleName, icatypes.ModuleName, icaauthtypes.ModuleName,
-		ibcfeetypes.ModuleName, auctiontypes.ModuleName, oracletypes.ModuleName,
+		ibcfeetypes.ModuleName, oracletypes.ModuleName,
 		marketmaptypes.ModuleName, packetforwardtypes.ModuleName, ibchookstypes.ModuleName, forwardingtypes.ModuleName,
 	}
 }

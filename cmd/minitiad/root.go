@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"io"
 	"os"
 	"path"
 
+	cmtmempool "github.com/cometbft/cometbft/mempool"
+	"github.com/cometbft/cometbft/rpc/client/local"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/errgroup"
 
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
@@ -203,6 +207,17 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 	server.AddCommandsWithStartCmdOptions(rootCmd, minitiaapp.DefaultNodeHome, a.AppCreator(), a.appExport, server.StartCmdOptions{
 		AddFlags: addModuleInitFlags,
 		DBOpener: initiastoreopendb.OpenDB,
+		PostSetup: func(svrCtx *server.Context, clientCtx client.Context, ctx context.Context, g *errgroup.Group) error {
+			if lc, ok := clientCtx.Client.(*local.Local); ok {
+				if ep, ok := lc.Mempool().(cmtmempool.EventProvider); ok {
+					if app, ok := a.App().(*minitiaapp.MinitiaApp); ok {
+						app.ConnectMempoolEvents(ep.AppEventCh())
+					}
+				}
+			}
+
+			return nil
+		},
 	})
 
 	// add keybase, auxiliary RPC, query, and tx child commands
