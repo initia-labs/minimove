@@ -27,7 +27,7 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.3.0-alpha.0
+	github.com/initia-labs/OPinit v1.3.0-alpha.1
 	github.com/initia-labs/initia v1.2.2
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.2.0
@@ -150,7 +150,7 @@ require (
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/initia-labs/OPinit/api v1.2.1-0.20260107071306-7207b34866b7 // indirect
+	github.com/initia-labs/OPinit/api v1.3.0 // indirect
 	github.com/initia-labs/initia/api v1.3.0 // indirect
 	github.com/initia-labs/store/memiavl v0.1.1 // indirect
 	github.com/initia-labs/store/versiondb v0.1.0 // indirect
@@ -273,14 +273,12 @@ require github.com/cosmos/iavl v1.2.6 // indirect
 // connect
 // - https://github.com/initia-labs/connect/pull/1
 replace (
-	// TODO: Replace this with proper tag once https://github.com/initia-labs/cometbft/pull/78 is merged.
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.19-minitia.19.0.20260219162153-1e9af6144f91
-
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.19-minitia.23
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.50.15-initia.0
 	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.7.0-initia.0
 
-	// TODO: Replace this with proper tag once https://github.com/initia-labs/initia/pull/474 is merged.
-	github.com/initia-labs/initia/api => github.com/initia-labs/initia/api v1.3.1-0.20260220053310-b5b792ecfe05
+	// TODO: Replace this with proper tag once https://github.com/initia-labs/initia/pull/473 is merged.
+	github.com/initia-labs/initia/api => github.com/initia-labs/initia/api v1.3.1-0.20260220103031-2e84a88974e4
 
 	github.com/noble-assets/forwarding/simapp => github.com/initia-labs/forwarding/simapp v1.0.0
 	github.com/noble-assets/forwarding/v2 => github.com/initia-labs/forwarding/v2 v2.0.3-initia.3
@@ -291,5 +289,5 @@ replace (
 	google.golang.org/grpc => google.golang.org/grpc v1.65.0
 )
 
-// TODO: Replace this with proper tag in the first block once https://github.com/initia-labs/initia/pull/474 is merged.
-replace github.com/initia-labs/initia => github.com/initia-labs/initia v1.3.1-0.20260220053310-b5b792ecfe05
+// TODO: Replace this with proper tag in the first block once https://github.com/initia-labs/initia/pull/473 is merged.
+replace github.com/initia-labs/initia => github.com/initia-labs/initia v1.3.1-0.20260220103031-2e84a88974e4
