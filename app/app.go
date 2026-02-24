@@ -72,7 +72,6 @@ import (
 
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
-	"github.com/initia-labs/minimove/app/upgrades/v1_1_5"
 	"github.com/initia-labs/minimove/app/upgrades/v1_2_0"
 
 	// memiavl store
@@ -252,7 +251,6 @@ func NewMinitiaApp(
 	// The cosmos upgrade handler attempts to create ${HOME}/.minitia/data to check for upgrade info,
 	// but this isn't required during initial encoding config setup.
 	if loadLatest {
-		v1_1_5.RegisterUpgradeHandlers(app)
 		v1_2_0.RegisterUpgradeHandlers(app)
 	}
 
@@ -559,8 +557,8 @@ func VerifyAddressLen() func(addr []byte) error {
 func (app *MinitiaApp) Close() error {
 	var errs []error
 
-	if mempool, ok := app.Mempool().(interface{ StopCleaningWorker() }); ok {
-		mempool.StopCleaningWorker()
+	if mempool, ok := app.Mempool().(interface{ Stop() }); ok {
+		mempool.Stop()
 	}
 
 	if err := app.BaseApp.Close(); err != nil {

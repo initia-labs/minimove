@@ -7,12 +7,13 @@ import (
 	"os"
 	"path"
 
-	cmtmempool "github.com/cometbft/cometbft/mempool"
-	"github.com/cometbft/cometbft/rpc/client/local"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
+
+	cmtmempool "github.com/cometbft/cometbft/mempool"
+	"github.com/cometbft/cometbft/rpc/client/local"
 
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
