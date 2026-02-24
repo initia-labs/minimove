@@ -41,8 +41,8 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 			}
 
 			var modules []vmtypes.Module
-			for _, module := range moduleBytesArray {
-				modules = append(modules, vmtypes.NewModule(module))
+			for _, moduleBytes := range moduleBytesArray {
+				modules = append(modules, vmtypes.NewModule(moduleBytes))
 			}
 
 			err = app.GetMoveKeeper().PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
