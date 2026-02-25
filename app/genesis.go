@@ -21,7 +21,6 @@ import (
 	movetypes "github.com/initia-labs/initia/x/move/types"
 	"github.com/initia-labs/movevm/precompile"
 
-	auctiontypes "github.com/skip-mev/block-sdk/v2/x/auction/types"
 	connecttypes "github.com/skip-mev/connect/v2/pkg/types"
 	marketmaptypes "github.com/skip-mev/connect/v2/x/marketmap/types"
 	oracletypes "github.com/skip-mev/connect/v2/x/oracle/types"
@@ -43,7 +42,6 @@ func NewDefaultGenesisState(cdc codec.Codec, mbm module.BasicManager, denom stri
 		ConfigureICA(cdc).
 		ConfigureMoveStdlib(cdc).
 		ConfigureIBCAllowedClients(cdc).
-		ConfigureAuctionFee(cdc, denom).
 		AddMarketData(cdc, cdc.InterfaceRegistry().SigningContext().AddressCodec())
 }
 
@@ -106,16 +104,6 @@ func (genState GenesisState) AddMarketData(cdc codec.JSONCodec, ac address.Codec
 	// write the updates to genState
 	genState[marketmaptypes.ModuleName] = cdc.MustMarshalJSON(&marketGenState)
 	genState[oracletypes.ModuleName] = cdc.MustMarshalJSON(&oracleGenState)
-	return genState
-}
-
-func (genState GenesisState) ConfigureAuctionFee(cdc codec.JSONCodec, denom string) GenesisState {
-	var auctionGenState auctiontypes.GenesisState
-	cdc.MustUnmarshalJSON(genState[auctiontypes.ModuleName], &auctionGenState)
-	auctionGenState.Params.ReserveFee.Denom = denom
-	auctionGenState.Params.MinBidIncrement.Denom = denom
-	genState[auctiontypes.ModuleName] = cdc.MustMarshalJSON(&auctionGenState)
-
 	return genState
 }
 

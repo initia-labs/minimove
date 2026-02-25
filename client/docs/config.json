@@ -163,6 +163,9 @@
       }
     },
     {
+      "url": "./tmp-swagger-gen/initia/abcipp/mempool/v1/query.swagger.json"
+    },
+    {
       "url": "./tmp-swagger-gen/connect/oracle/v2/query.swagger.json"
     },
     {
@@ -172,17 +175,6 @@
           "Params": "MarketMapParams"
         }
       }
-    },
-    {
-      "url": "./tmp-swagger-gen/sdk/auction/v1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "AuctionParams"
-        }
-      }
-    },
-    {
-      "url": "./tmp-swagger-gen/sdk/mempool/v1/query.swagger.json"
     }
   ]
 }

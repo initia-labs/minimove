@@ -1,5 +1,5 @@
 # Stage 1: Build the Go project
-FROM golang:1.23-alpine AS go-builder
+FROM golang:1.24-alpine AS go-builder
 
 # Use build arguments for the target architecture
 ARG TARGETARCH
@@ -8,7 +8,7 @@ ARG VERSION
 ARG COMMIT
 
 # See https://github.com/initia-labs/movevm/releases
-ENV LIBMOVEVM_VERSION=v1.1.2
+ENV LIBMOVEVM_VERSION=v1.2.0
 ENV MIMALLOC_VERSION=v2.2.2
 
 # Install necessary packages

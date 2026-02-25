@@ -25,9 +25,9 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
-          go-version: 1.23
+          go-version: 1.24
       - name: Install openssl
         run: sudo apt-get install libssl-dev
       - uses: actions/checkout@v5

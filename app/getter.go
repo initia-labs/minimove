@@ -13,6 +13,7 @@ import (
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
+	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	ibctestingtypes "github.com/initia-labs/initia/x/ibc/testing/types"
 	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
@@ -56,6 +57,11 @@ func (app *MinitiaApp) GetICAControllerKeeper() *icacontrollerkeeper.Keeper {
 // GetICAAuthKeeper returns the ica auth keeper for the app.
 func (app *MinitiaApp) GetICAAuthKeeper() *icaauthkeeper.Keeper {
 	return app.ICAAuthKeeper
+}
+
+// GetOPChildKeeper returns the opchild keeper for the app.
+func (app *MinitiaApp) GetOPChildKeeper() *opchildkeeper.Keeper {
+	return app.OPChildKeeper
 }
 
 // GetScopedIBCKeeper returns the scoped ibc keeper for the app.
