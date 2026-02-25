@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 
+	tmos "github.com/cometbft/cometbft/libs/os"
+
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
@@ -304,11 +306,14 @@ func NewAppKeeper(
 		authorityAddr,
 	)
 
-	appKeepers.OPChildKeeper.SetIBCKeepers(
+	if err := appKeepers.OPChildKeeper.SetIBCKeepers(
 		appKeepers.IBCKeeper.ClientKeeper,
 		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedOPChildKeeper,
-	)
+	); err != nil {
+		logger.Error("failed to setup IBCKeepers on OPChildKeeper", "error", err.Error())
+		tmos.Exit(err.Error())
+	}
 
 	// Set IBC post handler to receive validator set updates
 	appKeepers.IBCKeeper.ClientKeeper.SetPostUpdateHandler(
