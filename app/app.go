@@ -495,7 +495,7 @@ func (app *MinitiaApp) RegisterTxService(clientCtx client.Context) {
 	// Register the ABCIPP mempool query server.
 	mempool, ok := app.Mempool().(abcipp.Mempool)
 	if !ok {
-		panic("mempool is not a abcipp.Mempool")
+		panic("mempool is not an abcipp.Mempool")
 	}
 
 	abcipp.RegisterQueryServer(app.GRPCQueryRouter(), mempool)

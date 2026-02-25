@@ -3,6 +3,8 @@ package v1_2_0
 import (
 	"context"
 
+	tmos "github.com/cometbft/cometbft/libs/os"
+
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
@@ -30,6 +32,8 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 		}
+	} else {
+		tmos.Exit(err.Error())
 	}
 
 	app.GetUpgradeKeeper().SetUpgradeHandler(
