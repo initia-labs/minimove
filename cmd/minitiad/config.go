@@ -8,6 +8,7 @@ import (
 
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
+	"github.com/initia-labs/initia/abcipp"
 	moveconfig "github.com/initia-labs/initia/x/move/config"
 
 	"github.com/initia-labs/minimove/types"
@@ -18,6 +19,7 @@ import (
 // minitiaAppConfig minitia specify app config
 type minitiaAppConfig struct {
 	serverconfig.Config
+	ABCIPP     abcipp.AppConfig               `mapstructure:"abcipp"`
 	MemIAVL    initiastorecfg.MemIAVLConfig   `mapstructure:"memiavl"`
 	VersionDB  initiastorecfg.VersionDBConfig `mapstructure:"versiondb"`
 	MoveConfig moveconfig.MoveConfig          `mapstructure:"move"`
@@ -59,17 +61,20 @@ func initAppConfig() (string, any) {
 	moveCfg := moveconfig.DefaultMoveConfig()
 	moveCfg.ContractSimulationGasLimit = 10_000_000
 
+	abcippCfg := abcipp.DefaultAppConfig()
 	memIAVLCfg := initiastorecfg.DefaultMemIAVLConfig()
 	versionDBCfg := initiastorecfg.DefaultVersionDBConfig()
 
 	minitiaAppConfig := minitiaAppConfig{
 		Config:     *srvCfg,
+		ABCIPP:     abcippCfg,
 		MoveConfig: moveCfg,
 		MemIAVL:    memIAVLCfg,
 		VersionDB:  versionDBCfg,
 	}
 
 	minitiaAppTemplate := serverconfig.DefaultConfigTemplate +
+		abcipp.DefaultConfigTemplate +
 		moveconfig.DefaultConfigTemplate +
 		initiastorecfg.DefaultMemIAVLConfigTemplate +
 		initiastorecfg.DefaultVersionDBConfigTemplate
