@@ -284,7 +284,7 @@ func NewMinitiaApp(
 	app.RegisterMessageRouterContextDecorator()
 
 	// setup ABCIPP
-	mempool, anteHandler, prepareProposalHandler, processProposalHandler, checkTx, err := app.setupABCIPP(mempoolMaxTxs)
+	mempool, anteHandler, prepareProposalHandler, processProposalHandler, checkTx, err := app.setupABCIPP(mempoolMaxTxs, appOpts)
 	if err != nil {
 		tmos.Exit(err.Error())
 	}

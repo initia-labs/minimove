@@ -2,6 +2,7 @@ package app
 
 import (
 	"cosmossdk.io/errors"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	sdkmempool "github.com/cosmos/cosmos-sdk/types/mempool"
@@ -13,7 +14,7 @@ import (
 	appante "github.com/initia-labs/minimove/app/ante"
 )
 
-func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int) (
+func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int, appOpts servertypes.AppOptions) (
 	sdkmempool.Mempool,
 	sdk.AnteHandler,
 	sdk.PrepareProposalHandler,
@@ -94,28 +95,34 @@ func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int) (
 	}
 
 	anteHandler := initiaante.NewDualAnteHandler(minimalHandler, fullHandler)
+	abcippCfg := abcipp.GetConfig(appOpts)
 
 	mempool := abcipp.NewPriorityMempool(
 		abcipp.PriorityMempoolConfig{
-			MaxTx:       mempoolMaxTxs,
-			AnteHandler: fullHandler, // cleaning worker uses full handler
-			Tiers:       []abcipp.Tier{},
-		}, app.txConfig.TxEncoder(),
+			MaxTx:              mempoolMaxTxs,
+			MaxQueuedPerSender: abcippCfg.MaxQueuedPerSender,
+			MaxQueuedTotal:     abcippCfg.MaxQueuedTotal,
+			QueuedGapTTL:       abcippCfg.QueuedGapTTL,
+			AnteHandler:        fullHandler, // cleaning worker uses full handler
+			Tiers:              []abcipp.Tier{},
+		}, app.Logger(), app.txConfig.TxEncoder(), app.GetAccountKeeper(),
 	)
-	mempool.SetAccountKeeper(app.AccountKeeper)
 
 	// start mempool cleaning worker
-	mempool.StartCleaningWorker(app.BaseApp, app.AccountKeeper, abcipp.DefaultMempoolCleaningInterval)
+	mempool.StartCleaningWorker(app.BaseApp, abcipp.DefaultMempoolCleaningInterval)
 
-	proposalHandler := abcipp.NewProposalHandler(
+	proposalHandler, err := abcipp.NewProposalHandler(
 		app.Logger(),
 		app.txConfig.TxDecoder(),
 		app.txConfig.TxEncoder(),
 		mempool,
 		fullHandler, // proposal handler uses full handler
 	)
+	if err != nil {
+		return nil, nil, nil, nil, nil, err
+	}
 
-	checkTxHandler := abcipp.NewCheckTxHandler(
+	checkTxHandler, err := abcipp.NewCheckTxHandler(
 		app.Logger(),
 		app.BaseApp,
 		mempool,
@@ -123,6 +130,9 @@ func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int) (
 		app.BaseApp.CheckTx,
 		feeCheckerWrapper,
 	)
+	if err != nil {
+		return nil, nil, nil, nil, nil, err
+	}
 
 	return mempool, anteHandler, proposalHandler.PrepareProposalHandler(), proposalHandler.ProcessProposalHandler(), checkTxHandler.CheckTx, nil
 }
