@@ -7,7 +7,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	sdkmempool "github.com/cosmos/cosmos-sdk/types/mempool"
 	cosmosante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	opchildante "github.com/initia-labs/OPinit/x/opchild/ante"
+	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
 	"github.com/initia-labs/initia/abcipp"
 	initiaante "github.com/initia-labs/initia/app/ante"
 
@@ -23,42 +26,42 @@ func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int, appOpts servertypes.AppOpt
 	error,
 ) {
 
-	feeChecker := opchildante.NewMempoolFeeChecker(app.OPChildKeeper).CheckTxFeeWithMinGasPrices
-	feeCheckerWrapper := func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
-		freeFeeChecker := func() bool {
-			feeTx, ok := tx.(sdk.FeeTx)
-			if !ok {
-				return false
-			}
-
-			whitelist, err := app.OPChildKeeper.FeeWhitelist(ctx)
-			if err != nil {
-				return false
-			}
-
-			payer, err := app.ac.BytesToString(feeTx.FeePayer())
-			if err != nil {
-				return false
-			}
-
-			var granter string
-			if feeTx.FeeGranter() != nil {
-				granter, err = app.ac.BytesToString(feeTx.FeeGranter())
-				if err != nil {
-					return false
-				}
-			}
-
-			for _, addr := range whitelist {
-				if addr == payer || addr == granter {
-					return true
-				}
-			}
-
+	freeFeeChecker := func(ctx sdk.Context, tx sdk.Tx) bool {
+		feeTx, ok := tx.(sdk.FeeTx)
+		if !ok {
 			return false
 		}
 
-		if !freeFeeChecker() {
+		whitelist, err := app.OPChildKeeper.FeeWhitelist(ctx)
+		if err != nil {
+			return false
+		}
+
+		payer, err := app.ac.BytesToString(feeTx.FeePayer())
+		if err != nil {
+			return false
+		}
+
+		var granter string
+		if feeTx.FeeGranter() != nil {
+			granter, err = app.ac.BytesToString(feeTx.FeeGranter())
+			if err != nil {
+				return false
+			}
+		}
+
+		for _, addr := range whitelist {
+			if addr == payer || addr == granter {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	feeChecker := opchildante.NewMempoolFeeChecker(app.OPChildKeeper).CheckTxFeeWithMinGasPrices
+	feeCheckerWrapper := func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+		if !freeFeeChecker(ctx, tx) {
 			return feeChecker(ctx, tx)
 		}
 
@@ -97,6 +100,30 @@ func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int, appOpts servertypes.AppOpt
 	anteHandler := initiaante.NewDualAnteHandler(minimalHandler, fullHandler)
 	abcippCfg := abcipp.GetConfig(appOpts)
 
+	// system tier: oracle and ibc client update messages
+	systemTierMatcher := func(_ sdk.Context, tx sdk.Tx) bool {
+		for _, msg := range tx.GetMsgs() {
+			switch msg := msg.(type) {
+			case *clienttypes.MsgUpdateClient:
+			case *opchildtypes.MsgUpdateOracle:
+			case *opchildtypes.MsgRelayOracleData:
+			case *authz.MsgExec:
+				msgs, err := msg.GetMessages()
+				if err != nil || len(msgs) != 1 {
+					return false
+				}
+				switch msgs[0].(type) {
+				case *opchildtypes.MsgUpdateOracle, *opchildtypes.MsgRelayOracleData:
+				default:
+					return false
+				}
+			default:
+				return false
+			}
+		}
+		return true
+	}
+
 	mempool := abcipp.NewPriorityMempool(
 		abcipp.PriorityMempoolConfig{
 			MaxTx:              mempoolMaxTxs,
@@ -104,7 +131,10 @@ func (app *MinitiaApp) setupABCIPP(mempoolMaxTxs int, appOpts servertypes.AppOpt
 			MaxQueuedTotal:     abcippCfg.MaxQueuedTotal,
 			QueuedGapTTL:       abcippCfg.QueuedGapTTL,
 			AnteHandler:        fullHandler, // cleaning worker uses full handler
-			Tiers:              []abcipp.Tier{},
+			Tiers: []abcipp.Tier{
+				{Name: "system", Matcher: systemTierMatcher},
+				{Name: "admin", Matcher: freeFeeChecker},
+			},
 		}, app.Logger(), app.txConfig.TxEncoder(), app.GetAccountKeeper(),
 	)
 
