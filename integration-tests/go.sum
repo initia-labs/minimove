@@ -1129,8 +1129,8 @@ github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/initia-labs/OPinit/api v1.3.0 h1:MAu4XEJ2uibDVKBo0jB6b6/BGaoXjDUJC+dwhU530ag=
 github.com/initia-labs/OPinit/api v1.3.0/go.mod h1:sWDfvmcxd7KD59ukB/Wz0BSpyimyptDEzz1Epe/ET+Y=
-github.com/initia-labs/cometbft v0.38.19-minitia.23 h1:KwoS9P/tJyAEaCzpkWOIE236QrHmZncXjfYMNe8Rpcc=
-github.com/initia-labs/cometbft v0.38.19-minitia.23/go.mod h1:1Uhjm7cX6AImJAFnt4ttaf6FAu/qFA670NmouGi38sY=
+github.com/initia-labs/cometbft v0.38.19-minitia.24 h1:laacf9A9XgDLHeQEPrWZiG+rNa3somPPmzqBOrD5LG4=
+github.com/initia-labs/cometbft v0.38.19-minitia.24/go.mod h1:1Uhjm7cX6AImJAFnt4ttaf6FAu/qFA670NmouGi38sY=
 github.com/initia-labs/cosmos-sdk v0.50.15-initia.0 h1:cgKCqzXBm8md5Q5C9VAyIGCheHhNcOGK/BwpFbett2g=
 github.com/initia-labs/cosmos-sdk v0.50.15-initia.0/go.mod h1:/dinzXHi7qK0dEPZjS3LI5gMHueKQdqyjbB9chwswo0=
 github.com/jmhodges/levigo v1.0.0 h1:q5EC36kV79HWeTBWsod3mG11EgStG3qArTKcvlksN1U=
