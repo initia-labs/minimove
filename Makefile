@@ -225,9 +225,12 @@ test-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
 
 benchmark:
-	@go test -timeout 20m -mod=readonly -bench=. ./... 
+	@go test -timeout 20m -mod=readonly -bench=. ./...
 
-.PHONY: test test-all test-cover test-unit test-race benchmark
+benchmark-e2e:
+	cd integration-tests/e2e && go test -v -tags benchmark -run TestBenchmark -timeout 30m -count=1 ./benchmark/
+
+.PHONY: test test-all test-cover test-unit test-race benchmark benchmark-e2e
 
 ###############################################################################
 ###                                Linting                                  ###
