@@ -76,7 +76,7 @@ var maccPerms = map[string][]string{
 	ibcfeetypes.ModuleName:          nil,
 	ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
 	movetypes.MoveStakingModuleName: nil,
-	opchildtypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+	opchildtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 
 	// connect oracle permissions
 	oracletypes.ModuleName: nil,
