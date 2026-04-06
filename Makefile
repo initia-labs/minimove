@@ -151,9 +151,16 @@ update-swagger-docs: statik
 ###                                Protobuf                                 ###
 ###############################################################################
 
-protoVer=0.14.0
+protoVer=0.18.1
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+
+# Keep swagger generation on the legacy proto-builder because the cloned
+# third-party proto repos still expect the older `swagger` plugin flow.
+# The other proto tasks can use the newer builder independently.
+swaggerProtoVer=0.14.0
+swaggerProtoImageName=ghcr.io/cosmos/proto-builder:$(swaggerProtoVer)
+swaggerProtoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(swaggerProtoImageName)
 
 proto-all: proto-format proto-lint proto-gen
 
@@ -163,7 +170,7 @@ proto-gen:
 
 proto-swagger-gen:
 	@echo "Generating Swagger files"
-	@$(protoImage) sh ./scripts/protoc-swagger-gen.sh
+	@$(swaggerProtoImage) sh ./scripts/protoc-swagger-gen.sh
 	$(MAKE) update-swagger-docs
 
 proto-pulsar-gen:
