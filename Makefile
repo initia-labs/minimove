@@ -187,7 +187,7 @@ proto-pulsar-gen:
 
 proto-format:
 	@if find ./proto -name "*.proto" -print -quit | grep -q .; then \
-		$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \; \
+		$(protoImage) find ./ -name "*.proto" -exec buf format {} -w \; \
 	else \
 		echo "No .proto files found under ./proto, skipping proto-format"; \
 	fi
