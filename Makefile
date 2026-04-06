@@ -162,11 +162,15 @@ swaggerProtoVer=0.14.0
 swaggerProtoImageName=ghcr.io/cosmos/proto-builder:$(swaggerProtoVer)
 swaggerProtoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(swaggerProtoImageName)
 
-proto-all: proto-format proto-lint proto-gen
+proto-all: proto-format proto-lint proto-gen proto-swagger-gen proto-pulsar-gen
 
 proto-gen:
-	@echo "Generating Protobuf files"
-	@$(protoImage) sh ./scripts/protocgen.sh
+	@if find ./proto -name "*.proto" -print -quit | grep -q .; then \
+		echo "Generating Protobuf files"; \
+		$(protoImage) sh ./scripts/protocgen.sh; \
+	else \
+		echo "No .proto files found under ./proto, skipping proto-gen"; \
+	fi
 
 proto-swagger-gen:
 	@echo "Generating Swagger files"
@@ -174,14 +178,26 @@ proto-swagger-gen:
 	$(MAKE) update-swagger-docs
 
 proto-pulsar-gen:
-	@echo "Generating Dep-Inj Protobuf files"
-	@$(protoImage) sh ./scripts/protocgen-pulsar.sh
+	@if find ./proto -name "*.proto" -print -quit | grep -q .; then \
+		echo "Generating Dep-Inj Protobuf files"; \
+		$(protoImage) sh ./scripts/protocgen-pulsar.sh; \
+	else \
+		echo "No .proto files found under ./proto, skipping proto-pulsar-gen"; \
+	fi
 
 proto-format:
-	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
+	@if find ./proto -name "*.proto" -print -quit | grep -q .; then \
+		$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \; \
+	else \
+		echo "No .proto files found under ./proto, skipping proto-format"; \
+	fi
 
 proto-lint:
-	@$(protoImage) buf lint --error-format=json
+	@if find ./proto -name "*.proto" -print -quit | grep -q .; then \
+		$(protoImage) buf lint --error-format=json ./proto; \
+	else \
+		echo "No .proto files found under ./proto, skipping proto-lint"; \
+	fi
 
 proto-check-breaking:
 	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
