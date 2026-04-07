@@ -12,9 +12,6 @@ import (
 
 	"cosmossdk.io/log"
 	dbm "github.com/cosmos/cosmos-db"
-	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
-	"github.com/initia-labs/minimove/types"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -24,6 +21,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	moveconfig "github.com/initia-labs/initia/x/move/config"
+
+	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+
+	"github.com/initia-labs/minimove/types"
 )
 
 // defaultConsensusParams defines the default Tendermint consensus params used in
