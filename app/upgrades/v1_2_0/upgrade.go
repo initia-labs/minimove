@@ -7,16 +7,16 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
-
-	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
-	"github.com/initia-labs/minimove/app/upgrades"
 
 	movetypes "github.com/initia-labs/initia/x/move/types"
 
 	vmprecom "github.com/initia-labs/movevm/precompile"
 	vmtypes "github.com/initia-labs/movevm/types"
+
+	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
+
+	"github.com/initia-labs/minimove/app/upgrades"
 )
 
 const upgradeName = "v1.2.0"
