@@ -1,6 +1,6 @@
 module github.com/initia-labs/minimove
 
-go 1.24.0
+go 1.26.0
 
 require (
 	cosmossdk.io/api v0.7.6
@@ -24,8 +24,8 @@ require (
 	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.3.0-alpha.1
-	github.com/initia-labs/initia v1.4.0-beta.2
+	github.com/initia-labs/OPinit v1.3.0
+	github.com/initia-labs/initia v1.4.6
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.2.0
 	github.com/initia-labs/store v0.1.1
