@@ -114,12 +114,12 @@ replace (
 
 // initia custom
 replace (
-	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.19-minitia.24
+	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.21-minitia.0
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.50.15-initia.0
-	github.com/cosmos/ibc-go/v8 => github.com/initia-labs/ibc-go/v8 v8.7.0-initia.0
+	github.com/cosmos/ibc-go/v10 => github.com/initia-labs/ibc-go/v10 v10.6.0-initia.0
 	github.com/noble-assets/forwarding/simapp => github.com/initia-labs/forwarding/simapp v1.0.0
-	github.com/noble-assets/forwarding/v2 => github.com/initia-labs/forwarding/v2 v2.0.3-initia.3
-	github.com/skip-mev/connect/v2 => github.com/initia-labs/connect/v2 v2.3.1
+	github.com/noble-assets/forwarding/v2 => github.com/initia-labs/forwarding/v2 v2.0.3-initia.4
+	github.com/skip-mev/connect/v2 => github.com/initia-labs/connect/v2 v2.4.0
 
 	// cosmos/relayer seems having problem with the latest version of grpc; return nil in the below line
 	// - https://github.com/cosmos/relayer/blob/4e4e9530800d28fb2c984f1cfc7b03f05eec618c/relayer/chains/cosmos/grpc_query.go#L30
