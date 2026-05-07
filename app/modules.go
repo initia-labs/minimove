@@ -17,8 +17,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	genutil "github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
@@ -82,13 +80,11 @@ var maccPerms = map[string][]string{
 
 func appModules(
 	app *MinitiaApp,
-	skipGenesisInvariants bool,
-) []module.AppModule {
-	return []module.AppModule{
+) []module.AppModule { //nolint:staticcheck
+	return []module.AppModule{ //nolint:staticcheck
 		auth.NewAppModule(app.appCodec, *app.AccountKeeper, nil, nil),
 		bank.NewAppModule(app.appCodec, *app.BankKeeper, app.AccountKeeper),
 		opchild.NewAppModule(app.appCodec, app.OPChildKeeper),
-		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, nil),
 		feegrantmodule.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, *app.FeeGrantKeeper, app.interfaceRegistry),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.ac),
 		authzmodule.NewAppModule(app.appCodec, *app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
@@ -143,7 +139,6 @@ func orderBeginBlockers() []string {
 
 func orderEndBlockers() []string {
 	return []string{
-		crisistypes.ModuleName,
 		opchildtypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -162,7 +157,7 @@ NOTE: The genutils module must also occur after auth so that it can access the p
 func orderInitBlockers() []string {
 	return []string{
 		authtypes.ModuleName, movetypes.ModuleName, banktypes.ModuleName,
-		opchildtypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, group.ModuleName, crisistypes.ModuleName,
+		opchildtypes.ModuleName, genutiltypes.ModuleName, authz.ModuleName, group.ModuleName,
 		upgradetypes.ModuleName, feegrant.ModuleName, consensusparamtypes.ModuleName, ibcexported.ModuleName,
 		ibctransfertypes.ModuleName, ibcnfttransfertypes.ModuleName, icatypes.ModuleName, icaauthtypes.ModuleName,
 		oracletypes.ModuleName,

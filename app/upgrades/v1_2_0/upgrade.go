@@ -20,8 +20,9 @@ import (
 const upgradeName = "v1.2.0"
 
 // RegisterUpgradeHandlers registers the v1.2.0 upgrade.
-//   - Deletes the legacy "auction", "capability", and "feeibc" (29-fee) module
-//     stores. capability + feeibc were removed in ibc-go v10.
+//   - Deletes the legacy "auction", "capability", "feeibc" (29-fee), and
+//     "crisis" module stores. capability + feeibc were removed in ibc-go v10;
+//     crisis was removed in cosmos-sdk v0.53.
 //   - Republishes the move stdlib (minlib) so it picks up any updates bundled
 //     with the new binary.
 func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
@@ -29,7 +30,7 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 	if upgradeInfo, err := app.GetUpgradeKeeper().ReadUpgradeInfoFromDisk(); err == nil {
 		if upgradeInfo.Name == upgradeName && !app.GetUpgradeKeeper().IsSkipHeight(upgradeInfo.Height) {
 			storeUpgrades := storetypes.StoreUpgrades{
-				Deleted: []string{"auction", "capability", "feeibc"},
+				Deleted: []string{"auction", "capability", "feeibc", "crisis"},
 			}
 
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))

@@ -11,7 +11,6 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 
 	// ibc imports
@@ -45,7 +44,7 @@ import (
 func KVStoreKeys() []string {
 	return []string{
 		authtypes.StoreKey, banktypes.StoreKey, group.StoreKey, consensusparamtypes.StoreKey,
-		crisistypes.StoreKey, ibcexported.StoreKey, upgradetypes.StoreKey, ibctransfertypes.StoreKey,
+		ibcexported.StoreKey, upgradetypes.StoreKey, ibctransfertypes.StoreKey,
 		ibcnfttransfertypes.StoreKey, authzkeeper.StoreKey,
 		feegrant.StoreKey, icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		icaauthtypes.StoreKey, movetypes.StoreKey, opchildtypes.StoreKey,

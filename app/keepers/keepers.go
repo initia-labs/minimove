@@ -27,8 +27,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -99,7 +97,6 @@ type AppKeepers struct {
 	// keepers
 	AccountKeeper         *authkeeper.AccountKeeper
 	BankKeeper            *bankkeeper.BaseKeeper
-	CrisisKeeper          *crisiskeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
 	GroupKeeper           *groupkeeper.Keeper
 	ConsensusParamsKeeper *consensusparamkeeper.Keeper
@@ -135,7 +132,6 @@ func NewAppKeeper(
 	blockedAddress map[string]bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
-	invCheckPeriod uint,
 	logger log.Logger,
 	moveConfig moveconfig.MoveConfig,
 	appOpts servertypes.AppOptions,
@@ -226,16 +222,6 @@ func NewAppKeeper(
 		cc,
 		authcodec.NewBech32Codec("init"),
 		logger,
-	)
-
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-		authorityAddr,
-		ac,
 	)
 
 	appKeepers.UpgradeKeeper = upgradekeeper.NewKeeper(
