@@ -22,7 +22,7 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
 	github.com/cosmos/ibc-go/v10 v10.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.4.0
+	github.com/initia-labs/OPinit v1.4.1
 	github.com/initia-labs/initia v1.4.6
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.2.0
@@ -308,9 +308,6 @@ replace (
 	github.com/cometbft/cometbft => github.com/initia-labs/cometbft v0.38.21-minitia.0
 	github.com/cosmos/cosmos-sdk => github.com/initia-labs/cosmos-sdk v0.53.7-initia.0
 	github.com/cosmos/ibc-go/v10 => github.com/initia-labs/ibc-go/v10 v10.6.0-initia.0
-
-	// TODO: bump to v1.4.1 once initia-labs/OPinit PR #193 is merged and tagged
-	github.com/initia-labs/OPinit => github.com/initia-labs/OPinit v0.0.0-20260506085302-9340dbdf0a55
 
 	// TODO: bump to v1.5.0 once initia-labs/initia PR #517 is merged and is tagged.
 	github.com/initia-labs/initia => github.com/initia-labs/initia v1.4.7-0.20260430090433-8085f37b128c
