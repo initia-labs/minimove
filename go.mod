@@ -35,11 +35,10 @@ require (
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
+	go.uber.org/mock v0.6.0
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
 	golang.org/x/sync v0.20.0
 )
-
-require go.uber.org/mock v0.6.0
 
 require (
 	cel.dev/expr v0.25.1 // indirect
@@ -310,7 +309,7 @@ replace (
 	github.com/cosmos/ibc-go/v10 => github.com/initia-labs/ibc-go/v10 v10.6.0-initia.0
 
 	// TODO: bump to v1.5.0 once initia-labs/initia PR #517 is merged and is tagged.
-	github.com/initia-labs/initia => github.com/initia-labs/initia v1.4.7-0.20260430090433-8085f37b128c
+	github.com/initia-labs/initia => github.com/initia-labs/initia v1.4.7-0.20260507065048-a6bab8f11916
 
 	github.com/noble-assets/forwarding/simapp => github.com/initia-labs/forwarding/simapp v1.0.1-0.20260421090420-f24c4fc5f529
 	github.com/noble-assets/forwarding/v2 => github.com/initia-labs/forwarding/v2 v2.0.3-initia.4

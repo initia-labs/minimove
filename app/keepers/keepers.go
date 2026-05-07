@@ -296,7 +296,7 @@ func NewAppKeeper(
 	// Transfer configuration //
 	////////////////////////////
 	// Send   : transfer -> packet forward -> rate limit -> ibchooks -> channel
-	// Receive: channel  -> legacyfeeack   -> opchild-migration -> ibchooks(move) -> rate limit -> packet forward -> forwarding -> transfer
+	// Receive: channel  -> legacyfeeack   -> ibchooks(move) -> opchild-migration -> rate limit -> packet forward -> forwarding -> transfer
 
 	var transferStack porttypes.IBCModule
 	{
@@ -369,6 +369,17 @@ func NewAppKeeper(
 			transferStack,
 		)
 
+		// opchild migration middleware (rollup-side denom migration)
+		transferStack = opchildmigration.NewIBCMiddleware(
+			ac,
+			appCodec,
+			// receive: migration -> rate limit -> packet forward -> forwarding -> transfer
+			transferStack,
+			nil, /* ics4wrapper: not used */
+			appKeepers.BankKeeper,
+			appKeepers.OPChildKeeper,
+		)
+
 		// create move ibc-hooks middleware for transfer
 		*ibcHooksICS4Wrapper = *ibchooks.NewICS4Middleware(
 			// ics4wrapper: ibchooks -> channel
@@ -377,21 +388,10 @@ func NewAppKeeper(
 			ibcmovehooks.NewMoveHooks(ac, appCodec, logger, appKeepers.MoveKeeper),
 		)
 		transferStack = ibchooks.NewIBCMiddleware(
-			// receive: ibchooks(move) -> rate limit -> packet forward -> forwarding -> transfer
+			// receive: ibchooks(move) -> migration -> rate limit -> packet forward -> forwarding -> transfer
 			transferStack,
 			ibcHooksICS4Wrapper,
 			appKeepers.IBCHooksKeeper,
-		)
-
-		// opchild migration middleware (rollup-side denom migration)
-		transferStack = opchildmigration.NewIBCMiddleware(
-			ac,
-			appCodec,
-			// receive: migration -> ibchooks(move) -> rate limit -> packet forward -> forwarding -> transfer
-			transferStack,
-			nil, /* ics4wrapper: not used */
-			appKeepers.BankKeeper,
-			appKeepers.OPChildKeeper,
 		)
 
 		// legacy 29-fee ack compatibility for pre-v10 channels
@@ -443,7 +443,7 @@ func NewAppKeeper(
 	// OPChild configuration //
 	///////////////////////////
 
-	opchildStack := opchild.NewIBCModule(*appKeepers.OPChildKeeper)
+	opchildStack := legacyfeeack.NewIBCMiddleware(opchild.NewIBCModule(*appKeepers.OPChildKeeper))
 
 	///////////////////////
 	// ICA configuration //
@@ -485,8 +485,11 @@ func NewAppKeeper(
 
 		icaAuthIBCModule := icaauth.NewIBCModule(*appKeepers.ICAAuthKeeper)
 		icaHostIBCModule := icahost.NewIBCModule(*appKeepers.ICAHostKeeper)
-		icaHostStack = icaHostIBCModule
-		icaControllerStack = icacontroller.NewIBCMiddlewareWithAuth(icaAuthIBCModule, *appKeepers.ICAControllerKeeper)
+		// legacyfeeack outermost on both ICA stacks for fee-wrapped channel ack compatibility.
+		icaHostStack = legacyfeeack.NewIBCMiddleware(icaHostIBCModule)
+		icaControllerStack = legacyfeeack.NewIBCMiddleware(
+			icacontroller.NewIBCMiddlewareWithAuth(icaAuthIBCModule, *appKeepers.ICAControllerKeeper),
+		)
 	}
 
 	//////////////////////////////
@@ -499,7 +502,11 @@ func NewAppKeeper(
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icaauthtypes.ModuleName, icaControllerStack).
-		AddRoute("nft", nftTransferStack).
+		// new v10 PortKeeper.Route requires alphanumeric route keys but does a substring
+		// fallback (over sorted Keys()) when exact match fails. PortID "nft-transfer"
+		// has a hyphen so we register under "nft". sorts before "transfer", is a
+		// substring of "nft-transfer", so the fallback resolves deterministically.
+		AddRoute(ibcnfttransfertypes.IbcRouterKey, nftTransferStack).
 		AddRoute(opchildtypes.ModuleName, opchildStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
