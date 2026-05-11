@@ -10,9 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	opchildkeeper "github.com/initia-labs/OPinit/x/opchild/keeper"
 	ibctestingtypes "github.com/initia-labs/initia/x/ibc/testing/types"
@@ -63,11 +62,6 @@ func (app *MinitiaApp) GetICAAuthKeeper() *icaauthkeeper.Keeper {
 // GetOPChildKeeper returns the opchild keeper for the app.
 func (app *MinitiaApp) GetOPChildKeeper() *opchildkeeper.Keeper {
 	return app.OPChildKeeper
-}
-
-// GetScopedIBCKeeper returns the scoped ibc keeper for the app.
-func (app *MinitiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
-	return app.ScopedIBCKeeper
 }
 
 // TxConfig returns the tx config for the app.

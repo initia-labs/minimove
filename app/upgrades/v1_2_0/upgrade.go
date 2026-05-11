@@ -14,20 +14,23 @@ import (
 	vmprecom "github.com/initia-labs/movevm/precompile"
 	vmtypes "github.com/initia-labs/movevm/types"
 
-	opchildtypes "github.com/initia-labs/OPinit/x/opchild/types"
-
 	"github.com/initia-labs/minimove/app/upgrades"
 )
 
 const upgradeName = "v1.2.0"
 
-// RegisterUpgradeHandlers returns upgrade handlers
+// RegisterUpgradeHandlers registers the v1.2.0 upgrade.
+//   - Deletes the legacy "auction", "capability", "feeibc" (29-fee), and
+//     "crisis" module stores. capability + feeibc were removed in ibc-go v10;
+//     crisis was removed in cosmos-sdk v0.53.
+//   - Republishes the move stdlib (minlib) so it picks up any updates bundled
+//     with the new binary.
 func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 	// apply store upgrade only if this upgrade is scheduled at a height
 	if upgradeInfo, err := app.GetUpgradeKeeper().ReadUpgradeInfoFromDisk(); err == nil {
 		if upgradeInfo.Name == upgradeName && !app.GetUpgradeKeeper().IsSkipHeight(upgradeInfo.Height) {
 			storeUpgrades := storetypes.StoreUpgrades{
-				Deleted: []string{"auction"},
+				Deleted: []string{"auction", "capability", "feeibc", "crisis"},
 			}
 
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
@@ -52,17 +55,6 @@ func RegisterUpgradeHandlers(app upgrades.MinitiaApp) {
 			err = app.GetMoveKeeper().PublishModuleBundle(ctx, vmtypes.StdAddress, vmtypes.NewModuleBundle(modules...), movetypes.UpgradePolicy_COMPATIBLE)
 			if err != nil {
 				return nil, err
-			}
-
-			// bind the opinit IBC port for opchild module
-			bound, err := app.GetOPChildKeeper().IsBound(ctx, opchildtypes.PortID)
-			if err != nil {
-				return nil, err
-			}
-			if !bound {
-				if err := app.GetOPChildKeeper().BindPort(ctx, opchildtypes.PortID); err != nil {
-					return nil, err
-				}
 			}
 
 			return vm, nil

@@ -54,7 +54,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
 
 	// ibc modules
 
@@ -169,8 +168,6 @@ func NewMinitiaApp(
 
 	// app opts
 	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
-	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 	skipUpgradeHeights := make(map[int64]bool)
 	for _, h := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
 		skipUpgradeHeights[int64(h)] = true
@@ -210,7 +207,6 @@ func NewMinitiaApp(
 		blockedModuleAccountAddrs,
 		skipUpgradeHeights,
 		homePath,
-		invCheckPeriod,
 		logger,
 		moveConfig,
 		appOpts,
@@ -220,7 +216,7 @@ func NewMinitiaApp(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-	app.ModuleManager = module.NewManager(appModules(app, skipGenesisInvariants)...)
+	app.ModuleManager = module.NewManager(appModules(app)...)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration and genesis verification.
@@ -231,6 +227,7 @@ func NewMinitiaApp(
 	// NOTE: upgrade module is required to be prioritized
 	app.ModuleManager.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
+		authtypes.ModuleName,
 	)
 
 	// set order of module operations
@@ -239,9 +236,6 @@ func NewMinitiaApp(
 	genesisModuleOrder := orderInitBlockers()
 	app.ModuleManager.SetOrderInitGenesis(genesisModuleOrder...)
 	app.ModuleManager.SetOrderExportGenesis(genesisModuleOrder...)
-
-	// register invariants for crisis module
-	app.ModuleManager.RegisterInvariants(app.CrisisKeeper)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	err := app.ModuleManager.RegisterServices(app.configurator)
