@@ -382,7 +382,7 @@ func NewAppKeeper(
 
 		// create move middleware for transfer
 		*ibcHooksICS4Wrapper = *ibchooks.NewICS4Middleware(
-			// ics4wrapper: ibchooks -> channel
+			// ics4wrapper: transfer -> packet forward -> rate limit -> ibchooks -> channel
 			appKeepers.IBCKeeper.ChannelKeeper,
 			appKeepers.IBCHooksKeeper,
 			ibcmovehooks.NewMoveHooks(ac, appCodec, logger, appKeepers.MoveKeeper),
@@ -423,7 +423,7 @@ func NewAppKeeper(
 
 		// create move middleware for nft-transfer
 		*ibcHooksICS4Wrapper = *ibchooks.NewICS4Middleware(
-			// ics4wrapper: ibchooks -> channel
+			// nft transfer -> ibchooks -> channel
 			appKeepers.IBCKeeper.ChannelKeeper,
 			appKeepers.IBCHooksKeeper,
 			ibcmovehooks.NewMoveHooks(ac, appCodec, logger, appKeepers.MoveKeeper),
