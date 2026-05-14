@@ -22,7 +22,7 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
 	github.com/cosmos/ibc-go/v10 v10.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/initia-labs/OPinit v1.4.1
+	github.com/initia-labs/OPinit v1.4.2
 	github.com/initia-labs/initia v1.5.0-alpha.0
 	// we also need to update `LIBMOVEVM_VERSION` of Dockerfile#11
 	github.com/initia-labs/movevm v1.2.0
