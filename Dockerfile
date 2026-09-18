@@ -1,5 +1,5 @@
 # Stage 1: Build the Go project
-FROM golang:1.23-alpine AS go-builder
+FROM golang:1.26-alpine AS go-builder
 
 # Use build arguments for the target architecture
 ARG TARGETARCH
@@ -41,8 +41,8 @@ RUN set -eux; \
 # Build the project with the specified architecture and linker flags
 RUN VERSION=${VERSION} COMMIT=${COMMIT} LEDGER_ENABLED=false BUILD_TAGS=muslc GOARCH=${GOARCH} LDFLAGS="-linkmode=external -extldflags \"-L/code/mimalloc/build -lmimalloc -Wl,-z,muldefs -static\"" make build
 
-# use bullseye-slim as base image for rly binary at launch
-FROM debian:bullseye-slim
+# use bookworm-slim as base image for rly binary at launch
+FROM debian:bookworm-slim
 
 # install curl for health check
 RUN apt-get update && \
