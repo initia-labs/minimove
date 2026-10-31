@@ -292,3 +292,5 @@ replace (
 	github.com/noble-assets/forwarding/v2 => github.com/initia-labs/forwarding/v2 v2.0.3-initia.3
 	github.com/skip-mev/connect/v2 => github.com/initia-labs/connect/v2 v2.3.1
 )
+
+replace github.com/initia-labs/movevm => github.com/initia-labs/movevm-sec v1.1.3-sec

@@ -795,8 +795,8 @@ github.com/initia-labs/ibc-go/v8 v8.7.0-initia.0 h1:qDaf7jqmism9WXe8OtqpDDxJckKr
 github.com/initia-labs/ibc-go/v8 v8.7.0-initia.0/go.mod h1:G2z+Q6ZQSMcyHI2+BVcJdvfOupb09M2h/tgpXOEdY6k=
 github.com/initia-labs/initia v1.2.2 h1:gOtJnm+8DvM7yIZASvU14yOqT52YU6gG5LgRMYyjF9c=
 github.com/initia-labs/initia v1.2.2/go.mod h1:Re9FJTPiFy3VsooRZU7rMK9olcxBJ1Vooz7qR/Eu18c=
-github.com/initia-labs/movevm v1.1.2 h1:udIkzni6h0juPm9m3dM8eEUczxooTWU/OaW99fHSmEE=
-github.com/initia-labs/movevm v1.1.2/go.mod h1:sj/kXD7mUQASqogPTjqltIr4Uid3xxnlcbfiFvvqeXA=
+github.com/initia-labs/movevm-sec v1.1.3-sec h1:ZmUSWMsQvk+d46DV2DYJ2ivNa/T76bHSmuk4NDuQHHQ=
+github.com/initia-labs/movevm-sec v1.1.3-sec/go.mod h1:sj/kXD7mUQASqogPTjqltIr4Uid3xxnlcbfiFvvqeXA=
 github.com/initia-labs/store v0.1.2 h1:NiTc0uz2dSd/A8biFU88G2+K4yFQhVT7NQwrBsZNps0=
 github.com/initia-labs/store v0.1.2/go.mod h1:AV8QLhCM1qQH3fywIy08xLqf7GlZMECi54NzBNQ92mk=
 github.com/initia-labs/store/memiavl v0.1.2 h1:0q+V0x6NO6mwXfbTKJHkwdCbwTU/NsEJF3OjWxMOJPM=

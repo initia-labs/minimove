@@ -16,6 +16,8 @@ import (
 	ibctestingtypes "github.com/initia-labs/initia/x/ibc/testing/types"
 	icaauthkeeper "github.com/initia-labs/initia/x/intertx/keeper"
 	movekeeper "github.com/initia-labs/initia/x/move/keeper"
+
+	forwardingkeeper "github.com/noble-assets/forwarding/v2/keeper"
 )
 
 // GetBaseApp returns the base app for the app.
@@ -88,4 +90,9 @@ func (app *MinitiaApp) CheckStateContextGetter() func() sdk.Context {
 // GetQueryMultiStore returns the query multi store for the app.
 func (app *MinitiaApp) GetQueryMultiStore() storetypes.MultiStore {
 	return app.qms
+}
+
+// GetForwardingKeeper returns the noble forwarding keeper for the app.
+func (app *MinitiaApp) GetForwardingKeeper() *forwardingkeeper.Keeper {
+	return app.ForwardingKeeper
 }

@@ -72,6 +72,7 @@ import (
 	// local imports
 	"github.com/initia-labs/minimove/app/keepers"
 	"github.com/initia-labs/minimove/app/upgrades/v1_1_13"
+	"github.com/initia-labs/minimove/app/upgrades/v1_1_16"
 	"github.com/initia-labs/minimove/app/upgrades/v1_1_5"
 
 	// memiavl store
@@ -257,6 +258,7 @@ func NewMinitiaApp(
 		// chain has applied a newer on-chain plan.
 		v1_1_5.RegisterUpgradeHandlers(app)
 		v1_1_13.RegisterUpgradeHandlers(app)
+		v1_1_16.RegisterUpgradeHandlers(app)
 	}
 
 	// register executor change plans for later use
@@ -280,7 +282,7 @@ func NewMinitiaApp(
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
-	app.SetPreBlocker(app.PreBlocker)
+	app.SetPreBlocker(v1_1_16.WrapPreBlocker(app, app.PreBlocker))
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.setPostHandler()
 	app.SetEndBlocker(app.EndBlocker)
